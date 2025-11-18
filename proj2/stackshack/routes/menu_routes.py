@@ -211,3 +211,47 @@ def browse_ingredients():
     return render_template(
         "menu/browse_ingredients.html", categorized_items=categorized_items
     )
+
+@menu_bp.route("/inventory", methods=["GET", "POST"])
+@login_required
+def inventory_dashboard():
+    """Inventory dashboard showing stock for all items (admin/staff only)."""
+    if current_user.role not in ["admin", "staff"]:
+        flash("Unauthorized access", "error")
+        return redirect(url_for("auth.dashboard"))
+
+    # Handle stock updates
+    if request.method == "POST":
+        item_id = request.form.get("item_id")
+        stock = request.form.get("stock_quantity")
+        threshold = request.form.get("low_stock_threshold")
+
+        success, msg, _ = MenuController.update_stock(item_id, stock, threshold)
+        flash(msg, "success" if success else "error")
+        return redirect(url_for("menu.inventory_dashboard"))
+
+    # Get all items
+    success_all, _, items = MenuController.get_all_items()
+    if not success_all:
+        items = []
+
+    # Split into out-of-stock vs low-stock (without double-counting)
+    out_of_stock_items = []
+    low_stock_items = []
+
+    for item in items:
+        # Make sure these attributes exist; they should with your new model
+        stock_qty = getattr(item, "stock_quantity", 0) or 0
+        threshold = getattr(item, "low_stock_threshold", 0) or 0
+
+        if stock_qty == 0:
+            out_of_stock_items.append(item)
+        elif stock_qty <= threshold:
+            low_stock_items.append(item)
+
+    return render_template(
+        "menu/inventory.html",
+        items=items,
+        low_stock_items=low_stock_items,
+        out_of_stock_items=out_of_stock_items,
+    )

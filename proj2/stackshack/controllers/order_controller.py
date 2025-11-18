@@ -1,4 +1,5 @@
 from models.order import Order, OrderItem
+from models.menu_item import MenuItem 
 from database.db import db
 
 
@@ -19,36 +20,70 @@ class OrderController:
 
     @staticmethod
     def create_new_order(user_id, item_data):
-        """Creates a new order for the specified user with the given items."""
+        """
+        Creates a new order for the specified user with the given items.
+
+        item_data: list of tuples (item_id, price, quantity, name)
+        We IGNORE the client price & name and use DB values for safety.
+        """
         if not item_data:
             return False, "Order cannot be empty.", None
 
-        total_price = 0
-        new_order = Order(user_id=user_id, total_price=0, status="Pending")
-        db.session.add(new_order)
-        db.session.flush()  # Get the order ID before commit
-
         try:
-            for item_id, price, quantity, name in item_data:
-                price_float = float(price)
-                quantity_int = int(quantity)
+            total_price = 0
+            new_order = Order(user_id=user_id, total_price=0, status="Pending")
+            db.session.add(new_order)
+            db.session.flush()  # Get order ID
 
+            for item_id, _client_price, quantity, _client_name in item_data:
+                quantity_int = int(quantity)
                 if quantity_int <= 0:
                     continue
 
+                item_id_int = int(item_id)
+                menu_item = db.session.get(MenuItem, item_id_int)
+                if not menu_item:
+                    db.session.rollback()
+                    return False, f"Menu item {item_id_int} not found.", None
+
+                # Check stock
+                if menu_item.stock_quantity < quantity_int:
+                    db.session.rollback()
+                    return (
+                        False,
+                        f"Not enough stock for {menu_item.name}. "
+                        f"Available: {menu_item.stock_quantity}, requested: {quantity_int}.",
+                        None,
+                    )
+
+                price = float(menu_item.price)
+                name = menu_item.name
+
                 order_item = OrderItem(
                     order_id=new_order.id,
-                    menu_item_id=item_id if item_id else None,
+                    menu_item_id=menu_item.id,
                     name=name,
-                    price=price_float,
+                    price=price,
                     quantity=quantity_int,
                 )
                 db.session.add(order_item)
-                total_price += price_float * quantity_int
+
+                # Decrement stock & update availability
+                menu_item.stock_quantity -= quantity_int
+                if menu_item.stock_quantity <= 0:
+                    menu_item.stock_quantity = 0
+                    menu_item.is_available = False  # hide from customer menus
+
+                total_price += price * quantity_int
+
+            if total_price == 0:
+                db.session.rollback()
+                return False, "Order cannot be empty.", None
 
             new_order.total_price = total_price
             db.session.commit()
             return True, f"Order #{new_order.id} placed successfully.", new_order
+
         except Exception as e:
             db.session.rollback()
             return False, f"Error placing order: {str(e)}", None

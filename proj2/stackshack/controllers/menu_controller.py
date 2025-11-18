@@ -7,7 +7,7 @@ class MenuController:
 
     @staticmethod
     def get_all_items():
-        """Get all menu items"""
+        """Get all menu items (for management views)."""
         try:
             items = MenuItem.query.order_by(MenuItem.category, MenuItem.name).all()
             return True, "Items retrieved successfully", items
@@ -27,7 +27,15 @@ class MenuController:
 
     @staticmethod
     def create_item(
-        name, category, description, price, calories=None, protein=None, image_url=None
+        name,
+        category,
+        description,
+        price,
+        calories=None,
+        protein=None,
+        image_url=None,
+        stock_quantity=0,
+        low_stock_threshold=10,
     ):
         """Create a new menu item - Admin/Staff only"""
         # Check authorization
@@ -50,7 +58,14 @@ class MenuController:
                 calories=calories,
                 protein=protein,
                 image_url=image_url,
+                stock_quantity=int(stock_quantity) if stock_quantity else 0,
+                low_stock_threshold=int(low_stock_threshold)
+                if low_stock_threshold
+                else 10,
             )
+            # Auto-availability based on stock
+            item.is_available = item.stock_quantity > 0
+
             db.session.add(item)
             db.session.commit()
             return True, "Item created successfully", item
@@ -142,6 +157,14 @@ class MenuController:
             if not item:
                 return False, "Item not found", None
 
+            # If currently unavailable and stock is zero, don't allow marking it available
+            if not item.is_available and item.stock_quantity <= 0:
+                return (
+                    False,
+                    "Cannot mark available: stock is 0. Please update inventory first.",
+                    None,
+                )
+
             item.is_available = not item.is_available
             db.session.commit()
             status = "available" if item.is_available else "unavailable"
@@ -198,6 +221,7 @@ class MenuController:
         try:
             items = (
                 MenuItem.query.filter_by(is_available=True)
+                .filter(MenuItem.stock_quantity > 0)  # 🔹 only in-stock
                 .order_by(MenuItem.category, MenuItem.name)
                 .all()
             )
@@ -211,9 +235,48 @@ class MenuController:
         try:
             items = (
                 MenuItem.query.filter_by(is_healthy_choice=True, is_available=True)
+                .filter(MenuItem.stock_quantity > 0)  # 🔹 only in-stock
                 .order_by(MenuItem.name)
                 .all()
             )
             return True, "Healthy choices retrieved successfully", items
         except Exception as e:
             return False, f"Error: {str(e)}", None
+
+    # 🔹 INVENTORY-SPECIFIC METHODS
+
+    @staticmethod
+    def get_low_stock_items():
+        """Items that are running low (but not completely out-of-stock)."""
+        try:
+            items = (
+                MenuItem.query
+                .filter(MenuItem.stock_quantity > 0)
+                .filter(MenuItem.stock_quantity <= MenuItem.low_stock_threshold)
+                .order_by(MenuItem.stock_quantity.asc())
+                .all()
+            )
+            return True, "Low stock items retrieved successfully", items
+        except Exception as e:
+            return False, f"Error: {str(e)}", None
+
+    @staticmethod
+    def update_stock(item_id, new_stock, new_threshold=None):
+        """Update stock quantity (and optionally low-stock threshold)."""
+        try:
+            item = db.session.get(MenuItem, int(item_id))
+            if not item:
+                return False, "Item not found", None
+
+            item.stock_quantity = max(0, int(new_stock))
+            if new_threshold is not None and new_threshold != "":
+                item.low_stock_threshold = max(0, int(new_threshold))
+
+            # Auto-update availability based on stock
+            item.is_available = item.stock_quantity > 0
+
+            db.session.commit()
+            return True, "Stock updated successfully", item
+        except Exception as e:
+            db.session.rollback()
+            return False, f"Error updating stock: {str(e)}", None

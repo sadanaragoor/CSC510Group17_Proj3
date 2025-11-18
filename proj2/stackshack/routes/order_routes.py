@@ -20,12 +20,18 @@ def order_history():
 
 @order_bp.route("/ingredients/<category>")
 def get_ingredients(category):
-    items = MenuItem.query.filter(MenuItem.category.ilike(f"%{category}%")).all()
+    items = (
+        MenuItem.query
+        .filter(MenuItem.category.ilike(f"%{category}%"))
+        .filter(MenuItem.is_available == True)
+        .filter(MenuItem.stock_quantity > 0)
+        .all()
+    )
     data = [
         {
             "id": item.id,
             "name": item.name,
-            "price": item.price,
+            "price": float(item.price),
             "description": item.description,
             "is_healthy": item.is_healthy_choice,
             "image_url": item.image_url,

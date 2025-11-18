@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Inventory Dashboard{% endblock %}
+
+{% block content %}
+<h2>Inventory Management</h2>
+<p>View and update ingredient stock levels. Low-stock items are highlighted.</p>
+
+{# 🔴 Out of stock alert #}
+{% if out_of_stock_items %}
+  <div style="
+      padding: 15px;
+      margin: 20px 0 10px 0;
+      border-radius: 6px;
+      background: #fdecea;
+      color: #b71c1c;
+      border: 1px solid #f5c2c7;
+  ">
+    <strong>⚠ Out of Stock:</strong>
+    {{ out_of_stock_items|length }} item(s) are completely unavailable!
+  </div>
+{% endif %}
+
+{# 🟡 Low stock alert (stock > 0 but <= threshold) #}
+{% if low_stock_items %}
+  <div style="
+      padding: 15px;
+      margin: 10px 0 20px 0;
+      border-radius: 6px;
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+  ">
+    <strong>⚠ Low Stock Alert:</strong>
+    {{ low_stock_items|length }} item(s) are at or below their threshold.
+  </div>
+{% endif %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Current Stock</th>
+      <th>Low-stock Threshold</th>
+      <th>Status</th>
+      <th>Update Stock</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td><strong>{{ item.name }}</strong></td>
+      <td>{{ item.category | capitalize }}</td>
+      <td>{{ item.stock_quantity }}</td>
+      <td>{{ item.low_stock_threshold }}</td>
+      <td>
+        {% if item.stock_quantity == 0 %}
+          <span style="padding: 4px 10px; border-radius: 4px;
+                       background: #f8d7da; color: #721c24;">
+            Out of Stock
+          </span>
+        {% elif item.stock_quantity <= item.low_stock_threshold %}
+          <span style="padding: 4px 10px; border-radius: 4px;
+                       background: #fff3cd; color: #856404;">
+            Low Stock
+          </span>
+        {% else %}
+          <span style="padding: 4px 10px; border-radius: 4px;
+                       background: #d4edda; color: #155724;">
+            In Stock
+          </span>
+        {% endif %}
+      </td>
+
+      <td>
+        <form method="POST" style="display: flex; flex-direction: column; gap: 6px;">
+          <input type="hidden" name="item_id" value="{{ item.id }}">
+
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <label style="font-size: 0.85em; color: #555; width: 90px;">Stock:</label>
+            <input type="number" name="stock_quantity" min="0"
+                   value="{{ item.stock_quantity }}"
+                   style="width: 90px; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <label style="font-size: 0.85em; color: #555; width: 90px;">Threshold:</label>
+            <input type="number" name="low_stock_threshold" min="0"
+                   value="{{ item.low_stock_threshold }}"
+                   style="width: 90px; padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+          </div>
+
+          <button type="submit" style="margin-top: 4px; align-self: flex-start;">
+            Save
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
