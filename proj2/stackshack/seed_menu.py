@@ -45,6 +45,61 @@ def seed_menu_items():
             "image_url": "/static/images/bun/plain.jpg",
         },
         {
+            "name": "keto bun",
+            "category": "bun",
+            "description": "almond flour bun",
+            "price": 6.50,
+            "calories": 40,
+            "protein": 18,
+            "is_available": True,
+            "is_healthy_choice": True,
+            "image_url": "/static/images/bun/ketoo.png",
+        },
+        {
+            "name": "sesame bun",
+            "category": "bun",
+            "description": "steamed bun with sesame seeds",
+            "price": 4.50,
+            "calories": 100,
+            "protein": 20,
+            "is_available": True,
+            "is_healthy_choice": True,
+            "image_url": "/static/images/bun/sesame.png",
+        },
+        {
+            "name": "black sesame bun",
+            "category": "bun",
+            "description": "steamed bun filled with rich black sesame paste",
+            "price": 5.00,
+            "calories": 80,
+            "protein": 25,
+            "is_available": True,
+            "is_healthy_choice": True,
+            "image_url": "/static/images/bun/blacksesemebun.jpg",
+        },
+        {
+            "name": "beetroot bun",
+            "category": "bun",
+            "description": "beetroot bun",
+            "price": 3.50,
+            "calories": 50,
+            "protein": 15,
+            "is_available": True,
+            "is_healthy_choice": True,
+            "image_url": "/static/images/bun/beetrootbun.png",
+        },
+        {
+            "name": "carrot bun",
+            "category": "bun",
+            "description": "carrot bun",
+            "price": 3.50,
+            "calories": 50,
+            "protein": 15,
+            "is_available": True,
+            "is_healthy_choice": True,
+            "image_url": "/static/images/bun/carrotbun.png",
+        },
+        {
             "name": "chicken patty",
             "category": "patty",
             "description": "crispy chicken",
@@ -76,6 +131,28 @@ def seed_menu_items():
             "is_available": True,
             "is_healthy_choice": False,
             "image_url": "/static/images/patty/pork.png",
+        },
+        {
+            "name": "mixed veg patty",
+            "category": "patty",
+            "description": "veggies patty",
+            "price": 3.50,
+            "calories": 40,
+            "protein": 7,
+            "is_available": True,
+            "is_healthy_choice": True,
+            "image_url": "/static/images/patty/mveg.png",
+        },
+        {
+            "name": "low-calorie beef patty",
+            "category": "patty",
+            "description": "low carb beef patty",
+            "price": 6.00,
+            "calories": 50,
+            "protein": 10,
+            "is_available": True,
+            "is_healthy_choice": True,
+            "image_url": "/static/images/patty/low.png",
         },
         {
             "name": "veg patty",
@@ -237,7 +314,10 @@ def seed_menu_items():
         # Avoid duplicates
         existing_item = MenuItem.query.filter_by(name=item["name"]).first()
         if not existing_item:
-            new_item = MenuItem(**item)
+            new_item = MenuItem(
+                stock_quantity=20,          # default starting stock
+                low_stock_threshold=5,
+                **item)
             db.session.add(new_item)
 
     db.session.commit()
