@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from controllers.auth_controller import AuthController
+from database.db import db
+
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -21,12 +23,30 @@ def register():
         if current_user.is_authenticated and current_user.role == "admin":
             role = request.form.get("role", "customer")
 
-        success, msg, _ = AuthController.register_user(username, password, role)
+        # NEW: get dietary preferences from form
+        dietary_prefs = request.form.getlist("dietary_preferences")
+        if "no_preference" in dietary_prefs:
+            # treat "no preference" as no filters
+            dietary_prefs = []
+
+        # ✅ Call AuthController as it was originally (3 args only)
+        success, msg, user = AuthController.register_user(username, password, role)
+        if success and user:
+            # Now apply preferences to the saved user
+            user.pref_vegan = "vegan" in dietary_prefs
+            user.pref_gluten_free = "gluten_free" in dietary_prefs
+            user.pref_high_protein = "high_protein" in dietary_prefs
+            user.pref_low_calorie = "low_calorie" in dietary_prefs
+
+            db.session.commit()
+
         flash(msg, "success" if success else "error")
 
         if success:
             return redirect(url_for("auth.login"))
+
     return render_template("register.html")
+
 
 
 # Login route

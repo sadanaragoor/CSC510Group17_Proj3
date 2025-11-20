@@ -9,6 +9,31 @@
   <label for="password">Password:</label>
   <input type="password" id="password" name="password" required>
 
+  <!-- NEW: Dietary Preferences (multi-select) -->
+  <label>Dietary Preferences (optional):</label>
+  <div style="margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px;">
+    <label style="font-size: 0.95em;">
+      <input type="checkbox" name="dietary_preferences" value="vegan">
+      Vegan
+    </label>
+    <label style="font-size: 0.95em;">
+      <input type="checkbox" name="dietary_preferences" value="gluten_free">
+      Gluten-free
+    </label>
+    <label style="font-size: 0.95em;">
+      <input type="checkbox" name="dietary_preferences" value="low_calorie">
+      Low calorie (≤ 80 cal)
+    </label>
+    <label style="font-size: 0.95em;">
+      <input type="checkbox" name="dietary_preferences" value="high_protein">
+      High protein (≥ 15 g)
+    </label>
+    <label style="font-size: 0.95em;">
+      <input type="checkbox" name="dietary_preferences" value="no_preference">
+      No preference
+    </label>
+  </div>
+
   {% if current_user.is_authenticated and current_user.role == 'admin' %}
   <label for="role">Role:</label>
   <select name="role" id="role">

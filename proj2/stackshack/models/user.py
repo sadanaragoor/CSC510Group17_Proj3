@@ -15,6 +15,10 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), nullable=False, default="customer")
+    pref_vegan = db.Column(db.Boolean, default=False)
+    pref_gluten_free = db.Column(db.Boolean, default=False)
+    pref_high_protein = db.Column(db.Boolean, default=False)
+    pref_low_calorie = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         """

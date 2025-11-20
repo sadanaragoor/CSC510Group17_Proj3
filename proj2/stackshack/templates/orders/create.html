@@ -157,6 +157,32 @@
   margin-left: 15px;
   text-transform: capitalize;
 }
+/* Highlight ingredients that match user dietary preferences */
+.ingredient-card.preferred-ingredient {
+  border: 2px solid var(--primary-color);
+  background: #fffdf4;
+  box-shadow: 0 0 10px rgba(243, 156, 18, 0.25);
+  position: relative;
+}
+
+.pref-tags {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pref-tag {
+  font-size: 0.75em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(243, 156, 18, 0.1);
+  color: var(--primary-dark);
+  border: 1px solid rgba(243, 156, 18, 0.4);
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
 .healthy-icon { 
   width: 30px;
   height: 30px;
@@ -485,75 +511,90 @@ function loadIngredients(category) {
     .then(data => {
       ingredientCardsDiv.innerHTML = '';
       data.forEach(item => {
-        const itemId = `${category}-${item.id}`;
-        
-        // Calculate current quantity based on selectedIngredients
-        let currentQty = 0;
-        if (category === 'cheese' || category === 'topping' || category === 'patty') {
-          currentQty = selectedIngredients[category].filter(entry => 
-            String(entry.item.id) === String(item.id)
-          ).length;
-        }
-        
-        // Store in ingredientQuantities for display
-        ingredientQuantities[itemId] = currentQty;
-        
-        const card = document.createElement('div');
-        card.className = 'ingredient-card';
-        
-        const showQuantity = category === 'cheese' || category === 'topping' || category === 'patty';
-        
-        card.innerHTML = `
-          <div class="ingredient-info">
-            <span class="ingredient-name">${item.name}</span>
-            <span class="ingredient-description">${item.description}</span>
-            <span class="ingredient-price">$${item.price}</span>
-            ${item.is_healthy ? '<img class="healthy-icon" src="/static/images/healthyicon.png" alt="Healthy">' : ''}
-          </div>
-          <div class="ingredient-actions">
-            ${showQuantity ? `
-              <div class="quantity-control">
-                <button class="qty-btn qty-minus" data-item-id="${itemId}">-</button>
-                <span class="qty-display" data-item-id="${itemId}">${currentQty}</span>
-                <button class="qty-btn qty-plus" data-item-id="${itemId}">+</button>
-              </div>
-            ` : `<button class="add-btn" data-item-id="${itemId}">Add</button>`}
-          </div>
-        `;
+  const itemId = `${category}-${item.id}`;
+  
+  // Calculate current quantity based on selectedIngredients
+  let currentQty = 0;
+  if (category === 'cheese' || category === 'topping' || category === 'patty') {
+    currentQty = selectedIngredients[category].filter(entry => 
+      String(entry.item.id) === String(item.id)
+    ).length;
+  }
 
-        // Quantity controls for cheese, topping, patty
-        if (showQuantity) {
-          const minusBtn = card.querySelector('.qty-minus');
-          const plusBtn = card.querySelector('.qty-plus');
-          const qtyDisplay = card.querySelector('.qty-display');
-          
-          minusBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (ingredientQuantities[itemId] > 0) {
-              ingredientQuantities[itemId]--;
-              qtyDisplay.textContent = ingredientQuantities[itemId];
-              updateIngredientQuantity(category, item, itemId);
-            }
-          });
-          
-          plusBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (ingredientQuantities[itemId] < 10) {
-              ingredientQuantities[itemId]++;
-              qtyDisplay.textContent = ingredientQuantities[itemId];
-              updateIngredientQuantity(category, item, itemId);
-            }
-          });
-        } else {
-          // Add button for bun and sauce
-          const addBtn = card.querySelector('.add-btn');
-          addBtn.addEventListener('click', () => {
-            addIngredient(category, item, itemId);
-          });
-        }
+  // Store in ingredientQuantities for display
+  ingredientQuantities[itemId] = currentQty;
 
-        ingredientCardsDiv.appendChild(card);
-      });
+  const card = document.createElement('div');
+
+  // ✅ Highlight if this ingredient matches user dietary preferences
+  const isPreferred = item.matches_preferences === true;
+  card.className = isPreferred ? 'ingredient-card preferred-ingredient' : 'ingredient-card';
+
+  const showQuantity = category === 'cheese' || category === 'topping' || category === 'patty';
+
+  // Build preference tags HTML if any
+  let tagsHtml = '';
+  if (isPreferred && Array.isArray(item.matching_tags) && item.matching_tags.length > 0) {
+    tagsHtml = `
+      <div class="pref-tags">
+        ${item.matching_tags.map(t => `<span class="pref-tag">${t}</span>`).join('')}
+      </div>
+    `;
+  }
+
+  card.innerHTML = `
+    <div class="ingredient-info">
+      <span class="ingredient-name">${item.name}</span>
+      <span class="ingredient-description">${item.description || ''}</span>
+      <span class="ingredient-price">$${item.price}</span>
+      ${item.is_healthy ? '<img class="healthy-icon" src="/static/images/healthyicon.png" alt="Healthy">' : ''}
+      ${tagsHtml}
+    </div>
+    <div class="ingredient-actions">
+      ${showQuantity ? `
+        <div class="quantity-control">
+          <button class="qty-btn qty-minus" data-item-id="${itemId}">-</button>
+          <span class="qty-display" data-item-id="${itemId}">${currentQty}</span>
+          <button class="qty-btn qty-plus" data-item-id="${itemId}">+</button>
+        </div>
+      ` : `<button class="add-btn" data-item-id="${itemId}">Add</button>`}
+    </div>
+  `;
+
+  // Quantity controls for cheese, topping, patty
+  if (showQuantity) {
+    const minusBtn = card.querySelector('.qty-minus');
+    const plusBtn = card.querySelector('.qty-plus');
+    const qtyDisplay = card.querySelector('.qty-display');
+    
+    minusBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (ingredientQuantities[itemId] > 0) {
+        ingredientQuantities[itemId]--;
+        qtyDisplay.textContent = ingredientQuantities[itemId];
+        updateIngredientQuantity(category, item, itemId);
+      }
+    });
+    
+    plusBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (ingredientQuantities[itemId] < 10) {
+        ingredientQuantities[itemId]++;
+        qtyDisplay.textContent = ingredientQuantities[itemId];
+        updateIngredientQuantity(category, item, itemId);
+      }
+    });
+  } else {
+    // Add button for bun and sauce
+    const addBtn = card.querySelector('.add-btn');
+    addBtn.addEventListener('click', () => {
+      addIngredient(category, item, itemId);
+    });
+  }
+
+  ingredientCardsDiv.appendChild(card);
+});
+
     });
 }
 

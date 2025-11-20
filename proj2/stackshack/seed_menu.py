@@ -118,7 +118,7 @@ def seed_menu_items():
             "calories": 500,
             "protein": 18,
             "is_available": True,
-            "is_healthy_choice": True,
+            "is_healthy_choice": False,
             "image_url": "/static/images/patty/beef.jpg",
         },
         {
