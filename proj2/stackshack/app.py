@@ -5,8 +5,12 @@ from routes.auth_routes import auth_bp
 from routes.menu_routes import menu_bp
 from routes.order_routes import order_bp
 from routes.status_routes import status_bp
+from routes.payment_routes import payment_bp
+from routes.profile_routes import profile_bp
 from models.user import User
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def create_app(config_name="development"):
@@ -30,6 +34,8 @@ def create_app(config_name="development"):
     app.register_blueprint(menu_bp, url_prefix="/menu")
     app.register_blueprint(order_bp, url_prefix="/orders")
     app.register_blueprint(status_bp, url_prefix="/status")
+    app.register_blueprint(payment_bp, url_prefix="/payment")
+    app.register_blueprint(profile_bp, url_prefix="/profile")
 
     @app.context_processor
     def inject_current_year():
