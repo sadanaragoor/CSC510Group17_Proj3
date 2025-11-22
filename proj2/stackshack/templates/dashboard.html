@@ -2,12 +2,19 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 <h2 style="color: #e67e22; font-family: Momo Signature">Welcome, {{ current_user.username }}!</h2>
-<p >Your Role: <strong>{{ current_user.role | upper }}</strong></p>
+<p>Your Role: <strong>{{ current_user.role | upper }}</strong></p>
+<p style="margin-top: 10px;">
+    <a href="{{ url_for('profile.view_profile') }}" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">
+        ⚙️ Manage Profile & Email
+    </a>
+</p>
 <div class="admin-links" style="margin-top: 20px;">
-    <h3>Order Tools</h3>
-    <p>
-      <a href="{{ url_for('order.order_history') }}" class="admin-links">View Order History</a>
-      <a href="{{ url_for('order.create_order_form') }}" class="admin-links">Create New Order</a>
+    <h3>Quick Actions</h3>
+    <p style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <a href="{{ url_for('order.create_order_form') }}" class="admin-links" style="flex: 0 1 auto; padding: 12px 20px; white-space: nowrap;">🍔 Create New Order</a>
+      <a href="{{ url_for('order.order_history') }}" class="admin-links" style="flex: 0 1 auto; padding: 12px 20px; white-space: nowrap;">📋 Order History</a>
+      <a href="{{ url_for('payment.payment_history') }}" class="admin-links" style="flex: 0 1 auto; padding: 12px 20px; white-space: nowrap;">💳 Payment History</a>
+      <a href="{{ url_for('payment.campus_card_info') }}" class="admin-links" style="flex: 0 1 auto; padding: 12px 20px; white-space: nowrap;">🎓 Campus Card</a>
     </p>
 </div>
 {% if current_user.role == 'admin' %}
@@ -19,12 +26,28 @@
       <a href="{{ url_for('menu.view_items') }}" class="admin-links">Manage Menu</a>
     </p>
   </div>
+  <div class="admin-links" style="margin-top: 20px;">
+    <h3>💳 Payment Management</h3>
+    <p>
+      <a href="{{ url_for('payment.admin_dashboard') }}" class="admin-links">Payment Dashboard</a>
+      <a href="{{ url_for('payment.admin_dashboard', period='today') }}" class="admin-links">Today's Payments</a>
+      <a href="{{ url_for('payment.admin_dashboard', period='week') }}" class="admin-links">This Week's Payments</a>
+      <a href="{{ url_for('payment.admin_dashboard', period='month') }}" class="admin-links">This Month's Payments</a>
+    </p>
+  </div>
 {% elif current_user.role == 'staff' %}
   <div class="admin-links" style="margin-top: 20px;">
     <h3>Staff Tools</h3>
     <p>
       <a href="{{ url_for('status.manage_orders') }}" class="admin-links">Manage Orders</a>
       <a href="{{ url_for('menu.view_items') }}" class="admin-links">Manage Menu</a>
+    </p>
+  </div>
+  <div class="admin-links" style="margin-top: 20px;">
+    <h3>💳 Payment Management</h3>
+    <p>
+      <a href="{{ url_for('payment.admin_dashboard') }}" class="admin-links">Payment Dashboard</a>
+      <a href="{{ url_for('payment.admin_dashboard', period='today') }}" class="admin-links">Today's Payments</a>
     </p>
   </div>
 {% endif %}

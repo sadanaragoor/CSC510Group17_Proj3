@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Stack Shack{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <h2>Checkout</h2>
+    
+    <!-- Order Summary -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3>Order Summary</h3>
+        <p><strong>Order ID:</strong> #{{ order.id }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        
+        <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+            <thead style="background: var(--secondary-color); color: white;">
+                <tr>
+                    <th style="padding: 10px; text-align: left;">Item</th>
+                    <th style="padding: 10px; text-align: center;">Qty</th>
+                    <th style="padding: 10px; text-align: right;">Price</th>
+                    <th style="padding: 10px; text-align: right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all() %}
+                <tr style="border-bottom: 1px solid #e0e0e0;">
+                    <td style="padding: 10px;">{{ item.name }}</td>
+                    <td style="padding: 10px; text-align: center;">{{ item.quantity }}</td>
+                    <td style="padding: 10px; text-align: right;">${{ "%.2f"|format(item.price) }}</td>
+                    <td style="padding: 10px; text-align: right;">${{ "%.2f"|format(item.price * item.quantity) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot style="background: #f8f9fa;">
+                <tr>
+                    <td colspan="3" style="padding: 15px; text-align: right; font-weight: bold; font-size: 1.2em;">Total:</td>
+                    <td style="padding: 15px; text-align: right; font-weight: bold; font-size: 1.2em; color: var(--primary-color);">
+                        ${{ "%.2f"|format(order.total_price) }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <!-- Payment Method Selection -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3>Select Payment Method</h3>
+        
+        <div id="payment-method-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+            <button type="button" class="tab-btn active" onclick="showPaymentMethod('card')" style="padding: 10px 20px; border: none; background: none; cursor: pointer; border-bottom: 3px solid var(--primary-color);">
+                💳 Card
+            </button>
+            <button type="button" class="tab-btn" onclick="showPaymentMethod('campus_card')" style="padding: 10px 20px; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent;">
+                🎓 Campus Card
+            </button>
+            <button type="button" class="tab-btn" onclick="showPaymentMethod('wallet')" style="padding: 10px 20px; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent;">
+                📱 Digital Wallet
+            </button>
+        </div>
+        
+        <!-- Card Payment Form -->
+        <div id="card-payment" class="payment-form">
+            <form action="{{ url_for('payment.process_payment') }}" method="POST">
+                <input type="hidden" name="order_id" value="{{ order.id }}">
+                <input type="hidden" name="amount" value="{{ order.total_price }}">
+                <input type="hidden" name="payment_method" value="card">
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Card Number</label>
+                    <input type="text" name="card_number" placeholder="1234 5678 9012 3456" maxlength="16" required
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                    <small style="color: #666;">Use any 16-digit number for testing</small>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Expiry Month</label>
+                        <select name="expiry_month" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">MM</option>
+                            {% for month in range(1, 13) %}
+                            <option value="{{ '%02d'|format(month) }}">{{ '%02d'|format(month) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Expiry Year</label>
+                        <select name="expiry_year" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">YY</option>
+                            {% for year in range(2025, 2036) %}
+                            <option value="{{ year % 100 }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">CVV</label>
+                        <input type="text" name="cvv" placeholder="123" maxlength="4" required
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
+                
+                <button type="submit" style="width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s;">
+                    Pay ${{ "%.2f"|format(order.total_price) }}
+                </button>
+            </form>
+        </div>
+        
+        <!-- Campus Card Payment Form -->
+        <div id="campus_card-payment" class="payment-form" style="display: none;">
+            {% if not current_user.is_eligible_for_campus_card() %}
+            <!-- User is not eligible for campus card -->
+            <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 8px; text-align: center;">
+                <div style="font-size: 3em; margin-bottom: 15px;">🎓</div>
+                <h3 style="margin-top: 0; color: #856404;">Campus Card Not Available</h3>
+                <p style="color: #856404; margin-bottom: 15px;">
+                    Campus cards are exclusively for students and faculty with verified <strong>.edu email addresses</strong>.
+                </p>
+                {% if current_user.email %}
+                <p style="color: #856404; margin-bottom: 20px;">
+                    Your email (<strong>{{ current_user.email }}</strong>) does not qualify for a campus card.
+                </p>
+                {% else %}
+                <p style="color: #856404; margin-bottom: 20px;">
+                    You don't have an email address associated with your account.
+                </p>
+                {% endif %}
+                <p style="color: #666; font-size: 0.9em;">
+                    Please use a credit/debit card or digital wallet to complete your payment.
+                </p>
+            </div>
+            {% elif campus_card %}
+            <form action="{{ url_for('payment.process_payment') }}" method="POST">
+                <input type="hidden" name="order_id" value="{{ order.id }}">
+                <input type="hidden" name="amount" value="{{ order.total_price }}">
+                <input type="hidden" name="payment_method" value="campus_card">
+                <input type="hidden" name="campus_card_id" value="{{ campus_card.id }}">
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                    <p><strong>Card Number:</strong> {{ campus_card.card_number }}</p>
+                    <p><strong>Available Balance:</strong> ${{ "%.2f"|format(campus_card.balance) }}</p>
+                    <p><strong>Status:</strong> <span style="color: {{ 'green' if campus_card.is_active else 'red' }};">
+                        {{ 'Active' if campus_card.is_active else 'Inactive' }}</span></p>
+                </div>
+                
+                {% if campus_card.balance < order.total_price %}
+                <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                    <p style="margin: 0; color: #856404;">⚠️ Insufficient balance. Please add funds or choose another payment method.</p>
+                </div>
+                <button type="button" onclick="location.href='{{ url_for('payment.campus_card_info') }}'" 
+                        style="width: 100%; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer;">
+                    Add Balance
+                </button>
+                {% else %}
+                <button type="submit" style="width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s;">
+                    Pay ${{ "%.2f"|format(order.total_price) }}
+                </button>
+                {% endif %}
+            </form>
+            {% else %}
+            <div style="text-align: center; padding: 40px;">
+                <p>You don't have a campus card yet.</p>
+                <form action="{{ url_for('payment.create_campus_card') }}" method="POST" style="margin-top: 20px;">
+                    <button type="submit" style="padding: 15px 30px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer;">
+                        Create Campus Card
+                    </button>
+                </form>
+                <p style="margin-top: 10px; color: #666; font-size: 0.9em;">Free $100 starting balance!</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Digital Wallet Payment Form -->
+        <div id="wallet-payment" class="payment-form" style="display: none;">
+            <form action="{{ url_for('payment.process_payment') }}" method="POST" id="wallet-form">
+                <input type="hidden" name="order_id" value="{{ order.id }}">
+                <input type="hidden" name="amount" value="{{ order.total_price }}">
+                <input type="hidden" name="payment_method" value="wallet">
+                <input type="hidden" name="wallet_provider" id="wallet-provider-input">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <button type="button" onclick="selectWallet('gpay')" class="wallet-btn" 
+                            style="padding: 30px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-align: center;">
+                        <div style="font-size: 2em;">G</div>
+                        <div>Google Pay</div>
+                    </button>
+                    
+                    <button type="button" onclick="selectWallet('apple_pay')" class="wallet-btn"
+                            style="padding: 30px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-align: center;">
+                        <div style="font-size: 2em;">🍎</div>
+                        <div>Apple Pay</div>
+                    </button>
+                    
+                    <button type="button" onclick="selectWallet('paypal')" class="wallet-btn"
+                            style="padding: 30px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-align: center;">
+                        <div style="font-size: 2em;">P</div>
+                        <div>PayPal</div>
+                    </button>
+                    
+                    <button type="button" onclick="selectWallet('samsung_pay')" class="wallet-btn"
+                            style="padding: 30px; background: white; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-align: center;">
+                        <div style="font-size: 2em;">S</div>
+                        <div>Samsung Pay</div>
+                    </button>
+                </div>
+                
+                <div id="wallet-selected" style="display: none; background: #d4edda; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                    <p style="margin: 0;">Selected: <strong id="selected-wallet-name"></strong></p>
+                </div>
+                
+                <button type="button" onclick="processWallet()" id="wallet-pay-btn" disabled 
+                        style="width: 100%; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: not-allowed;">
+                    Select a wallet to continue
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Processing Modal -->
+    <div id="processing-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; max-width: 400px;">
+            <div style="font-size: 3em; margin-bottom: 20px;">⏳</div>
+            <h3 id="processing-title">Processing Payment...</h3>
+            <p id="processing-message">Please wait while we process your payment.</p>
+            <div style="width: 100%; height: 4px; background: #e0e0e0; border-radius: 2px; overflow: hidden; margin-top: 20px;">
+                <div style="width: 50%; height: 100%; background: var(--primary-color); animation: loading 1.5s infinite;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes loading {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(300%); }
+    }
+    
+    .tab-btn:hover {
+        background: #f8f9fa !important;
+    }
+    
+    .tab-btn.active {
+        border-bottom-color: var(--primary-color) !important;
+        font-weight: bold;
+    }
+    
+    .wallet-btn:hover {
+        border-color: var(--primary-color) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .wallet-btn.selected {
+        border-color: var(--primary-color) !important;
+        background: #fff8e1 !important;
+    }
+    
+    button[type="submit"]:hover, button[type="button"]:not(:disabled):hover {
+        opacity: 0.9;
+    }
+</style>
+
+<script>
+    function showPaymentMethod(method) {
+        // Hide all forms
+        document.querySelectorAll('.payment-form').forEach(form => {
+            form.style.display = 'none';
+        });
+        
+        // Show selected form
+        document.getElementById(method + '-payment').style.display = 'block';
+        
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.style.borderBottomColor = 'transparent';
+            btn.style.fontWeight = 'normal';
+        });
+        event.target.classList.add('active');
+        event.target.style.borderBottomColor = 'var(--primary-color)';
+        event.target.style.fontWeight = 'bold';
+    }
+    
+    let selectedWalletProvider = null;
+    
+    function selectWallet(provider) {
+        selectedWalletProvider = provider;
+        
+        // Update all wallet buttons
+        document.querySelectorAll('.wallet-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            btn.style.borderColor = '#ddd';
+            btn.style.background = 'white';
+        });
+        
+        // Highlight selected
+        event.target.closest('.wallet-btn').classList.add('selected');
+        
+        // Update hidden input
+        document.getElementById('wallet-provider-input').value = provider;
+        
+        // Show selection
+        document.getElementById('wallet-selected').style.display = 'block';
+        document.getElementById('selected-wallet-name').textContent = 
+            provider.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        // Enable pay button
+        const payBtn = document.getElementById('wallet-pay-btn');
+        payBtn.disabled = false;
+        payBtn.style.background = 'var(--primary-color)';
+        payBtn.style.cursor = 'pointer';
+        payBtn.textContent = 'Pay ${{ "%.2f"|format(order.total_price) }}';
+    }
+    
+    async function processWallet() {
+        const modal = document.getElementById('processing-modal');
+        const title = document.getElementById('processing-title');
+        const message = document.getElementById('processing-message');
+        const walletName = selectedWalletProvider.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        
+        // Step 1: Redirecting
+        modal.style.display = 'flex';
+        title.textContent = `Redirecting to ${walletName}...`;
+        message.textContent = 'Securely connecting to payment provider...';
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Step 2: Authentication
+        title.innerHTML = `${walletName} Authentication`;
+        message.innerHTML = `
+            <div style="text-align: left; margin-top: 20px;">
+                <p style="margin: 10px 0;">✓ Connection established</p>
+                <p style="margin: 10px 0;">✓ Verifying account...</p>
+                <p style="margin: 10px 0; color: #f39c12;">⏳ Waiting for authorization...</p>
+            </div>
+        `;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Step 3: Confirmation
+        message.innerHTML = `
+            <div style="text-align: left; margin-top: 20px;">
+                <p style="margin: 10px 0;">✓ Connection established</p>
+                <p style="margin: 10px 0;">✓ Account verified</p>
+                <p style="margin: 10px 0; color: #28a745;">✓ Authorization approved!</p>
+            </div>
+        `;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Step 4: Processing payment
+        title.textContent = 'Processing Payment...';
+        message.innerHTML = 'Completing transaction with ' + walletName + '...<br><small>Please do not close this window</small>';
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        // Submit form
+        document.getElementById('wallet-form').submit();
+    }
+    
+    // Show processing on card form submit
+    document.querySelector('#card-payment form').addEventListener('submit', function() {
+        document.getElementById('processing-modal').style.display = 'flex';
+        document.getElementById('processing-title').textContent = 'Processing Card Payment...';
+        document.getElementById('processing-message').textContent = 'Verifying card details and processing transaction.';
+    });
+    
+    // Show processing on campus card form submit
+    const campusForm = document.querySelector('#campus_card-payment form');
+    if (campusForm) {
+        campusForm.addEventListener('submit', function() {
+            document.getElementById('processing-modal').style.display = 'flex';
+            document.getElementById('processing-title').textContent = 'Processing Campus Card Payment...';
+            document.getElementById('processing-message').textContent = 'Checking campus card balance...';
+        });
+    }
+</script>
+{% endblock %}
+

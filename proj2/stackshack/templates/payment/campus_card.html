@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Campus Card - Stack Shack{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+    <h2>Campus Card Management</h2>
+    
+    {% if campus_card %}
+    <!-- Campus Card Display -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); margin-bottom: 30px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -30px; left: -30px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        
+        <div style="position: relative; z-index: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 40px;">
+                <div>
+                    <div style="font-size: 0.9em; opacity: 0.9;">Campus Card</div>
+                    <div style="font-size: 1.5em; font-weight: bold; margin-top: 5px;">Student ID Card</div>
+                </div>
+                <div style="font-size: 2em;">🎓</div>
+            </div>
+            
+            <div style="font-family: 'Courier New', monospace; font-size: 1.4em; letter-spacing: 2px; margin-bottom: 30px;">
+                {{ campus_card.card_number }}
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: end;">
+                <div>
+                    <div style="font-size: 0.8em; opacity: 0.8;">Available Balance</div>
+                    <div style="font-size: 2.5em; font-weight: bold; margin-top: 5px;">
+                        ${{ "%.2f"|format(campus_card.balance) }}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.8em; opacity: 0.8;">Status</div>
+                    <div style="font-size: 1.2em; font-weight: bold; margin-top: 5px;">
+                        {% if campus_card.is_active %}
+                        <span style="background: rgba(40,167,69,0.3); padding: 5px 15px; border-radius: 20px;">✓ Active</span>
+                        {% else %}
+                        <span style="background: rgba(220,53,69,0.3); padding: 5px 15px; border-radius: 20px;">✗ Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card Information -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <h3 style="margin-top: 0;">Card Details</h3>
+        <div style="display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font-size: 0.95em;">
+            <strong>Card ID:</strong>
+            <span>{{ campus_card.id }}</span>
+            
+            <strong>Card Number:</strong>
+            <span style="font-family: monospace;">{{ campus_card.card_number }}</span>
+            
+            <strong>Current Balance:</strong>
+            <span style="color: var(--primary-color); font-weight: bold; font-size: 1.1em;">${{ "%.2f"|format(campus_card.balance) }}</span>
+            
+            <strong>Created On:</strong>
+            <span>{{ campus_card.created_at[:19] if campus_card.created_at else 'N/A' }}</span>
+            
+            <strong>Status:</strong>
+            <span style="font-weight: bold; color: {{ 'green' if campus_card.is_active else 'red' }};">
+                {{ 'Active' if campus_card.is_active else 'Inactive' }}
+            </span>
+        </div>
+    </div>
+    
+    <!-- Add Balance -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <h3 style="margin-top: 0;">Add Balance</h3>
+        <p style="color: #666; font-size: 0.95em;">
+            Add funds to your campus card using a credit or debit card through our secure payment processor.
+        </p>
+        
+        <a href="{{ url_for('payment.add_campus_card_balance') }}" 
+           style="display: inline-block; margin-top: 15px; padding: 12px 30px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 4px; font-size: 1.1em; font-weight: bold; transition: opacity 0.3s;">
+            💳 Add Balance via Credit/Debit Card
+        </a>
+    </div>
+    
+    <!-- Recent Transactions -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0;">Recent Campus Card Transactions</h3>
+        <p style="color: #666; font-size: 0.9em;">
+            View your complete transaction history in <a href="{{ url_for('payment.payment_history') }}" style="color: var(--primary-color);">Payment History</a>
+        </p>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="{{ url_for('order.create_order_form') }}" 
+           style="padding: 12px 25px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            🍔 Place Order
+        </a>
+        <a href="{{ url_for('payment.payment_history') }}" 
+           style="padding: 12px 25px; background: var(--secondary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            📋 Payment History
+        </a>
+    </div>
+    
+    {% else %}
+    <!-- No Campus Card -->
+    <div style="background: white; padding: 60px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+        <div style="font-size: 5em; margin-bottom: 20px; opacity: 0.3;">🎓</div>
+        <h3 style="color: #666; margin-bottom: 10px;">No Campus Card Yet</h3>
+        
+        {% if current_user.is_eligible_for_campus_card() %}
+        <!-- User is eligible (has .edu email) -->
+        <p style="color: #999; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+            Create your campus card now and get $100 starting balance! Use it to pay for your orders at Stack Shack.
+        </p>
+        
+        <div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+            <p style="margin: 0; color: #155724;">
+                ✅ <strong>Eligible!</strong> Your email ({{ current_user.email }}) qualifies you for a campus card.
+            </p>
+        </div>
+        
+        <form action="{{ url_for('payment.create_campus_card') }}" method="POST" onsubmit="this.querySelector('button[type=submit]').disabled = true;">
+            <button type="submit" style="padding: 15px 40px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.2em; cursor: pointer; font-weight: bold;">
+                Create Campus Card
+            </button>
+        </form>
+        
+        {% else %}
+        <!-- User is NOT eligible (no .edu email) -->
+        <p style="color: #999; margin-bottom: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+            Campus cards are exclusively for students, faculty, and staff with verified institutional email addresses.
+        </p>
+        
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 8px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;">
+            <p style="margin: 0 0 15px 0; color: #856404;">
+                <strong>❌ Not Eligible</strong>
+            </p>
+            <p style="margin: 0 0 10px 0; color: #856404;">
+                Campus cards require a <strong>.edu email address</strong> to verify your student/faculty status.
+            </p>
+            {% if current_user.email %}
+            <p style="margin: 0; color: #856404;">
+                Your current email (<strong>{{ current_user.email }}</strong>) does not end with .edu
+            </p>
+            {% else %}
+            <p style="margin: 0; color: #856404;">
+                You don't have an email address associated with your account.
+            </p>
+            {% endif %}
+        </div>
+        
+        <div style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 20px; border-radius: 8px; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;">
+            <h4 style="margin-top: 0; color: var(--secondary-color);">How to Get a Campus Card:</h4>
+            <ol style="margin: 10px 0 0 20px; color: #666;">
+                <li>Update your account with a valid .edu email address</li>
+                <li>Examples: yourname@university.edu, student@college.edu</li>
+                <li>Return to this page and click "Create Campus Card"</li>
+            </ol>
+        </div>
+        
+        <button disabled style="padding: 15px 40px; background: #6c757d; color: white; border: none; border-radius: 4px; font-size: 1.2em; cursor: not-allowed; font-weight: bold; opacity: 0.6;">
+            🔒 Create Campus Card (Requires .edu Email)
+        </button>
+        {% endif %}
+        
+        <div style="margin-top: 40px; padding: 20px; background: #e8f4f8; border-radius: 8px; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+            <h4 style="margin-top: 0; color: var(--secondary-color);">Campus Card Benefits</h4>
+            <ul style="margin: 10px 0 0 20px; color: #666;">
+                <li>$100 free starting balance (demo mode)</li>
+                <li>Fast checkout with saved card</li>
+                <li>No credit card needed</li>
+                <li>Track all your campus purchases</li>
+                <li>Easy balance management</li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    button:hover, a:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    
+    button {
+        transition: all 0.3s;
+    }
+</style>
+{% endblock %}
+
