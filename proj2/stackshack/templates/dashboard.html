@@ -8,6 +8,182 @@
         ⚙️ Manage Profile & Email
     </a>
 </p>
+
+<!-- Personalized Burger Recommendations -->
+{% if burger_sections %}
+<div style="margin: 40px 0;">
+    {% for section in burger_sections %}
+    <div style="margin-bottom: 50px;">
+        <h2 style="font-family: 'Momo Signature', cursive; color: var(--primary-color); font-size: 2.2em; margin-bottom: 5px;">
+            {{ section.title }}
+        </h2>
+        <p style="color: #666; font-size: 1.1em; margin-bottom: 25px;">{{ section.subtitle }}</p>
+        
+        <div class="burger-grid">
+            {% for burger in section.burgers %}
+            <div class="burger-card">
+                <div class="burger-image-container">
+                    <img src="{{ url_for('static', filename='images/' + burger.image) }}" 
+                         alt="{{ burger.name }}"
+                         class="burger-image"
+                         onerror="this.src='{{ url_for('static', filename='images/hamburger_icon.webp') }}'">
+                </div>
+                
+                <div class="burger-details">
+                    <h3 class="burger-name">{{ burger.name }}</h3>
+                    <p class="burger-description">{{ burger.description }}</p>
+                    
+                    <div class="burger-ingredients">
+                        <strong style="font-size: 0.85em; color: #666;">Ingredients:</strong>
+                        <p style="font-size: 0.85em; color: #888; margin-top: 4px;">
+                            {{ burger.ingredients|join(', ')|capitalize }}
+                        </p>
+                    </div>
+                    
+                    <div class="burger-footer">
+                        <div class="burger-price">${{ "%.2f"|format(burger.price) }}</div>
+                        <form method="POST" action="{{ url_for('order.add_predefined_burger') }}" style="margin: 0;">
+                            <input type="hidden" name="burger_slug" value="{{ burger.slug }}">
+                            <button type="submit" class="add-to-cart-btn">
+                                🛒 Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.burger-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.burger-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.burger-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+.burger-image-container {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.burger-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.burger-card:hover .burger-image {
+    transform: scale(1.05);
+}
+
+.burger-details {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.burger-name {
+    font-family: 'Momo Signature', cursive;
+    color: var(--primary-color);
+    font-size: 1.4em;
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+}
+
+.burger-description {
+    color: #555;
+    font-size: 0.95em;
+    line-height: 1.5;
+    margin: 0 0 15px 0;
+    flex: 1;
+}
+
+.burger-ingredients {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.burger-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.burger-price {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.add-to-cart-btn {
+    padding: 12px 24px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.add-to-cart-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.add-to-cart-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .burger-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .burger-footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .add-to-cart-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endif %}
+
 <div class="admin-links" style="margin-top: 20px;">
     <h3>Quick Actions</h3>
     <p style="display: flex; gap: 10px; flex-wrap: wrap;">

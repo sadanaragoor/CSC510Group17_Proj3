@@ -78,7 +78,12 @@ def dashboard():
     The main dashboard page, accessible only to logged-in users.
     Displays user-specific information and admin links if applicable.
     """
-    return render_template("dashboard.html", user=current_user)
+    from services.burger_recommendations import BurgerRecommendationService
+    
+    # Get personalized burger recommendations
+    burger_sections = BurgerRecommendationService.get_recommendations_for_user(current_user)
+    
+    return render_template("dashboard.html", user=current_user, burger_sections=burger_sections)
 
 
 # Logout

@@ -8,14 +8,20 @@
   </h1>
 
   {% if cart and cart|length > 0 %}
+    <!-- Count custom burgers for proper numbering -->
+    {% set custom_counter = namespace(value=0) %}
+    
     <!-- Cart Items -->
     <div style="background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 20px;">
       {% for burger in cart %}
+      {% if not burger.get('name') %}
+        {% set custom_counter.value = custom_counter.value + 1 %}
+      {% endif %}
       <div style="border-bottom: 2px solid #f0f0f0; padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: start;">
           <div style="flex: 1;">
             <h3 style="margin: 0 0 15px 0; color: var(--primary-color); font-size: 1.3em;">
-              🍔 Burger #{{ loop.index }}
+              🍔 {% if burger.get('name') %}{{ burger['name'] }}{% else %}Custom Burger #{{ custom_counter.value }}{% endif %}
             </h3>
             
             <!-- Burger Items -->
@@ -65,7 +71,7 @@
 
     <!-- Action Buttons -->
     <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-      <a href="{{ url_for('order.create_order_form') }}" 
+      <a href="{{ url_for('auth.dashboard') }}" 
          style="flex: 1; padding: 15px; background: white; color: var(--primary-color); border: 2px solid var(--primary-color); text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold; font-size: 1.1em; transition: all 0.3s;">
         ➕ Add Another Burger
       </a>

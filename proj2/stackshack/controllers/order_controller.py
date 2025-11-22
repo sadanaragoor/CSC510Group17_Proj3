@@ -23,7 +23,10 @@ class OrderController:
         """
         Creates a new order for the specified user with the given items.
 
-        item_data: list of tuples (item_id, price, quantity, name) or (item_id, price, quantity, name, burger_index)
+        item_data: list of tuples:
+            - (item_id, price, quantity, name) - legacy format
+            - (item_id, price, quantity, name, burger_index) - with burger grouping
+            - (item_id, price, quantity, name, burger_index, burger_name) - with burger name
         We IGNORE the client price & name and use DB values for safety.
         """
         if not item_data:
@@ -36,12 +39,19 @@ class OrderController:
             db.session.flush()  # Get order ID
 
             for item_tuple in item_data:
-                # Handle both formats: with and without burger_index
-                if len(item_tuple) == 5:
+                # Handle different formats
+                burger_index = None
+                burger_name = None
+                
+                if len(item_tuple) == 6:
+                    # New format with burger_name
+                    item_id, _client_price, quantity, _client_name, burger_index, burger_name = item_tuple
+                elif len(item_tuple) == 5:
+                    # Format with burger_index only
                     item_id, _client_price, quantity, _client_name, burger_index = item_tuple
                 else:
+                    # Legacy format
                     item_id, _client_price, quantity, _client_name = item_tuple
-                    burger_index = None  # Single burger order (legacy)
                 
                 quantity_int = int(quantity)
                 if quantity_int <= 0:
@@ -73,6 +83,7 @@ class OrderController:
                     price=price,
                     quantity=quantity_int,
                     burger_index=burger_index,  # Track which burger this belongs to
+                    burger_name=burger_name,  # Store pre-defined burger name if available
                 )
                 db.session.add(order_item)
 

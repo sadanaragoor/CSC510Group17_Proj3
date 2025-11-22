@@ -32,14 +32,19 @@
                     {% set _ = burgers[burger_idx].append(item) %}
                 {% endfor %}
                 
+                {% set custom_counter = namespace(value=0) %}
                 {% for burger_index in burgers.keys()|sort %}
                     {% set burger_items = burgers[burger_index] %}
+                    {% set burger_name = burger_items[0].burger_name if burger_items and burger_items[0].burger_name else None %}
+                    {% if not burger_name %}
+                        {% set custom_counter.value = custom_counter.value + 1 %}
+                    {% endif %}
                     
                     <!-- Burger Header (if multiple burgers) -->
                     {% if burgers|length > 1 %}
                     <tr style="background: #f8f8f8;">
                         <td colspan="4" style="padding: 8px 10px; font-weight: bold; color: var(--primary-color);">
-                            🍔 Burger #{{ burger_index }}
+                            🍔 {% if burger_name %}{{ burger_name }}{% else %}Custom Burger #{{ custom_counter.value }}{% endif %}
                         </td>
                     </tr>
                     {% endif %}

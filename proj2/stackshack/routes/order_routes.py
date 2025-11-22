@@ -243,16 +243,18 @@ def checkout_cart():
         flash("Your cart is empty!", "error")
         return redirect(url_for("order.create_order_form"))
     
-    # Flatten all burger items into a single order, tracking burger_index
+    # Flatten all burger items into a single order, tracking burger_index and burger_name
     item_data = []
     for burger_index, burger in enumerate(cart, start=1):
+        burger_name = burger.get('name')  # Get pre-defined burger name if exists
         for item in burger['items']:
             item_data.append((
                 item['item_id'],
                 str(item['price']),
                 item['quantity'],
                 item['name'],
-                burger_index  # Track which burger this item belongs to
+                burger_index,  # Track which burger this item belongs to
+                burger_name  # Store pre-defined burger name
             ))
     
     # Create order
@@ -277,3 +279,70 @@ def checkout_cart():
 def place_order():
     """Direct order placement (legacy route - redirects to add to cart)"""
     return add_to_cart()
+
+
+@order_bp.route("/add-predefined-burger", methods=["POST"])
+@login_required
+def add_predefined_burger():
+    """Add a pre-defined burger to cart"""
+    from data_burgers import PREDEFINED_BURGERS
+    from models.menu_item import MenuItem
+    
+    burger_slug = request.form.get("burger_slug")
+    
+    if not burger_slug:
+        flash("Invalid burger selection", "error")
+        return redirect(url_for("auth.dashboard"))
+    
+    # Find burger definition
+    burger_def = None
+    for burger in PREDEFINED_BURGERS:
+        if burger['slug'] == burger_slug:
+            burger_def = burger
+            break
+    
+    if not burger_def:
+        flash("Burger not found", "error")
+        return redirect(url_for("auth.dashboard"))
+    
+    # Build burger items for cart
+    burger_items = []
+    burger_total = 0.0
+    
+    for ingredient_name in burger_def['ingredients']:
+        menu_item = MenuItem.query.filter_by(name=ingredient_name).first()
+        if not menu_item:
+            flash(f"Ingredient '{ingredient_name}' not available", "error")
+            return redirect(url_for("auth.dashboard"))
+        
+        # Check stock
+        if menu_item.stock_quantity <= 0:
+            flash(f"'{menu_item.name}' is out of stock", "error")
+            return redirect(url_for("auth.dashboard"))
+        
+        price = float(menu_item.price)
+        burger_total += price
+        
+        burger_items.append({
+            "item_id": str(menu_item.id),
+            "name": menu_item.name,
+            "price": price,
+            "quantity": 1,
+            "item_total": price
+        })
+    
+    # Initialize cart if not exists
+    if 'cart' not in session:
+        session['cart'] = []
+    
+    # Add burger to cart
+    burger = {
+        "items": burger_items,
+        "total": burger_total,
+        "name": burger_def['name']  # Store burger name for display
+    }
+    session['cart'].append(burger)
+    session.modified = True
+    
+    flash(f"🍔 {burger_def['name']} added to cart! (${burger_total:.2f})", "success")
+    return redirect(url_for("order.view_cart"))

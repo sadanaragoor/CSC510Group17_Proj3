@@ -37,6 +37,7 @@ class OrderItem(db.Model):
     price = db.Column(db.Numeric(10, 2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     burger_index = db.Column(db.Integer, nullable=True, default=None)  # Track which burger this item belongs to
+    burger_name = db.Column(db.String(255), nullable=True, default=None)  # Store pre-defined burger name
 
     def to_dict(self):
         return {
@@ -46,4 +47,5 @@ class OrderItem(db.Model):
             "price": float(self.price),
             "quantity": self.quantity,
             "burger_index": self.burger_index,
+            "burger_name": self.burger_name,
         }

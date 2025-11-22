@@ -51,11 +51,17 @@ show_create_link = show_create_link if show_create_link is defined else False %}
         
         {% if burgers|length > 1 %}
           <!-- Multiple burgers - show with grouping -->
+          {% set custom_counter = namespace(value=0) %}
           {% for burger_index in burgers.keys()|sort %}
+            {% set burger_items = burgers[burger_index] %}
+            {% set burger_name = burger_items[0].burger_name if burger_items and burger_items[0].burger_name else None %}
+            {% if not burger_name %}
+              {% set custom_counter.value = custom_counter.value + 1 %}
+            {% endif %}
             <div style="margin-bottom: 12px;">
-              <strong style="color: var(--primary-color); font-size: 0.95em;">🍔 Burger #{{ burger_index }}</strong>
+              <strong style="color: var(--primary-color); font-size: 0.95em;">🍔 {% if burger_name %}{{ burger_name }}{% else %}Custom Burger #{{ custom_counter.value }}{% endif %}</strong>
               <ul style="margin: 4px 0 0 0;">
-                {% for item in burgers[burger_index] %}
+                {% for item in burger_items %}
                 <li style="font-size: 0.85em;">
                   {{ item.quantity }} x {{ item.name }} (${{ "%.2f"|format(item.price) }})
                 </li>

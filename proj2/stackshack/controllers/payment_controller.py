@@ -121,16 +121,27 @@ class PaymentController:
             burgers[burger_idx].append(item)
         
         # Generate HTML for each burger group
+        custom_counter = 0
         for burger_index in sorted(burgers.keys()):
             burger_items = burgers[burger_index]
             burger_total = 0
+            
+            # Get burger name (if available from first item)
+            burger_name = burger_items[0].burger_name if burger_items and burger_items[0].burger_name else None
+            
+            # Count custom burgers for proper numbering
+            if not burger_name:
+                custom_counter += 1
+                burger_display_name = f"Custom Burger #{custom_counter}"
+            else:
+                burger_display_name = burger_name
             
             # Add burger header if multiple burgers
             if len(burgers) > 1:
                 items_html += f"""
                     <tr style="background: #f8f8f8;">
                         <td colspan="3" style="padding: 6px 4px; font-weight: bold; font-size: 10px;">
-                            🍔 Burger #{burger_index}
+                            🍔 {burger_display_name}
                         </td>
                     </tr>
                 """
@@ -151,7 +162,7 @@ class PaymentController:
             if len(burgers) > 1:
                 items_html += f"""
                     <tr style="border-bottom: 1px solid #ddd;">
-                        <td colspan="2" style="text-align: right; padding: 4px; font-size: 9px; font-style: italic;">Burger #{burger_index} Total:</td>
+                        <td colspan="2" style="text-align: right; padding: 4px; font-size: 9px; font-style: italic;">{burger_display_name} Total:</td>
                         <td style="font-weight: bold;">${burger_total:.2f}</td>
                     </tr>
                 """
