@@ -103,7 +103,8 @@ def manage_orders():
         orders = []
 
     status_flow = {
-        "Pending": "Preparing",
+        "Pending": "Paid",
+        "Paid": "Preparing",
         "Preparing": "Ready for Pickup",
         "Ready for Pickup": "Delivered",
         "Delivered": None,

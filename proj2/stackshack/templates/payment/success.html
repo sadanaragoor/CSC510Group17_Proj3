@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful - Stack Shack{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 60px auto; padding: 20px; text-align: center;">
+    <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <!-- Success Icon -->
+        <div style="width: 100px; height: 100px; background: #28a745; border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 3em; color: white;">
+            ✓
+        </div>
+        
+        <h1 style="color: #28a745; margin-bottom: 10px;">Payment Successful!</h1>
+        <p style="font-size: 1.1em; color: #666; margin-bottom: 30px;">
+            Thank you for your order. Your payment has been processed successfully.
+        </p>
+        
+        <!-- Transaction Details -->
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0; text-align: left;">
+            <h3 style="margin-top: 0;">Transaction Details</h3>
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 10px 20px; font-size: 0.95em;">
+                <strong>Transaction ID:</strong>
+                <span style="font-family: monospace;">{{ transaction.transaction_id }}</span>
+                
+                <strong>Order ID:</strong>
+                <span>#{{ transaction.order_id }}</span>
+                
+                <strong>Amount Paid:</strong>
+                <span style="color: var(--primary-color); font-weight: bold;">${{ "%.2f"|format(transaction.amount) }}</span>
+                
+                <strong>Payment Method:</strong>
+                <span>{{ transaction.payment_method.replace('_', ' ').title() }}</span>
+                
+                {% if transaction.masked_card %}
+                <strong>Card:</strong>
+                <span>{{ transaction.masked_card }}</span>
+                {% endif %}
+                
+                {% if transaction.payment_provider %}
+                <strong>Provider:</strong>
+                <span>{{ transaction.payment_provider.replace('_', ' ').title() }}</span>
+                {% endif %}
+                
+                <strong>Date & Time:</strong>
+                <span>{{ transaction.completed_at.strftime('%Y-%m-%d %H:%M:%S') if transaction.completed_at else 'N/A' }}</span>
+                
+                <strong>Status:</strong>
+                <span style="color: #28a745; font-weight: bold;">✓ {{ transaction.status.upper() }}</span>
+            </div>
+        </div>
+        
+        <!-- Receipt Section -->
+        {% if receipt %}
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0;">
+                <strong>📄 Receipt Generated</strong><br>
+                <small>Receipt Number: {{ receipt.receipt_number }}</small>
+            </p>
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div style="display: flex; gap: 15px; margin-top: 30px; justify-content: center; flex-wrap: wrap;">
+            {% if receipt %}
+            <a href="{{ url_for('payment.view_receipt', receipt_id=receipt.id) }}" target="_blank"
+               style="padding: 12px 25px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.3s;">
+                📄 View Receipt
+            </a>
+            <a href="{{ url_for('payment.download_receipt', receipt_id=receipt.id) }}"
+               style="padding: 12px 25px; background: #17a2b8; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.3s;">
+                📥 Download PDF
+            </a>
+            {% endif %}
+            
+            <a href="{{ url_for('order.order_history') }}"
+               style="padding: 12px 25px; background: var(--secondary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.3s;">
+                📋 Order History
+            </a>
+            
+            <a href="{{ url_for('order.create_order_form') }}"
+               style="padding: 12px 25px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; transition: all 0.3s;">
+                🍔 Order Again
+            </a>
+        </div>
+        
+        <!-- What's Next -->
+        <div style="margin-top: 40px; padding: 20px; background: #e8f4f8; border-radius: 8px; text-align: left;">
+            <h4 style="margin-top: 0; color: var(--secondary-color);">What happens next?</h4>
+            <ul style="margin: 10px 0 0 20px; text-align: left;">
+                <li>Your order is now being prepared by our kitchen staff</li>
+                <li>You'll receive a confirmation email shortly (in production)</li>
+                <li>Track your order status in the <a href="{{ url_for('order.order_history') }}" style="color: var(--primary-color);">Order History</a></li>
+                <li>Estimated preparation time: 15-20 minutes</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    a:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+

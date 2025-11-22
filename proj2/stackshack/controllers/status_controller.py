@@ -5,7 +5,8 @@ from database.db import db
 
 class StatusController:
     STATUS_FLOW = {
-        "Pending": "Preparing",
+        "Pending": "Paid",
+        "Paid": "Preparing",
         "Preparing": "Ready for Pickup",
         "Ready for Pickup": "Delivered",
         "Delivered": None,
@@ -17,10 +18,17 @@ class StatusController:
         """Returns the status flow mapping for frontend consumption."""
         return {
             "Pending": {
-                "display": "Your order has been received and is waiting to be prepared",
+                "display": "Your order has been received and is waiting for payment",
                 "icon": "📋",
                 "nextStatuses": (
-                    ["Preparing"] if StatusController.STATUS_FLOW["Pending"] else []
+                    ["Paid"] if StatusController.STATUS_FLOW["Pending"] else []
+                ),
+            },
+            "Paid": {
+                "display": "Payment successful! Order is now being prepared",
+                "icon": "💳",
+                "nextStatuses": (
+                    ["Preparing"] if StatusController.STATUS_FLOW["Paid"] else []
                 ),
             },
             "Preparing": {

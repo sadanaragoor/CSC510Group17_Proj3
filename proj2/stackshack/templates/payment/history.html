@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Payment History - Stack Shack{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 40px auto; padding: 20px;">
+    <h2>Payment History</h2>
+    
+    <!-- Statistics Dashboard -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 0.9em; opacity: 0.9;">Total Transactions</div>
+            <div style="font-size: 2em; font-weight: bold; margin-top: 5px;">{{ stats.total_transactions }}</div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 0.9em; opacity: 0.9;">Successful</div>
+            <div style="font-size: 2em; font-weight: bold; margin-top: 5px;">{{ stats.successful }}</div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 0.9em; opacity: 0.9;">Failed</div>
+            <div style="font-size: 2em; font-weight: bold; margin-top: 5px;">{{ stats.failed }}</div>
+        </div>
+        
+        <div style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 0.9em; opacity: 0.9;">Total Spent</div>
+            <div style="font-size: 2em; font-weight: bold; margin-top: 5px;">${{ "%.2f"|format(stats.total_amount) }}</div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{{ url_for('order.create_order_form') }}" 
+           style="padding: 10px 20px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            + New Order
+        </a>
+        <a href="{{ url_for('payment.campus_card_info') }}" 
+           style="padding: 10px 20px; background: var(--secondary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            🎓 Campus Card
+        </a>
+    </div>
+    
+    <!-- Transactions Table -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow-x: auto;">
+        <h3 style="margin-top: 0;">Transaction History</h3>
+        
+        {% if transactions %}
+        <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+            <thead style="background: var(--secondary-color); color: white;">
+                <tr>
+                    <th style="padding: 12px; text-align: left;">Transaction ID</th>
+                    <th style="padding: 12px; text-align: left;">Date & Time</th>
+                    <th style="padding: 12px; text-align: left;">Order ID</th>
+                    <th style="padding: 12px; text-align: left;">Payment Method</th>
+                    <th style="padding: 12px; text-align: right;">Amount</th>
+                    <th style="padding: 12px; text-align: center;">Status</th>
+                    <th style="padding: 12px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr style="border-bottom: 1px solid #e0e0e0;">
+                    <td style="padding: 12px; font-family: monospace; font-size: 0.85em;">
+                        {{ transaction.transaction_id }}
+                    </td>
+                    <td style="padding: 12px;">
+                        {{ transaction.initiated_at[:19] if transaction.initiated_at else 'N/A' }}
+                    </td>
+                    <td style="padding: 12px;">
+                        <a href="{{ url_for('order.order_history') }}" style="color: var(--primary-color);">
+                            #{{ transaction.order_id }}
+                        </a>
+                    </td>
+                    <td style="padding: 12px;">
+                        <div>{{ transaction.payment_method.replace('_', ' ').title() }}</div>
+                        {% if transaction.masked_card %}
+                        <small style="color: #666;">{{ transaction.masked_card }}</small>
+                        {% endif %}
+                        {% if transaction.payment_provider %}
+                        <small style="color: #666;">{{ transaction.payment_provider.replace('_', ' ').title() }}</small>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; text-align: right; font-weight: bold;">
+                        ${{ "%.2f"|format(transaction.amount) }}
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        {% if transaction.status == 'success' %}
+                        <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">
+                            ✓ SUCCESS
+                        </span>
+                        {% elif transaction.status == 'failed' %}
+                        <span style="background: #f8d7da; color: #721c24; padding: 5px 10px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">
+                            ✗ FAILED
+                        </span>
+                        {% else %}
+                        <span style="background: #fff3cd; color: #856404; padding: 5px 10px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">
+                            ⏳ PENDING
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        {% if transaction.status == 'success' %}
+                        <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
+                            <a href="{{ url_for('payment.receipt_view', order_id=transaction.order_id) }}" 
+                               target="_blank"
+                               style="color: var(--primary-color); text-decoration: none; font-size: 0.85em; padding: 5px 10px; border: 1px solid var(--primary-color); border-radius: 4px; display: inline-block;">
+                                👁️ View
+                            </a>
+                            <a href="{{ url_for('payment.download_receipt_by_order', order_id=transaction.order_id) }}"
+                               style="color: #17a2b8; text-decoration: none; font-size: 0.85em; padding: 5px 10px; border: 1px solid #17a2b8; border-radius: 4px; display: inline-block;">
+                                📥 PDF
+                            </a>
+                        </div>
+                        {% else %}
+                        <span style="color: #999; font-size: 0.9em;">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                
+                {% if transaction.failure_reason %}
+                <tr style="background: #f8f9fa;">
+                    <td colspan="7" style="padding: 8px 12px; font-size: 0.85em; color: #dc3545;">
+                        <strong>Failure Reason:</strong> {{ transaction.failure_reason }}
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 4em; margin-bottom: 20px; opacity: 0.3;">💳</div>
+            <h3 style="color: #666;">No Payment History</h3>
+            <p style="color: #999; margin-bottom: 30px;">You haven't made any payments yet.</p>
+            <a href="{{ url_for('order.create_order_form') }}" 
+               style="padding: 12px 25px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+                Place Your First Order
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Legend -->
+    {% if transactions %}
+    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <strong>Status Legend:</strong>
+        <div style="margin-top: 10px; display: flex; gap: 20px; flex-wrap: wrap;">
+            <span style="display: flex; align-items: center; gap: 5px;">
+                <span style="background: #d4edda; color: #155724; padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">✓ SUCCESS</span>
+                - Payment completed
+            </span>
+            <span style="display: flex; align-items: center; gap: 5px;">
+                <span style="background: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">✗ FAILED</span>
+                - Payment declined
+            </span>
+            <span style="display: flex; align-items: center; gap: 5px;">
+                <span style="background: #fff3cd; color: #856404; padding: 3px 8px; border-radius: 4px; font-size: 0.85em;">⏳ PENDING</span>
+                - Processing
+            </span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    a:hover {
+        opacity: 0.9;
+    }
+    
+    table tr:hover {
+        background: #f8f9fa;
+    }
+</style>
+{% endblock %}
+

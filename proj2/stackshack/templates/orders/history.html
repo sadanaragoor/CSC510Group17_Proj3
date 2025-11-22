@@ -119,6 +119,40 @@ show_create_link = show_create_link if show_create_link is defined else False %}
       {% else %}
       <td>
         <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          {% if order.status == 'Pending' %}
+          <button
+            type="button"
+            class="admin-links"
+            style="
+              border: none;
+              background: #28a745;
+              color: white;
+              padding: 6px 14px;
+              border-radius: 4px;
+              cursor: pointer;
+              font-weight: bold;
+            "
+            onclick="location.href='{{ url_for('payment.checkout', order_id=order.id) }}'"
+          >
+            💳 Pay Now
+          </button>
+          {% elif order.status == 'Paid' %}
+          <button
+            type="button"
+            class="admin-links"
+            style="
+              border: none;
+              background: #6c757d;
+              color: white;
+              padding: 4px 10px;
+              border-radius: 4px;
+              cursor: pointer;
+            "
+            onclick="location.href='{{ url_for('payment.receipt_view', order_id=order.id) }}'"
+          >
+            📄 Receipt
+          </button>
+          {% endif %}
           <button
             type="button"
             class="admin-links"
@@ -134,7 +168,7 @@ show_create_link = show_create_link if show_create_link is defined else False %}
           >
             View Flow
           </button>
-          {% if order.status not in ['Delivered', 'Cancelled'] %}
+          {% if order.status not in ['Delivered', 'Cancelled', 'Paid'] %}
           <button
             type="button"
             class="admin-links"
@@ -152,7 +186,7 @@ show_create_link = show_create_link if show_create_link is defined else False %}
           </button>
           {% else %}
           <span style="color: #999; font-size: 0.9em">
-            {% if order.status == 'Delivered' %} Cannot cancel {% else %}
+            {% if order.status == 'Delivered' %} Cannot cancel {% elif order.status == 'Paid' %} Payment completed {% else %}
             Already cancelled {% endif %}
           </span>
           {% endif %}
@@ -224,6 +258,18 @@ show_create_link = show_create_link if show_create_link is defined else False %}
       <!-- Arrow 1 -->
       <div class="flow-arrow">→</div>
 
+      <!-- Paid -->
+      <div id="flow-paid" class="flow-item">
+        <div class="flow-circle flow-circle--paid">💳</div>
+        <div class="flow-label">
+          <div class="flow-label-title">Paid</div>
+          <div class="flow-label-desc">Payment Success</div>
+        </div>
+      </div>
+
+      <!-- Arrow 2 -->
+      <div class="flow-arrow">→</div>
+
       <!-- Preparing -->
       <div id="flow-preparing" class="flow-item">
         <div class="flow-circle flow-circle--preparing">👨‍🍳</div>
@@ -233,7 +279,7 @@ show_create_link = show_create_link if show_create_link is defined else False %}
         </div>
       </div>
 
-      <!-- Arrow 2 -->
+      <!-- Arrow 3 -->
       <div class="flow-arrow">→</div>
 
       <!-- Ready for Pickup -->
@@ -245,7 +291,7 @@ show_create_link = show_create_link if show_create_link is defined else False %}
         </div>
       </div>
 
-      <!-- Arrow 3 -->
+      <!-- Arrow 4 -->
       <div class="flow-arrow">→</div>
 
       <!-- Delivered -->
@@ -273,6 +319,12 @@ show_create_link = show_create_link if show_create_link is defined else False %}
     --color-pending-shadow: 0 8px 24px rgba(204, 132, 0, 0.2);
     --color-pending-glow: rgba(204, 132, 0, 0.4);
     --color-pending-progress: #cc8400;
+
+    --color-paid-bg: linear-gradient(135deg, #d4edda 0%, #e8f5e9 100%);
+    --color-paid-border: #28a745;
+    --color-paid-shadow: 0 8px 24px rgba(40, 167, 69, 0.2);
+    --color-paid-glow: rgba(40, 167, 69, 0.4);
+    --color-paid-progress: #28a745;
 
     --color-preparing-bg: linear-gradient(135deg, #cfe2ff 0%, #e0eaff 100%);
     --color-preparing-border: #084298;
@@ -379,6 +431,17 @@ show_create_link = show_create_link if show_create_link is defined else False %}
 
   .flow-circle--pending::before {
     background: radial-gradient(circle, var(--color-pending-glow), transparent);
+  }
+
+  .flow-circle--paid {
+    background: var(--color-paid-bg);
+    border-color: var(--color-paid-border);
+    box-shadow: var(--color-paid-shadow),
+      inset 0 2px 8px rgba(255, 255, 255, 0.6);
+  }
+
+  .flow-circle--paid::before {
+    background: radial-gradient(circle, var(--color-paid-glow), transparent);
   }
 
   .flow-circle--preparing {
@@ -558,8 +621,13 @@ show_create_link = show_create_link if show_create_link is defined else False %}
 <script>
   const statusFlow = {
     Pending: {
-      display: "Your order has been received and is waiting to be prepared",
+      display: "Your order has been received and is waiting for payment",
       icon: "📋",
+      nextStatuses: ["Paid"],
+    },
+    Paid: {
+      display: "Payment successful! Order is now being prepared",
+      icon: "💳",
       nextStatuses: ["Preparing"],
     },
     Preparing: {
@@ -598,6 +666,7 @@ show_create_link = show_create_link if show_create_link is defined else False %}
   function updateStatusFlow(currentStatus) {
     const allStatuses = [
       "Pending",
+      "Paid",
       "Preparing",
       "Ready for Pickup",
       "Delivered",
@@ -606,6 +675,7 @@ show_create_link = show_create_link if show_create_link is defined else False %}
 
     const colorMap = {
       Pending: "#cc8400",
+      Paid: "#28a745",
       Preparing: "#084298",
       "Ready for Pickup": "#997404",
       Delivered: "#155724",
@@ -671,6 +741,7 @@ show_create_link = show_create_link if show_create_link is defined else False %}
   function getFlowId(status) {
     const mapping = {
       Pending: "pending",
+      Paid: "paid",
       Preparing: "preparing",
       "Ready for Pickup": "ready",
       Delivered: "delivered",
