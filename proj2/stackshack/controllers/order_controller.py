@@ -23,7 +23,7 @@ class OrderController:
         """
         Creates a new order for the specified user with the given items.
 
-        item_data: list of tuples (item_id, price, quantity, name)
+        item_data: list of tuples (item_id, price, quantity, name) or (item_id, price, quantity, name, burger_index)
         We IGNORE the client price & name and use DB values for safety.
         """
         if not item_data:
@@ -35,7 +35,14 @@ class OrderController:
             db.session.add(new_order)
             db.session.flush()  # Get order ID
 
-            for item_id, _client_price, quantity, _client_name in item_data:
+            for item_tuple in item_data:
+                # Handle both formats: with and without burger_index
+                if len(item_tuple) == 5:
+                    item_id, _client_price, quantity, _client_name, burger_index = item_tuple
+                else:
+                    item_id, _client_price, quantity, _client_name = item_tuple
+                    burger_index = None  # Single burger order (legacy)
+                
                 quantity_int = int(quantity)
                 if quantity_int <= 0:
                     continue
@@ -65,6 +72,7 @@ class OrderController:
                     name=name,
                     price=price,
                     quantity=quantity_int,
+                    burger_index=burger_index,  # Track which burger this belongs to
                 )
                 db.session.add(order_item)
 

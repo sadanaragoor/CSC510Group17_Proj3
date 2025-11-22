@@ -107,19 +107,56 @@ class PaymentController:
     
     @staticmethod
     def _create_receipt_html(transaction, order):
-        """Create HTML content for receipt - Professional receipt format"""
+        """Create HTML content for receipt - Professional receipt format with burger grouping"""
         items_html = ""
         subtotal = 0
-        for item in order.items.all():
-            item_total = float(item.price) * item.quantity
-            subtotal += item_total
-            items_html += f"""
-                <tr>
-                    <td>{item.name}</td>
-                    <td>x{item.quantity}</td>
-                    <td>${item_total:.2f}</td>
-                </tr>
-            """
+        
+        # Group items by burger_index
+        all_items = order.items.all()
+        burgers = {}
+        for item in all_items:
+            burger_idx = item.burger_index if item.burger_index is not None else 0
+            if burger_idx not in burgers:
+                burgers[burger_idx] = []
+            burgers[burger_idx].append(item)
+        
+        # Generate HTML for each burger group
+        for burger_index in sorted(burgers.keys()):
+            burger_items = burgers[burger_index]
+            burger_total = 0
+            
+            # Add burger header if multiple burgers
+            if len(burgers) > 1:
+                items_html += f"""
+                    <tr style="background: #f8f8f8;">
+                        <td colspan="3" style="padding: 6px 4px; font-weight: bold; font-size: 10px;">
+                            🍔 Burger #{burger_index}
+                        </td>
+                    </tr>
+                """
+            
+            # Add items for this burger
+            for item in burger_items:
+                item_total = float(item.price) * item.quantity
+                burger_total += item_total
+                items_html += f"""
+                    <tr>
+                        <td style="padding-left: {'10px' if len(burgers) > 1 else '0'};">{item.name}</td>
+                        <td>x{item.quantity}</td>
+                        <td>${item_total:.2f}</td>
+                    </tr>
+                """
+            
+            # Add burger subtotal if multiple burgers
+            if len(burgers) > 1:
+                items_html += f"""
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td colspan="2" style="text-align: right; padding: 4px; font-size: 9px; font-style: italic;">Burger #{burger_index} Total:</td>
+                        <td style="font-weight: bold;">${burger_total:.2f}</td>
+                    </tr>
+                """
+            
+            subtotal += burger_total
         
         # Calculate tax and total (if applicable)
         tax_rate = 0.00  # No tax for now, but structure is ready

@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_login import login_required, current_user
 from controllers.order_controller import OrderController
 from controllers.menu_controller import MenuController
 from models.menu_item import MenuItem
+import json
 
 VEGAN_INGREDIENT_NAMES = {
     # Buns
@@ -147,26 +148,132 @@ def create_order_form():
     return render_template("orders/create.html", items=items)
 
 
-@order_bp.route("/place", methods=["POST"])
+@order_bp.route("/add-to-cart", methods=["POST"])
 @login_required
-def place_order():
-    user_id = current_user.id
-    item_data = []
+def add_to_cart():
+    """Add a burger to the cart (session-based)"""
+    # Initialize cart if not exists
+    if 'cart' not in session:
+        session['cart'] = []
+    
+    # Extract burger items from form
+    burger_items = []
+    burger_total = 0.0
+    
     for key, value in request.form.items():
         if key.startswith("quantity_"):
             try:
                 item_id = key.split("_")[1]
                 quantity = int(value)
                 if quantity > 0:
-                    price = request.form.get(f"price_{item_id}")
-                    name = request.form.get(f"name_{item_id}")
+                    price = float(request.form.get(f"price_{item_id}", 0))
+                    name = request.form.get(f"name_{item_id}", "")
                     if price and name:
-                        item_data.append((item_id, price, quantity, name))
+                        item_price = price * quantity
+                        burger_total += item_price
+                        burger_items.append({
+                            "item_id": item_id,
+                            "name": name,
+                            "price": price,
+                            "quantity": quantity,
+                            "item_total": item_price
+                        })
             except ValueError:
                 continue
-    success, msg, _ = OrderController.create_new_order(user_id, item_data)
-    flash(msg, "success" if success else "error")
-    if success:
-        return redirect(url_for("order.order_history"))
-    else:
+    
+    if not burger_items:
+        flash("Please add ingredients to your burger!", "error")
         return redirect(url_for("order.create_order_form"))
+    
+    # Add burger to cart
+    burger = {
+        "items": burger_items,
+        "total": burger_total
+    }
+    session['cart'].append(burger)
+    session.modified = True
+    
+    flash(f"🍔 Burger added to cart! (${burger_total:.2f})", "success")
+    return redirect(url_for("order.view_cart"))
+
+
+@order_bp.route("/cart", methods=["GET"])
+@login_required
+def view_cart():
+    """View cart with all burgers"""
+    cart = session.get('cart', [])
+    cart_total = sum(burger['total'] for burger in cart)
+    return render_template("orders/cart.html", cart=cart, cart_total=cart_total)
+
+
+@order_bp.route("/cart/remove/<int:burger_index>", methods=["POST"])
+@login_required
+def remove_from_cart(burger_index):
+    """Remove a burger from cart"""
+    cart = session.get('cart', [])
+    
+    if 0 <= burger_index < len(cart):
+        removed_burger = cart.pop(burger_index)
+        session['cart'] = cart
+        session.modified = True
+        flash(f"Burger removed from cart! (${removed_burger['total']:.2f})", "info")
+    else:
+        flash("Invalid burger index", "error")
+    
+    return redirect(url_for("order.view_cart"))
+
+
+@order_bp.route("/cart/clear", methods=["POST"])
+@login_required
+def clear_cart():
+    """Clear entire cart"""
+    session['cart'] = []
+    session.modified = True
+    flash("Cart cleared!", "info")
+    return redirect(url_for("order.view_cart"))
+
+
+@order_bp.route("/cart/checkout", methods=["POST"])
+@login_required
+def checkout_cart():
+    """Checkout: Create order from cart and redirect to payment"""
+    cart = session.get('cart', [])
+    
+    if not cart:
+        flash("Your cart is empty!", "error")
+        return redirect(url_for("order.create_order_form"))
+    
+    # Flatten all burger items into a single order, tracking burger_index
+    item_data = []
+    for burger_index, burger in enumerate(cart, start=1):
+        for item in burger['items']:
+            item_data.append((
+                item['item_id'],
+                str(item['price']),
+                item['quantity'],
+                item['name'],
+                burger_index  # Track which burger this item belongs to
+            ))
+    
+    # Create order
+    user_id = current_user.id
+    success, msg, order = OrderController.create_new_order(user_id, item_data)
+    
+    if success:
+        # Clear cart after successful order
+        session['cart'] = []
+        session.modified = True
+        
+        # Redirect to payment checkout
+        flash("Order created! Please proceed to payment.", "success")
+        return redirect(url_for("payment.checkout", order_id=order.id))
+    else:
+        flash(f"Error creating order: {msg}", "error")
+        return redirect(url_for("order.view_cart"))
+
+
+@order_bp.route("/place", methods=["POST"])
+@login_required
+def place_order():
+    """Direct order placement (legacy route - redirects to add to cart)"""
+    return add_to_cart()

@@ -39,14 +39,40 @@ show_create_link = show_create_link if show_create_link is defined else False %}
         </span>
       </td>
       <td>
-        <ul>
-          {% for item in order.items.all() %}
-          <li style="font-size: 0.9em">
-            {{ item.quantity }} x {{ item.name }} (${{ "%.2f"|format(item.price)
-            }})
-          </li>
+        {% set all_items = order.items.all() %}
+        {% set burgers = {} %}
+        {% for item in all_items %}
+            {% set burger_idx = item.burger_index if item.burger_index is not none else 0 %}
+            {% if burger_idx not in burgers %}
+                {% set _ = burgers.update({burger_idx: []}) %}
+            {% endif %}
+            {% set _ = burgers[burger_idx].append(item) %}
+        {% endfor %}
+        
+        {% if burgers|length > 1 %}
+          <!-- Multiple burgers - show with grouping -->
+          {% for burger_index in burgers.keys()|sort %}
+            <div style="margin-bottom: 12px;">
+              <strong style="color: var(--primary-color); font-size: 0.95em;">🍔 Burger #{{ burger_index }}</strong>
+              <ul style="margin: 4px 0 0 0;">
+                {% for item in burgers[burger_index] %}
+                <li style="font-size: 0.85em;">
+                  {{ item.quantity }} x {{ item.name }} (${{ "%.2f"|format(item.price) }})
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
           {% endfor %}
-        </ul>
+        {% else %}
+          <!-- Single burger - show without grouping -->
+          <ul>
+            {% for item in all_items %}
+            <li style="font-size: 0.9em">
+              {{ item.quantity }} x {{ item.name }} (${{ "%.2f"|format(item.price) }})
+            </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
       </td>
       {% if manage_mode %}
       <td>

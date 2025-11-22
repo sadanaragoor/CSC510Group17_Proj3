@@ -23,11 +23,18 @@
         <div class="price-total">Total: $0.00</div>
       </div>
       
-      <!-- Place Order Form -->
-      <form id="place-order-form" method="POST" action="{{ url_for('order.place_order') }}">
+      <!-- Add to Cart Form -->
+      <form id="place-order-form" method="POST" action="{{ url_for('order.add_to_cart') }}">
         <div id="hidden-inputs"></div>
-        <button type="submit" id="place-order-btn" class="place-order-btn">Place Order</button>
+        <button type="submit" id="place-order-btn" class="place-order-btn">🛒 Add to Cart</button>
       </form>
+      
+      <!-- Continue Shopping / View Cart -->
+      <div style="margin-top: 15px; display: flex; gap: 10px;">
+        <a href="{{ url_for('order.view_cart') }}" style="flex: 1; padding: 12px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; text-align: center; font-weight: bold;">
+          🛒 View Cart
+        </a>
+      </div>
     </div>
   </div>
 </div>
@@ -755,7 +762,7 @@ placeOrderForm.addEventListener('submit', function(e) {
   
   if (!hasBun || !hasPatty) {
     e.preventDefault();
-    let message = 'Cannot place order: ';
+    let message = 'Cannot add to cart: ';
     if (!hasBun && !hasPatty) {
       message += 'Please add a bun and at least one patty.';
     } else if (!hasBun) {
@@ -767,9 +774,9 @@ placeOrderForm.addEventListener('submit', function(e) {
     return false;
   }
   
-  // Disable button to prevent double submission
+  // Temporarily disable button to prevent double submission
   placeOrderBtn.disabled = true;
-  placeOrderBtn.textContent = 'Placing Order...';
+  placeOrderBtn.textContent = 'Adding to Cart...';
 });
 
 // Initialize burger with empty state

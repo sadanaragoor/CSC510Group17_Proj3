@@ -22,13 +22,37 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in order.items.all() %}
-                <tr style="border-bottom: 1px solid #e0e0e0;">
-                    <td style="padding: 10px;">{{ item.name }}</td>
-                    <td style="padding: 10px; text-align: center;">{{ item.quantity }}</td>
-                    <td style="padding: 10px; text-align: right;">${{ "%.2f"|format(item.price) }}</td>
-                    <td style="padding: 10px; text-align: right;">${{ "%.2f"|format(item.price * item.quantity) }}</td>
-                </tr>
+                {% set all_items = order.items.all() %}
+                {% set burgers = {} %}
+                {% for item in all_items %}
+                    {% set burger_idx = item.burger_index if item.burger_index is not none else 0 %}
+                    {% if burger_idx not in burgers %}
+                        {% set _ = burgers.update({burger_idx: []}) %}
+                    {% endif %}
+                    {% set _ = burgers[burger_idx].append(item) %}
+                {% endfor %}
+                
+                {% for burger_index in burgers.keys()|sort %}
+                    {% set burger_items = burgers[burger_index] %}
+                    
+                    <!-- Burger Header (if multiple burgers) -->
+                    {% if burgers|length > 1 %}
+                    <tr style="background: #f8f8f8;">
+                        <td colspan="4" style="padding: 8px 10px; font-weight: bold; color: var(--primary-color);">
+                            🍔 Burger #{{ burger_index }}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    
+                    <!-- Burger Items -->
+                    {% for item in burger_items %}
+                    <tr style="border-bottom: 1px solid #e0e0e0;">
+                        <td style="padding: 10px; {{ 'padding-left: 20px;' if burgers|length > 1 else '' }}">{{ item.name }}</td>
+                        <td style="padding: 10px; text-align: center;">{{ item.quantity }}</td>
+                        <td style="padding: 10px; text-align: right;">${{ "%.2f"|format(item.price) }}</td>
+                        <td style="padding: 10px; text-align: right;">${{ "%.2f"|format(item.price * item.quantity) }}</td>
+                    </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
             <tfoot style="background: #f8f9fa;">
