@@ -1,0 +1,18 @@
+# PDF Generation Libraries for Receipt Download
+# Install ONE of these (in order of preference):
+
+# Option 1: WeasyPrint (Best quality, requires additional system dependencies)
+# weasyprint==60.1
+# Dependencies: Install system packages first:
+#   - Windows: Download GTK3 runtime from https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer
+#   - macOS: brew install cairo pango gdk-pixbuf libffi
+#   - Linux: sudo apt-get install python3-dev python3-pip python3-setuptools python3-wheel python3-cffi libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+
+# Option 2: xhtml2pdf (Simpler installation, good quality)
+# Note: xhtml2pdf requires reportlab<4, so we use compatible versions
+xhtml2pdf==0.2.11
+reportlab>=3.5.53,<4
+
+# Required for all options
+Pillow>=10.0.0
+

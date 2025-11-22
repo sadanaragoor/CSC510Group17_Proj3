@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
+    email = db.Column(db.String(255), nullable=True)  # Added for campus card eligibility
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), nullable=False, default="customer")
     pref_vegan = db.Column(db.Boolean, default=False)
@@ -40,6 +41,18 @@ class User(UserMixin, db.Model):
             bool: True if the password matches the hash, False otherwise.
         """
         return check_password_hash(self.password, password)
+
+    def is_eligible_for_campus_card(self):
+        """
+        Check if user is eligible for campus card.
+        Requires .edu email address (student/faculty verification).
+        
+        Returns:
+            bool: True if user has .edu email, False otherwise.
+        """
+        if not self.email:
+            return False
+        return self.email.lower().endswith('.edu')
 
     @staticmethod
     def get_by_username(username):

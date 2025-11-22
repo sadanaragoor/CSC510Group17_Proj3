@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Stack Shack{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h2>My Profile</h2>
+    
+    <!-- User Information -->
+    <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: var(--secondary-color);">Account Information</h3>
+        
+        <div style="display: grid; grid-template-columns: auto 1fr; gap: 15px 30px; font-size: 1em;">
+            <strong>Username:</strong>
+            <span>{{ current_user.username }}</span>
+            
+            <strong>Role:</strong>
+            <span style="text-transform: capitalize;">{{ current_user.role }}</span>
+            
+            <strong>Email:</strong>
+            <span>
+                {% if current_user.email %}
+                    {{ current_user.email }}
+                    {% if current_user.is_eligible_for_campus_card() %}
+                        <span style="color: #28a745; font-weight: bold; margin-left: 10px;">✓ Campus Card Eligible</span>
+                    {% endif %}
+                {% else %}
+                    <span style="color: #999;">Not set</span>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <!-- Update Email Section -->
+    <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: var(--secondary-color);">Update Email Address</h3>
+        
+        {% if not current_user.is_eligible_for_campus_card() %}
+        <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #856404;">
+                <strong>💡 Tip:</strong> Use a <strong>.edu email</strong> to become eligible for a campus card with $100 starting balance!
+            </p>
+        </div>
+        {% endif %}
+        
+        <form action="{{ url_for('profile.update_email') }}" method="POST">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Email Address</label>
+                <input type="email" 
+                       name="email" 
+                       value="{{ current_user.email if current_user.email else '' }}" 
+                       placeholder="your.email@university.edu"
+                       required
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1em;">
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Use a .edu email to qualify for campus card benefits
+                </small>
+            </div>
+            
+            <button type="submit" 
+                    style="padding: 12px 30px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; font-weight: bold;">
+                Update Email
+            </button>
+        </form>
+    </div>
+    
+    <!-- Update Password Section -->
+    <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: var(--secondary-color);">Change Password</h3>
+        
+        <form action="{{ url_for('profile.update_password') }}" method="POST">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Current Password</label>
+                <input type="password" 
+                       name="current_password" 
+                       required
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1em;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">New Password</label>
+                <input type="password" 
+                       name="new_password" 
+                       required
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1em;">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Confirm New Password</label>
+                <input type="password" 
+                       name="confirm_password" 
+                       required
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1em;">
+            </div>
+            
+            <button type="submit" 
+                    style="padding: 12px 30px; background: var(--secondary-color); color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; font-weight: bold;">
+                Change Password
+            </button>
+        </form>
+    </div>
+    
+    <!-- Quick Links -->
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="{{ url_for('auth.dashboard') }}" 
+           style="padding: 12px 25px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            ← Back to Dashboard
+        </a>
+        
+        {% if current_user.is_eligible_for_campus_card() %}
+        <a href="{{ url_for('payment.campus_card_info') }}" 
+           style="padding: 12px 25px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            🎓 Get Campus Card
+        </a>
+        {% endif %}
+        
+        <a href="{{ url_for('payment.payment_history') }}" 
+           style="padding: 12px 25px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            💳 Payment History
+        </a>
+    </div>
+</div>
+
+<style>
+    button:hover, a:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+

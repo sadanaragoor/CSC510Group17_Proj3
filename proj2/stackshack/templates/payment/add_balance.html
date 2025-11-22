@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Add Balance - Campus Card{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto; padding: 20px;">
+    <h2>Add Balance to Campus Card</h2>
+    
+    <!-- Campus Card Info -->
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3 style="margin-top: 0;">Current Balance</h3>
+        <p style="font-size: 2em; font-weight: bold; color: var(--primary-color); margin: 10px 0;">
+            ${{ "%.2f"|format(campus_card.balance) }}
+        </p>
+        <p style="color: #666; font-size: 0.9em; margin: 0;">
+            Card: {{ campus_card.card_number }}
+        </p>
+    </div>
+    
+    <!-- Payment Form -->
+    <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0;">Pay with Credit/Debit Card</h3>
+        <p style="color: #666; font-size: 0.95em; margin-bottom: 25px;">
+            Use your credit or debit card to securely add funds to your campus card.
+        </p>
+        
+        <form action="{{ url_for('payment.process_balance_addition') }}" method="POST">
+            <input type="hidden" name="campus_card_id" value="{{ campus_card.id }}">
+            
+            <!-- Amount -->
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Amount to Add</label>
+                <input type="number" name="amount" step="0.01" min="1" max="1000" placeholder="0.00" required
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 1.1em;">
+                <small style="color: #666;">Minimum: $1.00 | Maximum: $1,000.00</small>
+                
+                <!-- Quick Amount Buttons -->
+                <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" onclick="document.querySelector('input[name=amount]').value = 10" 
+                            style="padding: 8px 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+                        $10
+                    </button>
+                    <button type="button" onclick="document.querySelector('input[name=amount]').value = 25" 
+                            style="padding: 8px 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+                        $25
+                    </button>
+                    <button type="button" onclick="document.querySelector('input[name=amount]').value = 50" 
+                            style="padding: 8px 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+                        $50
+                    </button>
+                    <button type="button" onclick="document.querySelector('input[name=amount]').value = 100" 
+                            style="padding: 8px 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+                        $100
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Card Number -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Card Number</label>
+                <input type="text" name="card_number" placeholder="1234 5678 9012 3456" maxlength="16" required
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                <small style="color: #666;">16-digit card number</small>
+            </div>
+            
+            <!-- Expiry and CVV -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Expiry Month</label>
+                    <select name="expiry_month" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">MM</option>
+                        {% for month in range(1, 13) %}
+                        <option value="{{ '%02d'|format(month) }}">{{ '%02d'|format(month) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Expiry Year</label>
+                    <select name="expiry_year" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">YY</option>
+                        {% for year in range(2025, 2036) %}
+                        <option value="{{ year % 100 }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">CVV</label>
+                    <input type="text" name="cvv" placeholder="123" maxlength="4" required
+                           style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+            </div>
+            
+            <!-- Security Notice -->
+            <div style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                <p style="margin: 0; color: #31708f; font-size: 0.9em;">
+                    🔒 <strong>Secure Payment:</strong> Your card information is encrypted and processed securely.
+                </p>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" style="width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; font-weight: bold; transition: background 0.3s;">
+                💳 Process Payment
+            </button>
+        </form>
+    </div>
+    
+    <!-- Back Link -->
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('payment.campus_card_info') }}" style="color: var(--primary-color); text-decoration: none;">
+            ← Back to Campus Card
+        </a>
+    </div>
+</div>
+
+<style>
+    button:hover {
+        opacity: 0.9;
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
