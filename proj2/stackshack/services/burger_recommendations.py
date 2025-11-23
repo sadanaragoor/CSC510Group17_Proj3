@@ -66,7 +66,7 @@ class BurgerRecommendationService:
     @staticmethod
     def prepare_burger_data(burger_definition):
         """
-        Prepare burger data with calculated price and all display info.
+        Prepare burger data with calculated price, stock availability, and all display info.
         
         Args:
             burger_definition: Dict with burger config
@@ -82,6 +82,16 @@ class BurgerRecommendationService:
             # Skip burgers with missing ingredients
             return None
         
+        # Check stock availability for all ingredients
+        out_of_stock_items = []
+        is_available = True
+        
+        for ingredient_name in burger_definition['ingredients']:
+            menu_item = MenuItem.query.filter_by(name=ingredient_name).first()
+            if menu_item and menu_item.stock_quantity <= 0:
+                out_of_stock_items.append(ingredient_name)
+                is_available = False
+        
         return {
             'name': burger_definition['name'],
             'slug': burger_definition['slug'],
@@ -89,7 +99,9 @@ class BurgerRecommendationService:
             'ingredients': burger_definition['ingredients'],
             'dietary_tags': burger_definition['dietary_tags'],
             'image': burger_definition['image'],
-            'price': price
+            'price': price,
+            'is_available': is_available,
+            'out_of_stock_items': out_of_stock_items
         }
     
     @staticmethod

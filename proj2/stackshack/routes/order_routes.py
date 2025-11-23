@@ -309,16 +309,26 @@ def add_predefined_burger():
     burger_items = []
     burger_total = 0.0
     
+    # Check if all ingredients are available BEFORE adding to cart
+    out_of_stock_ingredients = []
     for ingredient_name in burger_def['ingredients']:
         menu_item = MenuItem.query.filter_by(name=ingredient_name).first()
         if not menu_item:
-            flash(f"Ingredient '{ingredient_name}' not available", "error")
+            flash(f"❌ Ingredient '{ingredient_name}' not available in our menu", "error")
             return redirect(url_for("auth.dashboard"))
         
         # Check stock
         if menu_item.stock_quantity <= 0:
-            flash(f"'{menu_item.name}' is out of stock", "error")
-            return redirect(url_for("auth.dashboard"))
+            out_of_stock_ingredients.append(menu_item.name)
+    
+    # If any ingredients are out of stock, show detailed message
+    if out_of_stock_ingredients:
+        flash(f"❌ Cannot add '{burger_def['name']}' - Out of stock: {', '.join(out_of_stock_ingredients)}", "error")
+        return redirect(url_for("auth.dashboard"))
+    
+    # Build burger items for cart (only if all items are in stock)
+    for ingredient_name in burger_def['ingredients']:
+        menu_item = MenuItem.query.filter_by(name=ingredient_name).first()
         
         price = float(menu_item.price)
         burger_total += price

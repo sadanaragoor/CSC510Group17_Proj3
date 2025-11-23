@@ -1,13 +1,150 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<h2 style="color: #e67e22; font-family: Momo Signature">Welcome, {{ current_user.username }}!</h2>
-<p>Your Role: <strong>{{ current_user.role | upper }}</strong></p>
-<p style="margin-top: 10px;">
-    <a href="{{ url_for('profile.view_profile') }}" style="color: var(--primary-color); text-decoration: none; font-weight: bold;">
-        ⚙️ Manage Profile & Email
+
+<!-- User Info Card -->
+<div class="user-info-card">
+    <div class="user-welcome">
+        <div class="welcome-icon">👋</div>
+        <div>
+            <h2 style="color: var(--secondary-color); font-family: 'Momo Signature', cursive; font-size: 2.5em; margin: 0;">
+                Welcome back, {{ current_user.username }}!
+            </h2>
+            <div class="role-badge role-{{ current_user.role }}">
+                <span class="role-icon">
+                    {% if current_user.role == 'admin' %}👑
+                    {% elif current_user.role == 'staff' %}👨‍🍳
+                    {% else %}🙋{% endif %}
+                </span>
+                {{ current_user.role | upper }}
+            </div>
+        </div>
+    </div>
+    <a href="{{ url_for('profile.view_profile') }}" class="profile-link">
+        <span class="profile-icon">⚙️</span>
+        <span>Manage Profile & Preferences</span>
+        <span class="arrow">→</span>
     </a>
-</p>
+</div>
+
+<style>
+.user-info-card {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(230, 126, 34, 0.3);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.user-welcome {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.welcome-icon {
+    font-size: 3em;
+    animation: wave 1s ease-in-out infinite;
+}
+
+@keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(20deg); }
+    75% { transform: rotate(-20deg); }
+}
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.role-icon {
+    font-size: 1.2em;
+}
+
+.role-admin {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.role-staff {
+    background: linear-gradient(135deg, #f39c12 0%, #f8b739 100%);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.role-customer {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 25px;
+    background: white;
+    color: #e67e22;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1.05em;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(230, 126, 34, 0.3);
+}
+
+.profile-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    background: #f8f9fa;
+}
+
+.profile-icon {
+    font-size: 1.3em;
+}
+
+.arrow {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+}
+
+.profile-link:hover .arrow {
+    transform: translateX(5px);
+}
+
+@media (max-width: 768px) {
+    .user-info-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .user-welcome {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .profile-link {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
 
 <!-- Personalized Burger Recommendations -->
 {% if burger_sections %}
@@ -21,11 +158,16 @@
         
         <div class="burger-grid">
             {% for burger in section.burgers %}
-            <div class="burger-card">
+            <div class="burger-card {% if not burger.is_available %}burger-unavailable{% endif %}">
                 <div class="burger-image-container">
+                    {% if not burger.is_available %}
+                    <div class="out-of-stock-badge">
+                        ⚠️ OUT OF STOCK
+                    </div>
+                    {% endif %}
                     <img src="{{ url_for('static', filename='images/' + burger.image) }}" 
                          alt="{{ burger.name }}"
-                         class="burger-image"
+                         class="burger-image {% if not burger.is_available %}burger-image-grayed{% endif %}"
                          onerror="this.src='{{ url_for('static', filename='images/hamburger_icon.webp') }}'">
                 </div>
                 
@@ -40,14 +182,29 @@
                         </p>
                     </div>
                     
+                    {% if not burger.is_available %}
+                    <div class="out-of-stock-message">
+                        <strong style="color: #dc3545; font-size: 0.9em;">Missing ingredients:</strong>
+                        <p style="font-size: 0.85em; color: #dc3545; margin-top: 4px;">
+                            {{ burger.out_of_stock_items|join(', ')|capitalize }}
+                        </p>
+                    </div>
+                    {% endif %}
+                    
                     <div class="burger-footer">
                         <div class="burger-price">${{ "%.2f"|format(burger.price) }}</div>
+                        {% if burger.is_available %}
                         <form method="POST" action="{{ url_for('order.add_predefined_burger') }}" style="margin: 0;">
                             <input type="hidden" name="burger_slug" value="{{ burger.slug }}">
                             <button type="submit" class="add-to-cart-btn">
                                 🛒 Add to Cart
                             </button>
                         </form>
+                        {% else %}
+                        <button type="button" class="add-to-cart-btn" disabled style="opacity: 0.5; cursor: not-allowed;">
+                            ❌ Unavailable
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -80,22 +237,66 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
+.burger-card.burger-unavailable {
+    opacity: 0.75;
+    border: 2px solid #dc3545;
+}
+
+.burger-card.burger-unavailable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
 .burger-image-container {
     width: 100%;
     height: 200px;
     overflow: hidden;
     background: #f5f5f5;
+    position: relative;
 }
 
 .burger-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.burger-image-grayed {
+    filter: grayscale(100%) brightness(0.7);
 }
 
 .burger-card:hover .burger-image {
     transform: scale(1.05);
+}
+
+.out-of-stock-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #dc3545 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.75em;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
+    z-index: 10;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.out-of-stock-message {
+    background: #ffe6e6;
+    border: 1px solid #dc3545;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
 }
 
 .burger-details {

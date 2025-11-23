@@ -87,3 +87,47 @@ def update_password():
         flash(f"Error updating password: {str(e)}", "error")
         return redirect(url_for("profile.view_profile"))
 
+
+@profile_bp.route("/profile/update-preferences", methods=["POST"])
+@login_required
+def update_preferences():
+    """Update user dietary preferences"""
+    try:
+        # Get checkbox values (checkboxes not checked won't be in form data)
+        pref_vegan = 'pref_vegan' in request.form
+        pref_gluten_free = 'pref_gluten_free' in request.form
+        pref_high_protein = 'pref_high_protein' in request.form
+        pref_low_calorie = 'pref_low_calorie' in request.form
+        
+        # Update user preferences
+        current_user.pref_vegan = pref_vegan
+        current_user.pref_gluten_free = pref_gluten_free
+        current_user.pref_high_protein = pref_high_protein
+        current_user.pref_low_calorie = pref_low_calorie
+        
+        db.session.commit()
+        
+        # Build message based on selected preferences
+        selected_prefs = []
+        if pref_vegan:
+            selected_prefs.append("Vegan")
+        if pref_gluten_free:
+            selected_prefs.append("Gluten-Free")
+        if pref_high_protein:
+            selected_prefs.append("High-Protein")
+        if pref_low_calorie:
+            selected_prefs.append("Low-Calorie")
+        
+        if selected_prefs:
+            prefs_text = ", ".join(selected_prefs)
+            flash(f"Preferences updated! You'll now see {prefs_text} recommendations on your dashboard. 🍔", "success")
+        else:
+            flash("Preferences cleared! You'll see our top picks on your dashboard. 🍔", "success")
+        
+        return redirect(url_for("auth.dashboard"))  # Redirect to dashboard to see new recommendations
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error updating preferences: {str(e)}", "error")
+        return redirect(url_for("profile.view_profile"))
+

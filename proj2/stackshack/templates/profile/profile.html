@@ -64,6 +64,97 @@
         </form>
     </div>
     
+    <!-- Dietary Preferences Section -->
+    <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        <h3 style="margin-top: 0; color: var(--secondary-color);">🍽️ Dietary Preferences</h3>
+        
+        <div style="background: #e7f3ff; border: 1px solid #2196F3; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #0c5460;">
+                <strong>💡 Personalize Your Experience:</strong> Select your dietary preferences to get customized burger recommendations on your dashboard!
+            </p>
+        </div>
+        
+        <form action="{{ url_for('profile.update_preferences') }}" method="POST">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                
+                <!-- Vegan Preference -->
+                <div class="preference-card {% if current_user.pref_vegan %}preference-active{% endif %}">
+                    <input type="checkbox" 
+                           id="pref_vegan" 
+                           name="pref_vegan" 
+                           {% if current_user.pref_vegan %}checked{% endif %}
+                           class="preference-checkbox dietary-pref">
+                    <label for="pref_vegan" class="preference-label">
+                        <span class="preference-icon">🌱</span>
+                        <span class="preference-title">Vegan</span>
+                        <span class="preference-desc">Plant-based only</span>
+                    </label>
+                </div>
+                
+                <!-- Gluten-Free Preference -->
+                <div class="preference-card {% if current_user.pref_gluten_free %}preference-active{% endif %}">
+                    <input type="checkbox" 
+                           id="pref_gluten_free" 
+                           name="pref_gluten_free" 
+                           {% if current_user.pref_gluten_free %}checked{% endif %}
+                           class="preference-checkbox dietary-pref">
+                    <label for="pref_gluten_free" class="preference-label">
+                        <span class="preference-icon">🌾</span>
+                        <span class="preference-title">Gluten-Free</span>
+                        <span class="preference-desc">No gluten</span>
+                    </label>
+                </div>
+                
+                <!-- High-Protein Preference -->
+                <div class="preference-card {% if current_user.pref_high_protein %}preference-active{% endif %}">
+                    <input type="checkbox" 
+                           id="pref_high_protein" 
+                           name="pref_high_protein" 
+                           {% if current_user.pref_high_protein %}checked{% endif %}
+                           class="preference-checkbox dietary-pref">
+                    <label for="pref_high_protein" class="preference-label">
+                        <span class="preference-icon">💪</span>
+                        <span class="preference-title">High-Protein</span>
+                        <span class="preference-desc">Protein-rich options</span>
+                    </label>
+                </div>
+                
+                <!-- Low-Calorie Preference -->
+                <div class="preference-card {% if current_user.pref_low_calorie %}preference-active{% endif %}">
+                    <input type="checkbox" 
+                           id="pref_low_calorie" 
+                           name="pref_low_calorie" 
+                           {% if current_user.pref_low_calorie %}checked{% endif %}
+                           class="preference-checkbox dietary-pref">
+                    <label for="pref_low_calorie" class="preference-label">
+                        <span class="preference-icon">⚖️</span>
+                        <span class="preference-title">Low-Calorie</span>
+                        <span class="preference-desc">Lighter meals</span>
+                    </label>
+                </div>
+                
+                <!-- No Preference -->
+                <div class="preference-card {% if not current_user.pref_vegan and not current_user.pref_gluten_free and not current_user.pref_high_protein and not current_user.pref_low_calorie %}preference-active{% endif %}">
+                    <input type="checkbox" 
+                           id="pref_none" 
+                           name="pref_none" 
+                           {% if not current_user.pref_vegan and not current_user.pref_gluten_free and not current_user.pref_high_protein and not current_user.pref_low_calorie %}checked{% endif %}
+                           class="preference-checkbox">
+                    <label for="pref_none" class="preference-label">
+                        <span class="preference-icon">🍔</span>
+                        <span class="preference-title">No Preference</span>
+                        <span class="preference-desc">Show all options</span>
+                    </label>
+                </div>
+            </div>
+            
+            <button type="submit" 
+                    style="padding: 12px 30px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; font-weight: bold;">
+                💾 Save Preferences
+            </button>
+        </form>
+    </div>
+    
     <!-- Update Password Section -->
     <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 25px;">
         <h3 style="margin-top: 0; color: var(--secondary-color);">Change Password</h3>
@@ -126,6 +217,154 @@
         opacity: 0.9;
         transform: translateY(-1px);
     }
+    
+    /* Dietary Preference Cards */
+    .preference-card {
+        position: relative;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        background: #f9f9f9;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .preference-card:hover {
+        border-color: var(--primary-color);
+        background: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.2);
+    }
+    
+    .preference-card.preference-active {
+        border-color: var(--primary-color);
+        background: linear-gradient(135deg, #fff5e6 0%, #ffe4cc 100%);
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.3);
+    }
+    
+    .preference-checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .preference-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .preference-icon {
+        font-size: 2.5em;
+        margin-bottom: 5px;
+    }
+    
+    .preference-title {
+        font-weight: bold;
+        font-size: 1.1em;
+        color: var(--secondary-color);
+    }
+    
+    .preference-desc {
+        font-size: 0.85em;
+        color: #666;
+    }
+    
+    .preference-checkbox:checked + .preference-label .preference-icon {
+        animation: bounce 0.5s ease;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+    
+    /* Make checkbox interaction visual */
+    .preference-card::before {
+        content: '';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        border: 2px solid #ddd;
+        border-radius: 50%;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    
+    .preference-card.preference-active::before {
+        content: '✓';
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    
+    /* Add JavaScript-like behavior with CSS */
+    .preference-checkbox:checked ~ .preference-label {
+        color: var(--primary-color);
+    }
 </style>
+
+<script>
+    // Add dynamic active class toggling with No Preference logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.preference-checkbox');
+        const noPrefCheckbox = document.getElementById('pref_none');
+        const dietaryPrefCheckboxes = document.querySelectorAll('.dietary-pref');
+        
+        checkboxes.forEach(checkbox => {
+            const card = checkbox.closest('.preference-card');
+            
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    card.classList.add('preference-active');
+                } else {
+                    card.classList.remove('preference-active');
+                }
+                
+                // Handle No Preference logic
+                if (checkbox.id === 'pref_none' && checkbox.checked) {
+                    // If No Preference is checked, uncheck all dietary preferences
+                    dietaryPrefCheckboxes.forEach(cb => {
+                        if (cb.checked) {
+                            cb.checked = false;
+                            cb.closest('.preference-card').classList.remove('preference-active');
+                        }
+                    });
+                } else if (checkbox.classList.contains('dietary-pref') && checkbox.checked) {
+                    // If any dietary preference is checked, uncheck No Preference
+                    if (noPrefCheckbox.checked) {
+                        noPrefCheckbox.checked = false;
+                        noPrefCheckbox.closest('.preference-card').classList.remove('preference-active');
+                    }
+                }
+                
+                // If all dietary prefs are unchecked, auto-check No Preference
+                const anyDietaryChecked = Array.from(dietaryPrefCheckboxes).some(cb => cb.checked);
+                if (!anyDietaryChecked && !noPrefCheckbox.checked) {
+                    noPrefCheckbox.checked = true;
+                    noPrefCheckbox.closest('.preference-card').classList.add('preference-active');
+                }
+            });
+            
+            // Click anywhere on card to toggle
+            card.addEventListener('click', function(e) {
+                if (e.target !== checkbox && !e.target.closest('label')) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}
 
