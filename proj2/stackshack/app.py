@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from routes.surprise_routes import surprise_bp
 from config import config
 from database.db import init_db, login_manager, db
 from routes.auth_routes import auth_bp
@@ -36,6 +37,8 @@ def create_app(config_name="development"):
     app.register_blueprint(status_bp, url_prefix="/status")
     app.register_blueprint(payment_bp, url_prefix="/payment")
     app.register_blueprint(profile_bp, url_prefix="/profile")
+    app.register_blueprint(surprise_bp, url_prefix="/surprisebox")
+
 
     @app.context_processor
     def inject_current_year():

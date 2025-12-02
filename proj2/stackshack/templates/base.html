@@ -280,6 +280,8 @@
     </a>
     <nav>
       <a href="{{ url_for('menu.browse_ingredients') }}">Ingredients</a> 
+      <a href="{{ url_for('menu') }}">Surprise Box</a>
+
 
   {% if current_user.is_authenticated and current_user.role in ['admin', 'staff'] %}
     <a href="{{ url_for('menu.inventory_dashboard') }}">Inventory</a>

@@ -1,11 +1,116 @@
 {% extends "base.html" %}
-{% block title %}Our Menu{% endblock %}
-{% block content %}
-<h2>Our Full Menu</h2>
-<p>We're currently customizing our delicious menu! Check back soon for details on our signature burgers, sides, and shakes.</p>
+{% block title %}Surprise Burger{% endblock %}
 
-<div style="margin-top: 30px; padding: 20px; border: 1px dashed var(--primary-color); border-radius: 8px; text-align: center;">
-    <h3>Menu Items Go Here</h3>
-    <p>This page is ready for our exciting food items once they are finalized!</p>
+{% block content %}
+
+<h2>Surprise Burger Box</h2>
+<p>Click below and we’ll build you a completely custom burger with a random bun, patty, cheeses, toppings, and sauces 🍔</p>
+
+<div style="margin-top: 20px; padding: 20px; border: 1px dashed var(--primary-color); border-radius: 8px; text-align: center;">
+    <h3>🎁 Surprise Box</h3>
+
+    <button id="surpriseBtn"
+            style="background:#f39c12; color:white; padding:12px 20px;
+                   border-radius:8px; font-size:1.1em; cursor:pointer;">
+        🎁 Generate Surprise Burger
+    </button>
+
+    <div id="surpriseResult" style="margin-top:20px;"></div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var btn = document.getElementById("surpriseBtn");
+    var resultDiv = document.getElementById("surpriseResult");
+
+    if (!btn || !resultDiv) {
+        return;
+    }
+
+    btn.addEventListener("click", async function() {
+        try {
+            const res = await fetch("/surprisebox/surprise");
+            const data = await res.json();
+
+            if (data.error) {
+                resultDiv.innerHTML = '<p style="color:red;">' + data.error + '</p>';
+                return;
+            }
+
+            function renderSingleSection(title, item) {
+                if (!item) {
+                    return "";
+                }
+                var html = '';
+                html += '<div style="margin-bottom:20px;">';
+                html += '<h4>' + title + '</h4>';
+                html += '<p><strong>' + (item.name || "") + '</strong>';
+                if (item.description) {
+                    html += ' (' + item.description + ')';
+                }
+                html += '</p>';
+                if (item.image_url) {
+                    html += '<img src="' + item.image_url + '" style="max-width:150px; border-radius:8px;">';
+                }
+                html += '</div>';
+                return html;
+            }
+
+            function renderListSection(title, items) {
+                if (!items || items.length === 0) {
+                    return "";
+                }
+                var html = '';
+                html += '<h4>' + title + '</h4>';
+                html += '<div style="display:flex; flex-wrap:wrap; gap:15px;">';
+                for (var i = 0; i < items.length; i++) {
+                    var it = items[i];
+                    html += '<div style="text-align:center; border:1px solid #ddd; padding:10px; border-radius:8px;">';
+                    html += '<p><strong>' + (it.name || "") + '</strong></p>';
+                    if (it.description) {
+                        html += '<p style="font-size:0.9em;">' + it.description + '</p>';
+                    }
+                    if (it.image_url) {
+                        html += '<img src="' + it.image_url + '" style="max-width:100px; border-radius:8px;">';
+                    }
+                    html += '</div>';
+                }
+                html += '</div>';
+                return html;
+            }
+
+            var html = '';
+            html += '<div style="border:1px solid #ccc; padding:20px; border-radius:10px;';
+            html += ' display:block; max-width:700px; margin:auto; text-align:left;">';
+
+            html += '<h3>🎉 ' + (data.burger_name || "Surprise Burger") + '</h3>';
+
+            html += renderSingleSection("Bun", data.bun);
+            html += renderSingleSection("Patty", data.patty);
+            html += renderListSection("Cheeses", data.cheeses);
+            html += renderListSection("Toppings", data.toppings);
+            html += renderListSection("Sauces", data.sauces);
+
+            html += '<h4>Totals</h4>';
+            if (typeof data.total_price !== "undefined") {
+                html += '<p><strong>Price:</strong> $' + data.total_price.toFixed(2) + '</p>';
+            }
+            if (typeof data.total_calories !== "undefined") {
+                html += '<p><strong>Calories:</strong> ' + data.total_calories + '</p>';
+            }
+            if (typeof data.total_protein !== "undefined") {
+                html += '<p><strong>Protein:</strong> ' + data.total_protein + 'g</p>';
+            }
+
+            html += '</div>';
+
+            resultDiv.innerHTML = html;
+        } catch (err) {
+            console.error(err);
+            resultDiv.innerHTML = '<p style="color:red;">Something went wrong while generating your surprise burger.</p>';
+        }
+    });
+});
+</script>
+
 {% endblock %}
