@@ -2,6 +2,9 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 
+<!-- Include Surprise Box Modal -->
+{% include 'surprise_box_modal.html' %}
+
 <!-- User Info Card -->
 <div class="user-info-card">
     <div class="user-welcome">
@@ -27,7 +30,120 @@
     </a>
 </div>
 
+<!-- Surprise Box Call-to-Action Card -->
+<div class="surprise-box-cta-card" id="surpriseBoxCTA" onclick="document.getElementById('surpriseMeButton').click()">
+    <div class="surprise-box-cta-content">
+        <div class="surprise-box-cta-icon">🎁</div>
+        <div class="surprise-box-cta-text">
+            <h2>Surprise Box</h2>
+            <p>Click anywhere to discover a randomly generated burger just for you!</p>
+        </div>
+        <button class="surprise-box-cta-button" onclick="event.stopPropagation(); document.getElementById('surpriseMeButton').click()">
+            Open Surprise Box
+        </button>
+    </div>
+</div>
+
 <style>
+.surprise-box-cta-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: ctaPulse 3s ease-in-out infinite;
+}
+
+.surprise-box-cta-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+}
+
+@keyframes ctaPulse {
+    0%, 100% {
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    50% {
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.6);
+    }
+}
+
+.surprise-box-cta-content {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    color: white;
+}
+
+.surprise-box-cta-icon {
+    font-size: 4em;
+    animation: iconBounce 2s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(-5deg);
+    }
+    75% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+}
+
+.surprise-box-cta-text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.surprise-box-cta-text h2 {
+    margin: 0 0 10px 0;
+    font-size: 2em;
+    font-family: 'Momo Signature', cursive;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.surprise-box-cta-text p {
+    margin: 0;
+    font-size: 1.1em;
+    opacity: 0.95;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.surprise-box-cta-button {
+    padding: 15px 30px;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+.surprise-box-cta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    .surprise-box-cta-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .surprise-box-cta-button {
+        width: 100%;
+    }
+}
 .user-info-card {
     background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
     border-radius: 16px;

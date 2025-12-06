@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from routes.surprise_routes import surprise_bp
 from config import config
 from database.db import init_db, login_manager, db
@@ -50,7 +50,11 @@ def create_app(config_name="development"):
 
     @app.route("/menu")
     def menu():
-        return render_template("menu.html")
+        from flask_login import current_user
+        # Redirect to dashboard if logged in, otherwise to home
+        if current_user.is_authenticated:
+            return redirect(url_for("auth.dashboard"))
+        return redirect(url_for("home"))
 
     return app
 

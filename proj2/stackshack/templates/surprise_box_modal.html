@@ -1,0 +1,1299 @@
+<!-- Canvas Confetti Library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+<!-- Surprise Box Modal Component -->
+<div id="surpriseBoxModal" class="surprise-modal" style="display: none;">
+    <!-- No overlay - background stays visible -->
+    <div class="surprise-modal-content">
+        <button class="surprise-modal-close" id="closeSurpriseModal">&times;</button>
+        
+        <!-- Gift Box Animation Stage -->
+        <div id="giftBoxStage" class="gift-box-stage">
+            <div class="gift-box-container" id="giftBoxContainer">
+                <!-- Particle Effects Container -->
+                <div class="particles-container" id="particlesContainer"></div>
+                
+                <div class="gift-box" id="giftBox">
+                    <div class="gift-box-lid" id="giftBoxLid">
+                        <div class="gift-box-bow"></div>
+                    </div>
+                    <div class="gift-box-body"></div>
+                </div>
+                
+                <!-- Enhanced Glow Effects -->
+                <div class="gift-box-glow" id="giftBoxGlow"></div>
+                <div class="gift-box-burst" id="giftBoxBurst"></div>
+            </div>
+            <p class="gift-box-instruction">Click the gift box to reveal your surprise! 🎁</p>
+        </div>
+
+        <!-- Burger Reveal Animation Stage -->
+        <div id="burgerRevealStage" class="burger-reveal-stage" style="display: none;">
+            <div class="burger-reveal-container">
+                <div class="burger-rising" id="burgerRising">
+                    <div class="burger-icon" id="burgerIcon">🍔</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Burger Card Display Stage -->
+        <div id="burgerCardStage" class="burger-card-stage" style="display: none;">
+            <div class="surprise-burger-card" id="surpriseBurgerCard">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingStage" class="loading-stage" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Creating your surprise burger...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Surprise Me Button -->
+<button id="surpriseMeButton" class="surprise-me-button" title="Surprise Me!">
+    <span class="button-icon">🎁</span>
+    <span class="button-text">Surprise Me!</span>
+</button>
+
+<style>
+/* Surprise Modal Styles - No overlay dimming - Full viewport overlay */
+.surprise-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10000;
+    pointer-events: none; /* Allow clicks through modal background */
+    /* Remove any parent container influence */
+    margin: 0;
+    padding: 0;
+    /* Ensure it's independent of any parent layout */
+    display: block;
+}
+
+/* Confetti fade-out overlay - appears when card is shown */
+.surprise-modal.confetti-fade::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: transparent;
+    pointer-events: none;
+    z-index: 10002;
+    animation: confettiFadeOut 0.5s ease-out forwards;
+}
+
+@keyframes confettiFadeOut {
+    0% {
+        background: rgba(255, 255, 255, 0);
+    }
+    100% {
+        background: rgba(255, 255, 255, 0.3);
+    }
+}
+
+.surprise-modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 35px;
+    max-width: 580px;
+    width: 90%;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 10001;
+    pointer-events: auto; /* Enable clicks on modal content */
+    /* Hide scrollbar but keep scrolling functionality */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    /* Prevent any parent container influence */
+    margin: 0;
+    /* Ensure perfect centering regardless of viewport changes */
+    box-sizing: border-box;
+    /* Maintain purple glow/background on all sides */
+    border: none;
+}
+
+.surprise-modal-content::-webkit-scrollbar {
+    display: none;
+}
+
+.surprise-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 2em;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 10002;
+}
+
+.surprise-modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+/* ============================================
+   DRAMATIC GIFT BOX ANIMATIONS
+   ============================================ */
+
+.gift-box-stage {
+    text-align: center;
+    padding: 20px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.gift-box-container {
+    position: relative;
+    display: inline-block;
+    margin: 40px 0;
+    cursor: pointer;
+    transform-style: preserve-3d;
+}
+
+/* Wiggle Animation - Continuous until clicked - Medium Pace, Playful but Gentle */
+.gift-box-container.wiggle {
+    animation: mediumWiggle 1s ease-in-out infinite;
+}
+
+@keyframes mediumWiggle {
+    0%, 100% { 
+        transform: translateY(0) translateX(0) rotate(0deg) scale(1); 
+    }
+    25% { 
+        transform: translateY(-6px) translateX(-2px) rotate(-4deg) scale(1.01); 
+    }
+    50% { 
+        transform: translateY(-8px) translateX(0) rotate(4deg) scale(1.02); 
+    }
+    75% { 
+        transform: translateY(-6px) translateX(2px) rotate(-3deg) scale(1.01); 
+    }
+}
+
+/* Bounce Animation */
+.gift-box-container.bounce {
+    animation: dramaticBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes dramaticBounce {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.2); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+.gift-box {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+}
+
+.gift-box-body {
+    width: 100%;
+    height: 70%;
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 10px 30px rgba(243, 156, 18, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.gift-box-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 20px,
+        rgba(255, 255, 255, 0.1) 20px,
+        rgba(255, 255, 255, 0.1) 40px
+    );
+}
+
+.gift-box-lid {
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transform-origin: bottom center;
+    transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.gift-box-lid.open {
+    transform: rotateX(-140deg) translateY(-30px) translateZ(20px);
+    animation: lidPop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes lidPop {
+    0% { transform: rotateX(0deg) translateY(0) translateZ(0); }
+    50% { transform: rotateX(-160deg) translateY(-40px) translateZ(30px); }
+    100% { transform: rotateX(-140deg) translateY(-30px) translateZ(20px); }
+}
+
+.gift-box-bow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+    z-index: 10;
+}
+
+.gift-box-bow::before,
+.gift-box-bow::after {
+    content: '';
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    border-radius: 50%;
+}
+
+.gift-box-bow::before {
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.gift-box-bow::after {
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Glow Effects */
+.gift-box-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(243, 156, 18, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.gift-box-glow.active {
+    opacity: 1;
+    animation: pulseGlow 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.4;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0.8;
+    }
+}
+
+/* Burst of Light Effect */
+.gift-box-burst {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 360px;
+    height: 360px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(243, 156, 18, 0.6) 30%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.gift-box-burst.active {
+    animation: lightBurst 0.6s ease-out forwards;
+}
+
+@keyframes lightBurst {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Particle Effects */
+.particles-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 290px;
+    height: 290px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #fff 0%, #f39c12 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(243, 156, 18, 0.8);
+    opacity: 0;
+}
+
+.particle.active {
+    animation: particleFloat 2s ease-out forwards;
+}
+
+@keyframes particleFloat {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
+    }
+}
+
+.gift-box-instruction {
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* ============================================
+   BURGER REVEAL ANIMATIONS
+   ============================================ */
+
+.burger-reveal-stage {
+    text-align: center;
+    padding: 40px 20px;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.burger-reveal-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+.burger-rising {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: dramaticRise 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes dramaticRise {
+    0% {
+        bottom: 0;
+        opacity: 0;
+        transform: translateX(-50%) scale(0.3) rotate(-180deg);
+    }
+    50% {
+        bottom: 40%;
+        opacity: 0.8;
+        transform: translateX(-50%) scale(1.1) rotate(10deg);
+    }
+    100% {
+        bottom: 50%;
+        opacity: 1;
+        transform: translateX(-50%) translateY(50%) scale(1) rotate(0deg);
+    }
+}
+
+.burger-icon {
+    font-size: 140px;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.4));
+    animation: burgerCelebration 2s ease-in-out infinite;
+    display: inline-block;
+}
+
+.burger-icon.loading {
+    animation: burgerLoadingWiggle 0.8s ease-in-out infinite;
+}
+
+@keyframes burgerCelebration {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translateY(-8px) rotate(-3deg) scale(1.02);
+    }
+    50% {
+        transform: translateY(-10px) rotate(0deg) scale(1.03);
+    }
+    75% {
+        transform: translateY(-8px) rotate(3deg) scale(1.02);
+    }
+}
+
+@keyframes burgerLoadingWiggle {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translateY(-5px) rotate(-5deg) scale(1.05);
+    }
+    50% {
+        transform: translateY(-8px) rotate(0deg) scale(1.08);
+    }
+    75% {
+        transform: translateY(-5px) rotate(5deg) scale(1.05);
+    }
+}
+
+
+/* ============================================
+   BURGER CARD REVEAL
+   ============================================ */
+
+.burger-card-stage {
+    padding: 20px;
+    animation: stageFadeIn 0.5s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+}
+
+@keyframes stageFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.surprise-burger-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: cardReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    opacity: 0;
+    transform: translateY(50px);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    /* Slightly smaller card while maintaining full padding */
+}
+
+@keyframes cardReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+    60% {
+        opacity: 0.9;
+        transform: translateY(-10px) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.burger-card-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+    /* Keep header unchanged - no size adjustments */
+}
+
+.burger-card-title {
+    font-size: 2.2em;
+    color: #f39c12;
+    margin: 0;
+    font-family: 'Momo Signature', cursive;
+    text-shadow: 2px 2px 4px rgba(243, 156, 18, 0.2);
+    line-height: 1.2;
+    word-wrap: break-word;
+    /* Header styling unchanged */
+}
+
+.burger-card-ingredients {
+    margin: 25px 0;
+}
+
+.ingredient-section {
+    margin-bottom: 20px;
+}
+
+.ingredient-section:last-child {
+    margin-bottom: 0;
+}
+
+.ingredient-section-title {
+    font-weight: bold;
+    color: #34495e;
+    margin-bottom: 12px;
+    font-size: 1.05em;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+}
+
+.ingredient-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.ingredient-tag {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-size: 0.9em;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.ingredient-tag:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
+}
+
+.burger-card-nutrition {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 25px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+.nutrition-item {
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+}
+
+.nutrition-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: #f39c12;
+    display: block;
+    line-height: 1.2;
+}
+
+.nutrition-label {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.burger-card-price {
+    text-align: center;
+    font-size: 2.8em;
+    font-weight: bold;
+    color: #f39c12;
+    margin: 25px 0;
+    text-shadow: 2px 2px 4px rgba(243, 156, 18, 0.2);
+    padding: 15px 0;
+    border-top: 2px solid #f0f0f0;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.burger-card-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 30px;
+    flex-wrap: nowrap;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.surprise-btn {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.btn-add-cart {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: white;
+}
+
+.btn-add-cart:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+.btn-generate-another {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+}
+
+.btn-generate-another:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+/* Loading Stage */
+.loading-stage {
+    text-align: center;
+    padding: 60px 20px;
+    color: white;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Floating Surprise Me Button */
+.surprise-me-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    animation: floatButton 3s ease-in-out infinite;
+}
+
+.surprise-me-button:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+@keyframes floatButton {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.button-icon {
+    font-size: 1.5em;
+}
+
+.button-text {
+    display: inline-block;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .surprise-modal-content {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    .surprise-burger-card {
+        padding: 25px;
+    }
+    
+    .burger-card-title {
+        font-size: 1.8em;
+    }
+    
+    .burger-card-nutrition {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nutrition-item {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .burger-card-price {
+        font-size: 2.2em;
+    }
+    
+    .burger-card-actions {
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    .surprise-btn {
+        flex: 1;
+        padding: 12px 20px;
+        font-size: 0.95em;
+    }
+    
+    .gift-box {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .burger-icon {
+        font-size: 100px;
+    }
+    
+    .surprise-me-button {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+    
+    .button-text {
+        display: none;
+    }
+}
+</style>
+
+<script>
+// Surprise Box Modal JavaScript with Dramatic Animations
+(function() {
+    const modal = document.getElementById('surpriseBoxModal');
+    const closeBtn = document.getElementById('closeSurpriseModal');
+    const giftBoxContainer = document.getElementById('giftBoxContainer');
+    const giftBoxLid = document.getElementById('giftBoxLid');
+    const giftBoxGlow = document.getElementById('giftBoxGlow');
+    const giftBoxBurst = document.getElementById('giftBoxBurst');
+    const particlesContainer = document.getElementById('particlesContainer');
+    const giftBoxStage = document.getElementById('giftBoxStage');
+    const burgerRevealStage = document.getElementById('burgerRevealStage');
+    const burgerCardStage = document.getElementById('burgerCardStage');
+    const surpriseBurgerCard = document.getElementById('surpriseBurgerCard');
+    const surpriseMeButton = document.getElementById('surpriseMeButton');
+    const burgerIcon = document.getElementById('burgerIcon');
+    
+    let currentBurgerData = null;
+    let isAnimating = false;
+    let confettiInterval = null; // Track confetti animation
+    let confettiActive = false; // Flag to stop confetti loop
+    
+    // Show modal
+    function showModal() {
+        if (modal) {
+            modal.style.display = 'flex';
+            resetModal();
+        }
+    }
+    
+    // Hide modal
+    function hideModal() {
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    // Reset modal to initial state
+    function resetModal() {
+        giftBoxStage.style.display = 'flex';
+        burgerRevealStage.style.display = 'none';
+        burgerCardStage.style.display = 'none';
+        
+        giftBoxLid.classList.remove('open');
+        giftBoxGlow.classList.remove('active');
+        giftBoxBurst.classList.remove('active');
+        giftBoxContainer.classList.remove('bounce');
+        particlesContainer.innerHTML = '';
+        isAnimating = false;
+        currentBurgerData = null;
+        
+        // Stop any ongoing confetti
+        stopConfetti();
+        
+        // Start continuous wiggling
+        giftBoxContainer.classList.add('wiggle');
+    }
+    
+    // Create particle effects
+    function createParticles(count = 20) {
+        particlesContainer.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random angle and distance
+            const angle = (Math.PI * 2 * i) / count;
+            const distance = 150 + Math.random() * 100;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            particle.style.left = '50%';
+            particle.style.top = '50%';
+            
+            particlesContainer.appendChild(particle);
+            
+            // Trigger animation
+            setTimeout(() => {
+                particle.classList.add('active');
+            }, i * 20);
+        }
+    }
+    
+    // Stop confetti animation with fade-out effect
+    function stopConfetti() {
+        confettiActive = false;
+        if (confettiInterval) {
+            cancelAnimationFrame(confettiInterval);
+            confettiInterval = null;
+        }
+        
+        // Fade out any remaining confetti by reducing opacity over time
+        // This is handled by stopping new confetti emissions
+        // Existing particles will naturally fade as they fall
+        if (typeof confetti !== 'undefined') {
+            // Force stop any ongoing confetti animations
+            // The library will handle particle fade naturally
+        }
+    }
+    
+    // Trigger confetti explosion - short-lived and dramatic
+    function triggerConfetti() {
+        if (typeof confetti !== 'undefined') {
+            confettiActive = true;
+            
+            // Shorter duration - only during opening sequence
+            const duration = 1500; // Reduced from 3000ms
+            const end = Date.now() + duration;
+            
+            const colors = ['#f39c12', '#e67e22', '#e74c3c', '#f1c40f', '#27ae60', '#3498db'];
+            
+            // Main explosion first
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { x: 0.5, y: 0.5 },
+                colors: colors,
+                zIndex: 10003,
+                ticks: 200 // Limit particle lifetime
+            });
+            
+            // Continuous bursts for short duration
+            (function frame() {
+                if (!confettiActive) return; // Stop if flag is set
+                
+                confetti({
+                    particleCount: 2,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0.5, y: 0.5 },
+                    colors: colors,
+                    zIndex: 10003,
+                    ticks: 150 // Shorter particle lifetime
+                });
+                confetti({
+                    particleCount: 2,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 0.5, y: 0.5 },
+                    colors: colors,
+                    zIndex: 10003,
+                    ticks: 150
+                });
+                
+                if (Date.now() < end && confettiActive) {
+                    confettiInterval = requestAnimationFrame(frame);
+                } else {
+                    confettiInterval = null;
+                    confettiActive = false; // Auto-stop after duration
+                }
+            }());
+        }
+    }
+    
+    // Dramatic opening sequence
+    async function playOpeningSequence() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        // Step 1: Stop wiggling and start bounce animation
+        giftBoxContainer.classList.remove('wiggle');
+        giftBoxContainer.classList.add('bounce');
+        await delay(600);
+        
+        // Step 3: Open lid with pop
+        giftBoxLid.classList.add('open');
+        
+        // Step 4: Activate glow and burst
+        giftBoxGlow.classList.add('active');
+        giftBoxBurst.classList.add('active');
+        
+        // Step 5: Create particles
+        createParticles(25);
+        
+        // Step 6: Trigger confetti explosion
+        triggerConfetti();
+        
+        await delay(800);
+        
+        // Step 7: Stop confetti BEFORE showing burger reveal (clean transition)
+        stopConfetti();
+        
+        // Step 8: Hide gift box stage, show burger reveal
+        giftBoxStage.style.display = 'none';
+        burgerRevealStage.style.display = 'flex';
+        
+        // Remove confetti fade overlay if it exists
+        if (modal) {
+            modal.classList.remove('confetti-fade');
+        }
+        
+        // Step 9: Wait for burger animation, then fetch burger
+        await delay(2000);
+        
+        // Step 10: Fetch burger data
+        await fetchSurpriseBurger();
+    }
+    
+    // Delay helper
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    // Handle gift box click
+    if (giftBoxContainer) {
+        giftBoxContainer.addEventListener('click', function() {
+            if (isAnimating) return;
+            playOpeningSequence();
+        });
+    }
+    
+    // Fetch surprise burger from API
+    async function fetchSurpriseBurger() {
+        // Add loading wiggle animation to burger icon
+        if (burgerIcon) {
+            burgerIcon.classList.add('loading');
+        }
+        
+        // Keep burger reveal visible while fetching, then transition directly to card
+        try {
+            const response = await fetch('/surprisebox/api/surprise-burger');
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+                if (burgerIcon) {
+                    burgerIcon.classList.remove('loading');
+                }
+                hideModal();
+                return;
+            }
+            
+            currentBurgerData = data;
+            // Remove loading animation before transitioning to card
+            if (burgerIcon) {
+                burgerIcon.classList.remove('loading');
+            }
+            // Transition directly from burger reveal to card
+            displayBurgerCard(data);
+        } catch (error) {
+            console.error('Error fetching surprise burger:', error);
+            if (burgerIcon) {
+                burgerIcon.classList.remove('loading');
+            }
+            alert('Something went wrong. Please try again.');
+            hideModal();
+        }
+    }
+    
+    // Display burger card with animation
+    function displayBurgerCard(data) {
+        // Hide burger reveal stage and show card directly
+        burgerRevealStage.style.display = 'none';
+        burgerCardStage.style.display = 'block';
+        
+        // Ensure confetti is stopped (should already be stopped, but double-check)
+        stopConfetti();
+        
+        // Add fade overlay to help clear any lingering confetti
+        if (modal) {
+            modal.classList.add('confetti-fade');
+            // Remove fade after animation completes
+            setTimeout(() => {
+                if (modal) {
+                    modal.classList.remove('confetti-fade');
+                }
+            }, 500);
+        }
+        
+        // Build ingredients list
+        const allIngredients = [];
+        if (data.bun) allIngredients.push({ category: 'Bun', item: data.bun });
+        if (data.patty) allIngredients.push({ category: 'Patty', item: data.patty });
+        if (data.cheeses && data.cheeses.length > 0) {
+            data.cheeses.forEach(cheese => {
+                allIngredients.push({ category: 'Cheese', item: cheese });
+            });
+        }
+        if (data.toppings && data.toppings.length > 0) {
+            data.toppings.forEach(topping => {
+                allIngredients.push({ category: 'Topping', item: topping });
+            });
+        }
+        if (data.sauces && data.sauces.length > 0) {
+            data.sauces.forEach(sauce => {
+                allIngredients.push({ category: 'Sauce', item: sauce });
+            });
+        }
+        
+        // Group by category
+        const grouped = {};
+        allIngredients.forEach(ing => {
+            if (!grouped[ing.category]) {
+                grouped[ing.category] = [];
+            }
+            grouped[ing.category].push(ing.item);
+        });
+        
+        // Build HTML
+        let html = `
+            <div class="burger-card-header">
+                <h2 class="burger-card-title">${data.burger_name || 'Surprise Burger'}</h2>
+            </div>
+            
+            <div class="burger-card-ingredients">
+        `;
+        
+        // Add ingredient sections
+        Object.keys(grouped).forEach(category => {
+            html += `
+                <div class="ingredient-section">
+                    <div class="ingredient-section-title">${category}:</div>
+                    <div class="ingredient-list">
+            `;
+            grouped[category].forEach(item => {
+                html += `<span class="ingredient-tag">${item.name}</span>`;
+            });
+            html += `
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        
+        // Add nutrition info
+        if (data.total_calories || data.total_protein) {
+            html += `
+                <div class="burger-card-nutrition">
+            `;
+            if (data.total_calories) {
+                html += `
+                    <div class="nutrition-item">
+                        <span class="nutrition-value">${data.total_calories}</span>
+                        <span class="nutrition-label">Calories</span>
+                    </div>
+                `;
+            }
+            if (data.total_protein) {
+                html += `
+                    <div class="nutrition-item">
+                        <span class="nutrition-value">${data.total_protein}g</span>
+                        <span class="nutrition-label">Protein</span>
+                    </div>
+                `;
+            }
+            html += `</div>`;
+        }
+        
+        // Add price
+        html += `
+            <div class="burger-card-price">$${data.total_price.toFixed(2)}</div>
+        `;
+        
+        // Add action buttons
+        html += `
+            <div class="burger-card-actions">
+                <button class="surprise-btn btn-add-cart" onclick="addSurpriseBurgerToCart()">
+                    🛒 Add to Cart
+                </button>
+                <button class="surprise-btn btn-generate-another" onclick="generateAnotherSurprise()">
+                    🎁 Generate Another
+                </button>
+            </div>
+        `;
+        
+        surpriseBurgerCard.innerHTML = html;
+        
+        // Trigger card animation
+        setTimeout(() => {
+            surpriseBurgerCard.style.opacity = '1';
+            surpriseBurgerCard.style.transform = 'translateY(0) scale(1)';
+        }, 50);
+    }
+    
+    // Add to cart function (global for onclick)
+    window.addSurpriseBurgerToCart = function() {
+        if (!currentBurgerData) return;
+        
+        // Build form data
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/orders/add-to-cart';
+        
+        // Add all ingredients
+        const allItems = [];
+        if (currentBurgerData.bun) allItems.push(currentBurgerData.bun);
+        if (currentBurgerData.patty) allItems.push(currentBurgerData.patty);
+        if (currentBurgerData.cheeses) allItems.push(...currentBurgerData.cheeses);
+        if (currentBurgerData.toppings) allItems.push(...currentBurgerData.toppings);
+        if (currentBurgerData.sauces) allItems.push(...currentBurgerData.sauces);
+        
+        allItems.forEach(item => {
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'hidden';
+            quantityInput.name = `quantity_${item.id}`;
+            quantityInput.value = '1';
+            form.appendChild(quantityInput);
+            
+            const priceInput = document.createElement('input');
+            priceInput.type = 'hidden';
+            priceInput.name = `price_${item.id}`;
+            priceInput.value = item.price;
+            form.appendChild(priceInput);
+            
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = `name_${item.id}`;
+            nameInput.value = item.name;
+            form.appendChild(nameInput);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+    };
+    
+    // Generate another surprise
+    window.generateAnotherSurprise = function() {
+        resetModal();
+        setTimeout(() => {
+            playOpeningSequence();
+        }, 100);
+    };
+    
+    // Close modal
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideModal);
+    }
+    
+    // Surprise Me button click
+    if (surpriseMeButton) {
+        surpriseMeButton.addEventListener('click', function() {
+            showModal();
+        });
+    }
+})();
+</script>
