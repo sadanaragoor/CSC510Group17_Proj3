@@ -1,6 +1,7 @@
 """
 Fixtures for service tests.
 """
+
 import pytest
 import sys
 import os
@@ -20,15 +21,17 @@ from models.order import Order, OrderItem
 def app():
     """Create and configure a test application instance."""
     app = create_app("testing")
-    
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "WTF_CSRF_ENABLED": False,
-        "SECRET_KEY": "test-secret-key",
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-    })
-    
+
+    app.config.update(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
+            "SECRET_KEY": "test-secret-key",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+        }
+    )
+
     with app.app_context():
         db.create_all()
         yield app
@@ -45,4 +48,3 @@ def test_user(app):
         db.session.add(user)
         db.session.commit()
         return user.id
-

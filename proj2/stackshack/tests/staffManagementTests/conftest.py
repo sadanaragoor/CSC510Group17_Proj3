@@ -1,6 +1,7 @@
 """
 Fixtures for staff management and shift scheduling tests.
 """
+
 import pytest
 import sys
 import os
@@ -19,15 +20,17 @@ from models.shift import StaffProfile, Shift, ShiftAssignment
 def app():
     """Create and configure a test application instance."""
     app = create_app("testing")
-    
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "WTF_CSRF_ENABLED": False,
-        "SECRET_KEY": "test-secret-key",
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-    })
-    
+
+    app.config.update(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
+            "SECRET_KEY": "test-secret-key",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+        }
+    )
+
     with app.app_context():
         db.create_all()
         yield app
@@ -79,10 +82,30 @@ def sample_shifts(app):
     """Create sample shifts for testing."""
     with app.app_context():
         shifts = [
-            Shift(name="Morning Prep", start_time=time(9, 0), end_time=time(11, 0), is_active=True),
-            Shift(name="Lunch Rush", start_time=time(11, 0), end_time=time(14, 0), is_active=True),
-            Shift(name="Afternoon", start_time=time(14, 0), end_time=time(18, 0), is_active=True),
-            Shift(name="Dinner/Closing", start_time=time(18, 0), end_time=time(22, 0), is_active=True),
+            Shift(
+                name="Morning Prep",
+                start_time=time(9, 0),
+                end_time=time(11, 0),
+                is_active=True,
+            ),
+            Shift(
+                name="Lunch Rush",
+                start_time=time(11, 0),
+                end_time=time(14, 0),
+                is_active=True,
+            ),
+            Shift(
+                name="Afternoon",
+                start_time=time(14, 0),
+                end_time=time(18, 0),
+                is_active=True,
+            ),
+            Shift(
+                name="Dinner/Closing",
+                start_time=time(18, 0),
+                end_time=time(22, 0),
+                is_active=True,
+            ),
         ]
         for shift in shifts:
             db.session.add(shift)
@@ -100,13 +123,13 @@ def sample_assignments(app, admin_user, staff_user, sample_shifts):
                 user_id=staff_user,
                 shift_id=sample_shifts[0],
                 date=today,
-                station_role="Grill Master"
+                station_role="Grill Master",
             ),
             ShiftAssignment(
                 user_id=staff_user,
                 shift_id=sample_shifts[1],
                 date=today + timedelta(days=1),
-                station_role="Counter/Cashier"
+                station_role="Counter/Cashier",
             ),
         ]
         for assignment in assignments:
@@ -121,7 +144,7 @@ def authenticated_admin_client(client, app, admin_user):
     with app.app_context():
         user = db.session.get(User, admin_user)
         from flask_login import login_user
-        
+
         with client:
             with app.test_request_context():
                 login_user(user)
@@ -134,9 +157,8 @@ def authenticated_staff_client(client, app, staff_user):
     with app.app_context():
         user = db.session.get(User, staff_user)
         from flask_login import login_user
-        
+
         with client:
             with app.test_request_context():
                 login_user(user)
             yield client
-
