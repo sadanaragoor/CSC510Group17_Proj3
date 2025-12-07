@@ -257,13 +257,6 @@ class ChallengeService:
             "type": "behavioral",
             "check_func": "check_new_combination",
         },
-        "rate_earn": {
-            "description": "Rate & Earn - Leave a rating today",
-            "condition": "leave_rating",
-            "points": 35,
-            "type": "behavioral",
-            "check_func": "check_leave_rating",
-        },
         "healthy_choice_hero": {
             "description": "Healthy Choice Hero - Order a burger with 💚 Healthy ingredients only",
             "condition": "all_healthy",
