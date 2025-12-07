@@ -15,16 +15,17 @@ from models.user import User
 from werkzeug.security import generate_password_hash
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def app():
     """Create application for testing"""
-    app = create_app()
+    app = create_app("testing")
     app.config.update(
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
             "WTF_CSRF_ENABLED": False,
             "SECRET_KEY": "test-secret-key",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
         }
     )
 
@@ -35,22 +36,18 @@ def app():
         db.drop_all()
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def client(app):
     """Create test client"""
     return app.test_client()
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def test_user(app):
     """Create a test user."""
     with app.app_context():
-        user = User(
-            username="testuser",
-            password_hash=generate_password_hash("testpassword123"),
-            role="customer",
-            email="test@example.com",
-        )
+        user = User(username="testuser", email="test@example.com")
+        user.set_password("testpassword123")
         db.session.add(user)
         db.session.commit()
-        yield user.id
+        return user.id
