@@ -4,7 +4,8 @@ Integration Flow Test - Cart → Payment → Receipt
 This script tests the complete flow to ensure all components work together.
 """
 
-print("""
+print(
+    """
 =================================================================
 CART → PAYMENT → RECEIPT INTEGRATION FLOW
 =================================================================
@@ -313,5 +314,5 @@ All components work together seamlessly:
 - Receipt → Payment History ✓
 
 No additional changes needed!
-""")
-
+"""
+)
