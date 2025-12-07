@@ -54,4 +54,3 @@ def test_user(app):
         db.session.add(user)
         db.session.commit()
         yield user.id
-

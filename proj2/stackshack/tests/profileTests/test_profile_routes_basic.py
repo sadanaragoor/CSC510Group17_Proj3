@@ -53,7 +53,9 @@ class TestProfileRoutesBasic:
         """Test updating email without @ symbol."""
         self.login(client)
         response = client.post(
-            "/profile/update-email", data={"email": "invalidemail"}, follow_redirects=True
+            "/profile/update-email",
+            data={"email": "invalidemail"},
+            follow_redirects=True,
         )
         assert response.status_code == 200
 
@@ -61,7 +63,9 @@ class TestProfileRoutesBasic:
         """Test updating email without dot."""
         self.login(client)
         response = client.post(
-            "/profile/update-email", data={"email": "invalid@email"}, follow_redirects=True
+            "/profile/update-email",
+            data={"email": "invalid@email"},
+            follow_redirects=True,
         )
         assert response.status_code == 200
 
@@ -154,4 +158,3 @@ class TestProfileRoutesBasic:
             follow_redirects=True,
         )
         assert response.status_code == 200
-
