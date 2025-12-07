@@ -484,3 +484,4 @@ class TestOrderRoutes:
         # Should redirect to login
         assert response.status_code == 302
         assert "login" in response.location.lower()
+

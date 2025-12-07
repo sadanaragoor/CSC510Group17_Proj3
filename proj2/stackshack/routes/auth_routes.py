@@ -48,6 +48,7 @@ def register():
     return render_template("register.html")
 
 
+
 # Login route
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -78,15 +79,11 @@ def dashboard():
     Displays user-specific information and admin links if applicable.
     """
     from services.burger_recommendations import BurgerRecommendationService
-
+    
     # Get personalized burger recommendations
-    burger_sections = BurgerRecommendationService.get_recommendations_for_user(
-        current_user
-    )
-
-    return render_template(
-        "dashboard.html", user=current_user, burger_sections=burger_sections
-    )
+    burger_sections = BurgerRecommendationService.get_recommendations_for_user(current_user)
+    
+    return render_template("dashboard.html", user=current_user, burger_sections=burger_sections)
 
 
 # Logout

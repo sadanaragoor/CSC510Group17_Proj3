@@ -13,23 +13,17 @@ class User(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
-    email = db.Column(
-        db.String(255), nullable=True
-    )  # Added for campus card eligibility
+    email = db.Column(db.String(255), nullable=True)  # Added for campus card eligibility
     password = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), nullable=False, default="customer")
     pref_vegan = db.Column(db.Boolean, default=False)
     pref_gluten_free = db.Column(db.Boolean, default=False)
     pref_high_protein = db.Column(db.Boolean, default=False)
     pref_low_calorie = db.Column(db.Boolean, default=False)
-
+    
     # Gamification fields
-    tier = db.Column(
-        db.String(20), nullable=True, default="Bronze"
-    )  # Bronze, Silver, Gold
-    total_points = db.Column(
-        db.Integer, nullable=True, default=0
-    )  # Cached total for performance
+    tier = db.Column(db.String(20), nullable=True, default="Bronze")  # Bronze, Silver, Gold
+    total_points = db.Column(db.Integer, nullable=True, default=0)  # Cached total for performance
     birthday = db.Column(db.Date, nullable=True)  # For birthday burger reward
 
     def set_password(self, password):
@@ -57,13 +51,13 @@ class User(UserMixin, db.Model):
         """
         Check if user is eligible for campus card.
         Requires .edu email address (student/faculty verification).
-
+        
         Returns:
             bool: True if user has .edu email, False otherwise.
         """
         if not self.email:
             return False
-        return self.email.lower().endswith(".edu")
+        return self.email.lower().endswith('.edu')
 
     @staticmethod
     def get_by_username(username):

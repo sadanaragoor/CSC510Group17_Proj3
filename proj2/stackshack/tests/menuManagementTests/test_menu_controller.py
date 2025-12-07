@@ -145,3 +145,4 @@ class TestMenuController:
         assert success is True
         assert len(items) == 2  # Beef and Turkey patties
         assert all(item.category == "patty" for item in items)
+

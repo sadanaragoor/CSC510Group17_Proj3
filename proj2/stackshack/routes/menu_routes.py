@@ -212,7 +212,6 @@ def browse_ingredients():
         "menu/browse_ingredients.html", categorized_items=categorized_items
     )
 
-
 @menu_bp.route("/inventory", methods=["GET", "POST"])
 @login_required
 def inventory_dashboard():

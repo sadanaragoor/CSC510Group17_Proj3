@@ -59,9 +59,9 @@ class MenuController:
                 protein=protein,
                 image_url=image_url,
                 stock_quantity=int(stock_quantity) if stock_quantity else 0,
-                low_stock_threshold=(
-                    int(low_stock_threshold) if low_stock_threshold else 10
-                ),
+                low_stock_threshold=int(low_stock_threshold)
+                if low_stock_threshold
+                else 10,
             )
             # Auto-availability based on stock
             item.is_available = item.stock_quantity > 0
@@ -250,7 +250,8 @@ class MenuController:
         """Items that are running low (but not completely out-of-stock)."""
         try:
             items = (
-                MenuItem.query.filter(MenuItem.stock_quantity > 0)
+                MenuItem.query
+                .filter(MenuItem.stock_quantity > 0)
                 .filter(MenuItem.stock_quantity <= MenuItem.low_stock_threshold)
                 .order_by(MenuItem.stock_quantity.asc())
                 .all()

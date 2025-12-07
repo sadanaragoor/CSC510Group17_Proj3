@@ -1,7 +1,6 @@
 """
 Fixtures for inventory tests.
 """
-
 import pytest
 import sys
 import os
@@ -20,17 +19,15 @@ from models.menu_item import MenuItem
 def app():
     """Create and configure a test application instance."""
     app = create_app("testing")
-
-    app.config.update(
-        {
-            "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-            "WTF_CSRF_ENABLED": False,
-            "SECRET_KEY": "test-secret-key",
-            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-        }
-    )
-
+    
+    app.config.update({
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "WTF_CSRF_ENABLED": False,
+        "SECRET_KEY": "test-secret-key",
+        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    })
+    
     with app.app_context():
         db.create_all()
         yield app
@@ -60,29 +57,12 @@ def sample_menu_items(app):
     """Create sample menu items for inventory testing."""
     with app.app_context():
         items = [
-            MenuItem(
-                name="Item 1",
-                category="bun",
-                price=Decimal("1.50"),
-                is_available=True,
-                stock_quantity=10,
-            ),
-            MenuItem(
-                name="Item 2",
-                category="patty",
-                price=Decimal("3.50"),
-                is_available=False,
-                stock_quantity=0,
-            ),
-            MenuItem(
-                name="Item 3",
-                category="cheese",
-                price=Decimal("1.00"),
-                is_available=True,
-                stock_quantity=5,
-            ),
+            MenuItem(name="Item 1", category="bun", price=Decimal("1.50"), is_available=True, stock_quantity=10),
+            MenuItem(name="Item 2", category="patty", price=Decimal("3.50"), is_available=False, stock_quantity=0),
+            MenuItem(name="Item 3", category="cheese", price=Decimal("1.00"), is_available=True, stock_quantity=5),
         ]
         for item in items:
             db.session.add(item)
         db.session.commit()
         return [item.id for item in items]
+

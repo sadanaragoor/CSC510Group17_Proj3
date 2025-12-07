@@ -13,7 +13,6 @@ from routes.shift_routes import shift_bp
 from models.user import User
 from datetime import datetime
 from dotenv import load_dotenv
-
 load_dotenv()
 
 
@@ -44,6 +43,7 @@ def create_app(config_name="development"):
     app.register_blueprint(gamification_bp, url_prefix="/gamification")
     app.register_blueprint(shift_bp, url_prefix="/shifts")
 
+
     @app.context_processor
     def inject_current_year():
         return {"current_year": datetime.now().year}
@@ -55,7 +55,6 @@ def create_app(config_name="development"):
     @app.route("/menu")
     def menu():
         from flask_login import current_user
-
         # Redirect to dashboard if logged in, otherwise to home
         if current_user.is_authenticated:
             return redirect(url_for("auth.dashboard"))
@@ -73,17 +72,10 @@ if __name__ == "__main__":
         from models.order import Order, OrderItem
         from models.payment import Transaction, PaymentMethod, CampusCard, Receipt
         from models.gamification import (
-            PointsTransaction,
-            Badge,
-            UserBadge,
-            DailyBonus,
-            WeeklyChallenge,
-            UserChallengeProgress,
-            PunchCard,
-            Redemption,
+            PointsTransaction, Badge, UserBadge, DailyBonus, WeeklyChallenge,
+            UserChallengeProgress, PunchCard, Redemption
         )
         from models.shift import StaffProfile, Shift, ShiftAssignment
-
         # This creates all tables from your models if they don't exist
         db.create_all()
         print("Database tables checked/created.")

@@ -315,10 +315,9 @@ def seed_menu_items():
         existing_item = MenuItem.query.filter_by(name=item["name"]).first()
         if not existing_item:
             new_item = MenuItem(
-                stock_quantity=20,  # default starting stock
+                stock_quantity=20,          # default starting stock
                 low_stock_threshold=5,
-                **item,
-            )
+                **item)
             db.session.add(new_item)
 
     db.session.commit()
