@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Management - Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 20px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>👥 Staff Management</h1>
+        <div>
+            <a href="{{ url_for('shift.admin_shifts_dashboard') }}" style="padding: 10px 20px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">
+                📅 Shift Schedule
+            </a>
+            <a href="{{ url_for('auth.dashboard') }}" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Create New Staff Form -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0;">Create New Staff Member</h2>
+        <form method="POST" action="{{ url_for('shift.create_staff') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+                <label><strong>Username *</strong></label>
+                <input type="text" name="username" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label><strong>Email</strong></label>
+                <input type="email" name="email" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label><strong>Password *</strong></label>
+                <input type="password" name="password" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label><strong>Role</strong></label>
+                <select name="role" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="staff">Staff</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div>
+                <label><strong>Phone</strong></label>
+                <input type="text" name="phone" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label><strong>Position</strong></label>
+                <input type="text" name="position" placeholder="e.g., Part-time, Full-time" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <button type="submit" style="padding: 10px 30px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                    Create Staff Member
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Staff List -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2 style="margin-top: 0;">Staff Members</h2>
+        
+        {% if staff_members %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: var(--primary-color); color: white;">
+                    <th style="padding: 12px; text-align: left;">Username</th>
+                    <th style="padding: 12px; text-align: left;">Email</th>
+                    <th style="padding: 12px; text-align: left;">Role</th>
+                    <th style="padding: 12px; text-align: left;">Phone</th>
+                    <th style="padding: 12px; text-align: left;">Position</th>
+                    <th style="padding: 12px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in staff_members %}
+                    {% set staff = item.user %}
+                    {% set profile = item.profile %}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 12px;">{{ staff.username }}</td>
+                        <td style="padding: 12px;">{{ staff.email or '-' }}</td>
+                        <td style="padding: 12px;">
+                            <span style="padding: 4px 8px; background: {% if staff.role == 'admin' %}#dc3545{% else %}#17a2b8{% endif %}; color: white; border-radius: 3px; font-size: 0.85em;">
+                                {{ staff.role|title }}
+                            </span>
+                        </td>
+                        <td style="padding: 12px;">{{ profile.phone if profile else '-' }}</td>
+                        <td style="padding: 12px;">{{ profile.position if profile else '-' }}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            <button onclick="toggleEditForm({{ staff.id }})" style="padding: 5px 10px; background: #ffc107; color: #333; border: none; border-radius: 3px; cursor: pointer; margin-right: 5px;">
+                                Edit
+                            </button>
+                            {% if staff.id != current_user.id %}
+                            <form method="POST" action="{{ url_for('shift.delete_staff', user_id=staff.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to remove this staff member?');">
+                                <button type="submit" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                    Remove
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <!-- Edit Form (Hidden by default) -->
+                    <tr id="edit-form-{{ staff.id }}" style="display: none; background: #f8f9fa;">
+                        <td colspan="6" style="padding: 20px;">
+                            <form method="POST" action="{{ url_for('shift.update_staff', user_id=staff.id) }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <div>
+                                    <label><strong>Email</strong></label>
+                                    <input type="email" name="email" value="{{ staff.email or '' }}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label><strong>Role</strong></label>
+                                    <select name="role" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                        <option value="staff" {% if staff.role == 'staff' %}selected{% endif %}>Staff</option>
+                                        <option value="admin" {% if staff.role == 'admin' %}selected{% endif %}>Admin</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label><strong>New Password (leave blank to keep current)</strong></label>
+                                    <input type="password" name="password" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label><strong>Phone</strong></label>
+                                    <input type="text" name="phone" value="{{ profile.phone if profile else '' }}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label><strong>Position</strong></label>
+                                    <input type="text" name="position" value="{{ profile.position if profile else '' }}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                </div>
+                                <div>
+                                    <label><strong>Notes</strong></label>
+                                    <textarea name="notes" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 60px;">{{ profile.notes if profile else '' }}</textarea>
+                                </div>
+                                <div style="grid-column: 1 / -1; display: flex; gap: 10px;">
+                                    <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        Save Changes
+                                    </button>
+                                    <button type="button" onclick="toggleEditForm({{ staff.id }})" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No staff members found. Create one above.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleEditForm(userId) {
+    const form = document.getElementById('edit-form-' + userId);
+    if (form.style.display === 'none') {
+        form.style.display = 'table-row';
+    } else {
+        form.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}
+

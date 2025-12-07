@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Shift Scheduling - Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 1400px; margin: 20px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>📅 Shift Scheduling Dashboard</h1>
+        <div>
+            <a href="{{ url_for('shift.admin_staff_management') }}" style="padding: 10px 20px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; margin-right: 10px;">
+                👥 Manage Staff
+            </a>
+            <a href="{{ url_for('auth.dashboard') }}" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Navigation -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <form method="GET" style="display: flex; gap: 10px; align-items: center;">
+            <label><strong>View Week Starting:</strong></label>
+            <input type="date" name="date" value="{{ week_start.isoformat() }}" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            <button type="submit" style="padding: 8px 20px; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Go
+            </button>
+            <span style="margin-left: 20px; color: #666;">
+                Week: {{ week_start.strftime('%B %d') }} - {{ week_end.strftime('%B %d, %Y') }}
+            </span>
+        </form>
+    </div>
+
+    <!-- Schedule Table -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow-x: auto;">
+        <h2 style="margin-top: 0;">Weekly Schedule</h2>
+        
+        <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+            <thead>
+                <tr style="background: var(--primary-color); color: white;">
+                    <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Date</th>
+                    {% for shift in shifts %}
+                    <th style="padding: 12px; text-align: center; border: 1px solid #ddd;">
+                        {{ shift.name }}<br>
+                        <small style="font-weight: normal;">{{ shift.start_time.strftime('%I:%M %p') }} - {{ shift.end_time.strftime('%I:%M %p') }}</small>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for day_info in week_dates %}
+                    {% set current_date = day_info.date %}
+                    {% set date_str = day_info.date_str %}
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; background: #f8f9fa;">
+                            {{ day_info.formatted }}
+                        </td>
+                        {% for shift in shifts %}
+                            <td style="padding: 8px; border: 1px solid #ddd; vertical-align: top; min-height: 100px;">
+                                {% if date_str in schedule and shift.id in schedule[date_str] %}
+                                    {% for assignment in schedule[date_str][shift.id] %}
+                                        <div style="background: #e3f2fd; padding: 8px; margin-bottom: 5px; border-radius: 4px; border-left: 3px solid var(--primary-color);">
+                                            <div style="font-weight: bold; color: var(--primary-color);">{{ assignment.user.username }}</div>
+                                            <div style="font-size: 0.85em; color: #666; margin-top: 4px;">{{ assignment.station_role }}</div>
+                                            <form method="POST" action="{{ url_for('shift.delete_assignment', assignment_id=assignment.id) }}" style="margin-top: 5px;">
+                                                <button type="submit" onclick="return confirm('Remove this assignment?')" 
+                                                        style="padding: 4px 8px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.75em;">
+                                                    Remove
+                                                </button>
+                                            </form>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <!-- Add Assignment Form -->
+                                <div style="margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                                    <form method="POST" action="{{ url_for('shift.assign_shift') }}" style="display: flex; flex-direction: column; gap: 5px;">
+                                        <input type="hidden" name="shift_id" value="{{ shift.id }}">
+                                        <input type="hidden" name="date" value="{{ date_str }}">
+                                        
+                                        <select name="user_id" required style="padding: 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 0.9em;">
+                                            <option value="">Select Staff</option>
+                                            {% for staff in staff_members %}
+                                                <option value="{{ staff.id }}">{{ staff.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        
+                                        <select name="station_role" required style="padding: 5px; border: 1px solid #ddd; border-radius: 3px; font-size: 0.9em;">
+                                            <option value="">Select Role</option>
+                                            {% for role in station_roles %}
+                                                <option value="{{ role }}">{{ role }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        
+                                        <button type="submit" style="padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.85em;">
+                                            Assign
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 1200px) {
+        table {
+            font-size: 0.9em;
+        }
+    }
+</style>
+{% endblock %}
+

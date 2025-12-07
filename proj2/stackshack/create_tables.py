@@ -22,6 +22,7 @@ def create_tables():
             PointsTransaction, Badge, UserBadge, DailyBonus, WeeklyChallenge,
             UserChallengeProgress, PunchCard, Redemption
         )
+        from models.shift import StaffProfile, Shift, ShiftAssignment
         
         print("\n[+] Models registered:")
         print("  - User")
@@ -40,6 +41,9 @@ def create_tables():
         print("  - UserChallengeProgress")
         print("  - PunchCard")
         print("  - Redemption")
+        print("  - StaffProfile")
+        print("  - Shift")
+        print("  - ShiftAssignment")
         
         # Create all tables
         print("\n[+] Creating database tables...")

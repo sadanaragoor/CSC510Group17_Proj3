@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}My Shifts - Staff{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 20px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>📅 My Upcoming Shifts</h1>
+        <a href="{{ url_for('auth.dashboard') }}" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    {% if shifts_by_date %}
+        {% for date_str, assignments, formatted_date in shifts_by_date %}
+            <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h2 style="margin-top: 0; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 10px;">
+                    {{ formatted_date }}
+                </h2>
+                
+                <div style="display: grid; gap: 15px;">
+                    {% for assignment in assignments %}
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-color);">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div style="flex: 1;">
+                                    <h3 style="margin: 0 0 10px 0; color: var(--primary-color);">
+                                        {{ assignment.shift.name }}
+                                    </h3>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
+                                        <div>
+                                            <strong>⏰ Time:</strong><br>
+                                            <span style="color: #666;">
+                                                {{ assignment.shift.start_time.strftime('%I:%M %p') }} - 
+                                                {{ assignment.shift.end_time.strftime('%I:%M %p') }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <strong>👤 Role:</strong><br>
+                                            <span style="color: #666; font-weight: bold; color: var(--primary-color);">
+                                                {{ assignment.station_role }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div style="background: white; padding: 40px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <p style="font-size: 1.2em; color: #666;">No upcoming shifts scheduled.</p>
+            <p style="color: #999; margin-top: 10px;">Check back later or contact your manager.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

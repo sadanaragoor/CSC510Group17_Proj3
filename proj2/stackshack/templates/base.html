@@ -282,8 +282,12 @@
       <a href="{{ url_for('menu.browse_ingredients') }}">Ingredients</a>
 
 
-  {% if current_user.is_authenticated and current_user.role in ['admin', 'staff'] %}
+  {% if current_user.is_authenticated and current_user.role == 'admin' %}
+    <a href="{{ url_for('shift.admin_shifts_dashboard') }}">📅 Schedule</a>
+    <a href="{{ url_for('shift.admin_staff_management') }}">👥 Staff</a>
     <a href="{{ url_for('menu.inventory_dashboard') }}">Inventory</a>
+  {% elif current_user.is_authenticated and current_user.role == 'staff' %}
+    <a href="{{ url_for('shift.staff_shifts_view') }}">📅 My Shifts</a>
   {% endif %}
 
   <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>

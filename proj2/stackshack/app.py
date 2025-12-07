@@ -9,6 +9,7 @@ from routes.status_routes import status_bp
 from routes.payment_routes import payment_bp
 from routes.profile_routes import profile_bp
 from routes.gamification_routes import gamification_bp
+from routes.shift_routes import shift_bp
 from models.user import User
 from datetime import datetime
 from dotenv import load_dotenv
@@ -40,6 +41,7 @@ def create_app(config_name="development"):
     app.register_blueprint(profile_bp, url_prefix="/profile")
     app.register_blueprint(surprise_bp, url_prefix="/surprisebox")
     app.register_blueprint(gamification_bp, url_prefix="/gamification")
+    app.register_blueprint(shift_bp, url_prefix="/shifts")
 
 
     @app.context_processor
@@ -73,6 +75,7 @@ if __name__ == "__main__":
             PointsTransaction, Badge, UserBadge, DailyBonus, WeeklyChallenge,
             UserChallengeProgress, PunchCard, Redemption
         )
+        from models.shift import StaffProfile, Shift, ShiftAssignment
         # This creates all tables from your models if they don't exist
         db.create_all()
         print("Database tables checked/created.")
