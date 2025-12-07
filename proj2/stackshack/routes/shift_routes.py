@@ -217,18 +217,24 @@ def assign_shift():
     station_role = request.form.get("station_role")
     
     if not all([user_id, shift_id, assignment_date, station_role]):
-        return jsonify({"success": False, "error": "Missing required fields"}), 400
+        flash("Missing required fields.", "error")
+        return redirect(request.referrer or url_for("shift.admin_shifts_dashboard"))
     
     try:
         assignment_date = datetime.strptime(assignment_date, "%Y-%m-%d").date()
     except:
-        return jsonify({"success": False, "error": "Invalid date format"}), 400
+        flash("Invalid date format.", "error")
+        return redirect(request.referrer or url_for("shift.admin_shifts_dashboard"))
     
     assignment, message = ShiftService.assign_shift(user_id, shift_id, assignment_date, station_role)
     if assignment:
-        return jsonify({"success": True, "message": message, "assignment": assignment.to_dict()})
+        # Get the week start for the assignment date to preserve the view
+        week_start = assignment_date - timedelta(days=assignment_date.weekday())
+        flash(f"Assignment created: {assignment.user.username} assigned to {assignment.shift.name} as {station_role}.", "success")
+        return redirect(url_for("shift.admin_shifts_dashboard", date=week_start.isoformat()))
     else:
-        return jsonify({"success": False, "error": message}), 400
+        flash(f"Error: {message}", "error")
+        return redirect(request.referrer or url_for("shift.admin_shifts_dashboard"))
 
 
 @shift_bp.route("/admin/shifts/assignment/<int:assignment_id>/delete", methods=["POST"])
@@ -252,12 +258,28 @@ def delete_assignment(assignment_id):
 @staff_required
 def staff_shifts_view():
     """Staff view of their upcoming shifts"""
-    # Get upcoming shifts for current user
-    upcoming_shifts = ShiftService.get_user_upcoming_shifts(current_user.id)
+    # Get all shifts (including past ones for now, or we can filter to show only upcoming)
+    # For now, let's show shifts from the past week to future
+    from datetime import timedelta
+    start_date = date.today() - timedelta(days=7)  # Show shifts from past week onwards
+    
+    upcoming_shifts = ShiftService.get_user_upcoming_shifts(current_user.id, start_date=start_date)
+    
+    # Debug: Print assignments to console
+    print(f"DEBUG: Found {len(upcoming_shifts)} assignments for user {current_user.id} (username: {current_user.username})")
+    for a in upcoming_shifts:
+        shift_name = a.shift.name if a.shift else "No shift loaded"
+        print(f"  - Date: {a.date}, Shift ID: {a.shift_id}, Shift: {shift_name}, Role: {a.station_role}")
     
     # Organize by date
     shifts_by_date = {}
     for assignment in upcoming_shifts:
+        # Ensure shift is loaded
+        if not assignment.shift:
+            # Manually load if not loaded
+            from models.shift import Shift
+            assignment.shift = db.session.get(Shift, assignment.shift_id)
+        
         date_str = assignment.date.isoformat()
         if date_str not in shifts_by_date:
             shifts_by_date[date_str] = []

@@ -197,12 +197,21 @@ class ShiftService:
         if start_date is None:
             start_date = date.today()
         
-        return ShiftAssignment.query.filter(
+        # Use options to eager load the shift relationship
+        from sqlalchemy.orm import joinedload
+        assignments = ShiftAssignment.query.options(
+            joinedload(ShiftAssignment.shift)
+        ).filter(
             and_(
                 ShiftAssignment.user_id == user_id,
                 ShiftAssignment.date >= start_date
             )
-        ).order_by(ShiftAssignment.date, Shift.start_time).join(Shift).all()
+        ).order_by(ShiftAssignment.date).all()
+        
+        # Manually order by shift start time after loading
+        assignments.sort(key=lambda a: (a.date, a.shift.start_time if a.shift else time(0, 0)))
+        
+        return assignments
     
     @staticmethod
     def get_schedule_table(start_date, end_date=None):
