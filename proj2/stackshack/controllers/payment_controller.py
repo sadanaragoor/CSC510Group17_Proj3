@@ -2,6 +2,7 @@
 Payment Controller
 Handles payment processing business logic
 """
+
 from datetime import datetime, timedelta
 from flask import session
 from database.db import db
@@ -14,15 +15,15 @@ class PaymentController:
     """
     Controller for payment-related operations
     """
-    
+
     @staticmethod
     def process_payment(payment_data):
         """
         Process a payment through the dummy gateway
-        
+
         Args:
             payment_data (dict): Payment information
-        
+
         Returns:
             tuple: (success, message, transaction_data)
         """
@@ -31,31 +32,30 @@ class PaymentController:
             order = Order.query.get(payment_data.get("order_id"))
             if not order:
                 return False, "Order not found", None
-            
+
             if order.user_id != payment_data.get("user_id"):
                 return False, "Unauthorized", None
-            
+
             # Check if order already paid
             existing_transaction = Transaction.query.filter_by(
-                order_id=order.id,
-                status="success"
+                order_id=order.id, status="success"
             ).first()
-            
+
             if existing_transaction:
                 return False, "Order already paid", None
-            
+
             # Refresh order from database to get latest total_price (in case coupon was applied)
             db.session.refresh(order)
-            
+
             # Use the amount from payment_data (which includes coupon discount) or fall back to order.total_price
             payment_amount = float(payment_data.get("amount", order.total_price))
-            
+
             # Initialize payment gateway
             gateway = PaymentGatewayService(simulation_mode="random_90")
-            
+
             # Process payment
             payment_response = gateway.process_payment(payment_data)
-            
+
             # Create transaction record
             transaction = Transaction(
                 transaction_id=payment_response["transaction_id"],
@@ -69,85 +69,104 @@ class PaymentController:
                 status=payment_response["status"],
                 failure_reason=payment_response.get("failure_reason"),
                 initiated_at=datetime.utcnow(),
-                completed_at=datetime.utcnow() if payment_response["success"] else None
+                completed_at=datetime.utcnow() if payment_response["success"] else None,
             )
-            
+
             db.session.add(transaction)
-            
+
             # Update order status if payment successful
             if payment_response["success"]:
                 order.status = "Paid"
-            
+
             # Commit transaction first to get the transaction.id
             db.session.commit()
-            
+
             # Now generate receipt with valid transaction.id
             if payment_response["success"]:
                 receipt = PaymentController._generate_receipt(transaction, order)
                 db.session.add(receipt)
                 db.session.commit()
-                
+
                 # Mark applied coupon as used if one was applied
                 try:
                     from models.gamification import Coupon
-                    
+
                     # First, try to get coupon from session
-                    coupon_code = session.get('applied_coupons', {}).get(str(order.id))
+                    coupon_code = session.get("applied_coupons", {}).get(str(order.id))
                     coupon = None
-                    
+
                     if coupon_code:
-                        coupon = Coupon.query.filter_by(coupon_code=coupon_code.upper()).first()
-                    
+                        coupon = Coupon.query.filter_by(
+                            coupon_code=coupon_code.upper()
+                        ).first()
+
                     # Fallback: Check if any coupon was applied to this order (by used_order_id)
                     if not coupon:
-                        coupon = Coupon.query.filter_by(used_order_id=order.id, is_used=False).first()
-                    
+                        coupon = Coupon.query.filter_by(
+                            used_order_id=order.id, is_used=False
+                        ).first()
+
                     # Mark coupon as used if found
                     if coupon and not coupon.is_used:
                         coupon.is_used = True
                         coupon.used_at = datetime.utcnow()
                         coupon.used_order_id = order.id
                         db.session.commit()
-                        print(f"Marked coupon {coupon.coupon_code} as used for order {order.id}")
-                    
+                        print(
+                            f"Marked coupon {coupon.coupon_code} as used for order {order.id}"
+                        )
+
                     # Remove from session
-                    if 'applied_coupons' in session:
-                        session['applied_coupons'].pop(str(order.id), None)
+                    if "applied_coupons" in session:
+                        session["applied_coupons"].pop(str(order.id), None)
                         session.modified = True
                 except Exception as e:
                     print(f"Error marking coupon as used: {str(e)}")
                     import traceback
+
                     traceback.print_exc()
-                
+
                 # Process gamification: points, badges, challenges
                 try:
                     from services.gamification_service import GamificationService
-                    
+
                     # Process order points with all bonuses
-                    total_points, breakdown = GamificationService.process_order_points(order)
-                    
+                    total_points, breakdown = GamificationService.process_order_points(
+                        order
+                    )
+
                     # Check and grant badges
-                    newly_earned_badges = GamificationService.check_and_grant_badges(order.user_id, order)
-                    
+                    newly_earned_badges = GamificationService.check_and_grant_badges(
+                        order.user_id, order
+                    )
+
                     # Check daily bonus
-                    daily_bonus_success, daily_bonus = GamificationService.check_daily_bonus(order.user_id, order)
-                    
+                    daily_bonus_success, daily_bonus = (
+                        GamificationService.check_daily_bonus(order.user_id, order)
+                    )
+
                     # Check weekly challenge
-                    weekly_challenge_success, weekly_challenge = GamificationService.check_weekly_challenge(order.user_id, order)
-                    
+                    weekly_challenge_success, weekly_challenge = (
+                        GamificationService.check_weekly_challenge(order.user_id, order)
+                    )
+
                     # Update user tier
                     GamificationService.update_user_tier(order.user_id)
-                    
+
                 except Exception as e:
                     # Log error but don't fail payment
                     print(f"Gamification processing error: {str(e)}")
-            
-            return payment_response["success"], payment_response["message"], transaction.to_dict()
-            
+
+            return (
+                payment_response["success"],
+                payment_response["message"],
+                transaction.to_dict(),
+            )
+
         except Exception as e:
             db.session.rollback()
             return False, f"Payment processing error: {str(e)}", None
-    
+
     @staticmethod
     def _generate_receipt(transaction, order):
         """Generate a receipt for successful transaction"""
@@ -158,21 +177,21 @@ class PaymentController:
             user_id=order.user_id,
             total_amount=transaction.amount,
             payment_method=transaction.payment_method,
-            generated_at=datetime.utcnow()
+            generated_at=datetime.utcnow(),
         )
-        
+
         # Generate HTML receipt content
         receipt_html = PaymentController._create_receipt_html(transaction, order)
         receipt.receipt_html = receipt_html
-        
+
         return receipt
-    
+
     @staticmethod
     def _create_receipt_html(transaction, order):
         """Create HTML content for receipt - Professional receipt format with burger grouping"""
         items_html = ""
         subtotal = 0
-        
+
         # Group items by burger_index
         all_items = order.items.all()
         burgers = {}
@@ -181,23 +200,27 @@ class PaymentController:
             if burger_idx not in burgers:
                 burgers[burger_idx] = []
             burgers[burger_idx].append(item)
-        
+
         # Generate HTML for each burger group
         custom_counter = 0
         for burger_index in sorted(burgers.keys()):
             burger_items = burgers[burger_index]
             burger_total = 0
-            
+
             # Get burger name (if available from first item)
-            burger_name = burger_items[0].burger_name if burger_items and burger_items[0].burger_name else None
-            
+            burger_name = (
+                burger_items[0].burger_name
+                if burger_items and burger_items[0].burger_name
+                else None
+            )
+
             # Count custom burgers for proper numbering
             if not burger_name:
                 custom_counter += 1
                 burger_display_name = f"Custom Burger #{custom_counter}"
             else:
                 burger_display_name = burger_name
-            
+
             # Add burger header if multiple burgers
             if len(burgers) > 1:
                 items_html += f"""
@@ -207,7 +230,7 @@ class PaymentController:
                         </td>
                     </tr>
                 """
-            
+
             # Add items for this burger
             for item in burger_items:
                 item_total = float(item.price) * item.quantity
@@ -219,7 +242,7 @@ class PaymentController:
                         <td>${item_total:.2f}</td>
                     </tr>
                 """
-            
+
             # Add burger subtotal if multiple burgers
             if len(burgers) > 1:
                 items_html += f"""
@@ -228,14 +251,14 @@ class PaymentController:
                         <td style="font-weight: bold;">${burger_total:.2f}</td>
                     </tr>
                 """
-            
+
             subtotal += burger_total
-        
+
         # Calculate tax and total (if applicable)
         tax_rate = 0.00  # No tax for now, but structure is ready
         tax_amount = subtotal * tax_rate
         total = float(transaction.amount)
-        
+
         html = f"""
         <!DOCTYPE html>
         <html>
@@ -481,16 +504,16 @@ class PaymentController:
         </html>
         """
         return html
-    
+
     @staticmethod
     def get_user_payment_history(user_id, limit=None):
         """
         Get payment history for a user
-        
+
         Args:
             user_id: User ID
             limit: Optional limit for number of transactions
-        
+
         Returns:
             tuple: (success, message, transactions)
         """
@@ -498,34 +521,38 @@ class PaymentController:
             query = Transaction.query.filter_by(user_id=user_id).order_by(
                 Transaction.initiated_at.desc()
             )
-            
+
             if limit:
                 query = query.limit(limit)
-            
+
             transactions = query.all()
-            return True, "Payment history retrieved", [t.to_dict() for t in transactions]
-            
+            return (
+                True,
+                "Payment history retrieved",
+                [t.to_dict() for t in transactions],
+            )
+
         except Exception as e:
             return False, f"Error retrieving payment history: {str(e)}", []
-    
+
     @staticmethod
     def get_payment_statistics(user_id=None, filter_period=None):
         """
         Get payment statistics
-        
+
         Args:
             user_id: Optional user ID to filter by
             filter_period: 'today', 'week', 'month', or None
-        
+
         Returns:
             dict: Statistics about payments
         """
         try:
             query = Transaction.query
-            
+
             if user_id:
                 query = query.filter_by(user_id=user_id)
-            
+
             # Apply time filter
             if filter_period:
                 now = datetime.utcnow()
@@ -537,118 +564,131 @@ class PaymentController:
                     start_date = now - timedelta(days=30)
                 else:
                     start_date = None
-                
+
                 if start_date:
                     query = query.filter(Transaction.initiated_at >= start_date)
-            
+
             all_transactions = query.all()
-            
+
             # Calculate statistics
             total_transactions = len(all_transactions)
             successful = len([t for t in all_transactions if t.status == "success"])
             failed = len([t for t in all_transactions if t.status == "failed"])
             pending = len([t for t in all_transactions if t.status == "pending"])
-            
+
             total_amount = sum(
                 float(t.amount) for t in all_transactions if t.status == "success"
             )
-            
+
             return {
                 "total_transactions": total_transactions,
                 "successful": successful,
                 "failed": failed,
                 "pending": pending,
-                "success_rate": (successful / total_transactions * 100) if total_transactions > 0 else 0,
+                "success_rate": (
+                    (successful / total_transactions * 100)
+                    if total_transactions > 0
+                    else 0
+                ),
                 "total_amount": total_amount,
-                "period": filter_period or "all_time"
+                "period": filter_period or "all_time",
             }
-            
+
         except Exception as e:
             return {
                 "error": str(e),
                 "total_transactions": 0,
                 "successful": 0,
                 "failed": 0,
-                "pending": 0
+                "pending": 0,
             }
-    
+
     @staticmethod
     def get_receipt(receipt_id, user_id):
         """
         Get receipt by ID
-        
+
         Args:
             receipt_id: Receipt ID
             user_id: User ID for authorization
-        
+
         Returns:
             tuple: (success, message, receipt)
         """
         try:
             receipt = Receipt.query.filter_by(id=receipt_id, user_id=user_id).first()
-            
+
             if not receipt:
                 return False, "Receipt not found", None
-            
+
             return True, "Receipt retrieved", receipt.to_dict()
-            
+
         except Exception as e:
             return False, f"Error retrieving receipt: {str(e)}", None
-    
+
     @staticmethod
     def create_campus_card(user_id, initial_balance=100.00):
         """
         Create a dummy campus card for a user
-        
+
         ELIGIBILITY: User must have a .edu email address (student/faculty verification)
-        
+
         Args:
             user_id: User ID
             initial_balance: Starting balance
-        
+
         Returns:
             tuple: (success, message, campus_card)
         """
         try:
             from models.user import User
-            
+
             # Get user to check eligibility
             user = User.query.get(user_id)
             if not user:
                 return False, "User not found", None
-            
+
             # CHECK ELIGIBILITY: Must have .edu email
             if not user.is_eligible_for_campus_card():
                 if not user.email:
-                    return False, "Campus cards are only available to students/faculty. Please add a .edu email to your account.", None
+                    return (
+                        False,
+                        "Campus cards are only available to students/faculty. Please add a .edu email to your account.",
+                        None,
+                    )
                 else:
-                    return False, f"Campus cards require a .edu email address. Your email ({user.email}) is not eligible.", None
-            
+                    return (
+                        False,
+                        f"Campus cards require a .edu email address. Your email ({user.email}) is not eligible.",
+                        None,
+                    )
+
             # Check if user already has a campus card
             existing_card = CampusCard.query.filter_by(user_id=user_id).first()
             if existing_card:
                 return False, "User already has a campus card", None
-            
+
             # Generate unique card number
             import random
+
             card_number = f"CAMPUS{random.randint(100000, 999999)}"
-            
+
             campus_card = CampusCard(
                 user_id=user_id,
                 card_number=card_number,
                 balance=initial_balance,
-                is_active=True
+                is_active=True,
             )
-            
+
             db.session.add(campus_card)
             db.session.commit()
-            
+
             return True, "Campus card created successfully", campus_card.to_dict()
-            
+
         except Exception as e:
             db.session.rollback()
             return False, f"Error creating campus card: {str(e)}", None
-    
+
     @staticmethod
     def get_campus_card(user_id):
         """Get user's campus card"""
@@ -656,30 +696,33 @@ class PaymentController:
             campus_card = CampusCard.query.filter_by(user_id=user_id).first()
             if not campus_card:
                 return False, "No campus card found", None
-            
+
             return True, "Campus card retrieved", campus_card.to_dict()
-            
+
         except Exception as e:
             return False, f"Error retrieving campus card: {str(e)}", None
-    
+
     @staticmethod
     def add_campus_card_balance(user_id, amount):
         """Add balance to campus card via payment processor (credit/debit card)"""
         from decimal import Decimal
-        
+
         try:
             campus_card = CampusCard.query.filter_by(user_id=user_id).first()
             if not campus_card:
                 return False, "No campus card found", None
-            
+
             # Convert amount to Decimal to match database type
             amount_decimal = Decimal(str(amount))
             campus_card.balance += amount_decimal
             db.session.commit()
-            
-            return True, f"Added ${amount} to campus card via payment processor", campus_card.to_dict()
-            
+
+            return (
+                True,
+                f"Added ${amount} to campus card via payment processor",
+                campus_card.to_dict(),
+            )
+
         except Exception as e:
             db.session.rollback()
             return False, f"Error adding balance: {str(e)}", None
-

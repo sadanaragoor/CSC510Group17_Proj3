@@ -2,6 +2,7 @@
 Demo Script for Payment Gateway
 Helps test and demonstrate the payment gateway functionality
 """
+
 from app import create_app
 from database.db import db
 from models.user import User
@@ -13,15 +14,15 @@ from datetime import datetime
 def create_demo_data():
     """Create demo data for testing payment gateway"""
     app = create_app("development")
-    
+
     with app.app_context():
         print("=" * 60)
         print("🎬 Payment Gateway Demo Setup")
         print("=" * 60)
-        
+
         # Check if demo user exists
         demo_user = User.query.filter_by(username="demo_customer").first()
-        
+
         if not demo_user:
             print("\n📝 Creating demo customer account...")
             demo_user = User(username="demo_customer", role="customer")
@@ -35,17 +36,17 @@ def create_demo_data():
             print("\n✅ Demo customer already exists:")
             print(f"   Username: {demo_user.username}")
             print(f"   User ID: {demo_user.id}")
-        
+
         # Create campus card for demo user
         campus_card = CampusCard.query.filter_by(user_id=demo_user.id).first()
-        
+
         if not campus_card:
             print("\n🎓 Creating demo campus card...")
             campus_card = CampusCard(
                 user_id=demo_user.id,
                 card_number="CAMPUS123456",
                 balance=150.00,
-                is_active=True
+                is_active=True,
             )
             db.session.add(campus_card)
             db.session.commit()
@@ -56,18 +57,18 @@ def create_demo_data():
             print("\n✅ Campus card already exists:")
             print(f"   Card Number: {campus_card.card_number}")
             print(f"   Balance: ${campus_card.balance}")
-        
+
         # Create a demo order
         print("\n🍔 Creating demo order...")
         demo_order = Order(
             user_id=demo_user.id,
             total_price=25.99,
             status="Pending",
-            ordered_at=datetime.utcnow()
+            ordered_at=datetime.utcnow(),
         )
         db.session.add(demo_order)
         db.session.commit()
-        
+
         # Add order items
         order_items = [
             OrderItem(
@@ -75,39 +76,39 @@ def create_demo_data():
                 menu_item_id=1,
                 name="Classic Burger",
                 price=12.99,
-                quantity=1
+                quantity=1,
             ),
             OrderItem(
                 order_id=demo_order.id,
                 menu_item_id=2,
                 name="French Fries",
                 price=4.99,
-                quantity=2
+                quantity=2,
             ),
             OrderItem(
                 order_id=demo_order.id,
                 menu_item_id=3,
                 name="Soft Drink",
                 price=3.02,
-                quantity=1
-            )
+                quantity=1,
+            ),
         ]
-        
+
         for item in order_items:
             db.session.add(item)
-        
+
         db.session.commit()
-        
+
         print("✅ Demo order created:")
         print(f"   Order ID: #{demo_order.id}")
         print(f"   Total: ${demo_order.total_price}")
         print(f"   Status: {demo_order.status}")
         print(f"   Items: {len(order_items)}")
-        
+
         print("\n" + "=" * 60)
         print("🎉 Demo Setup Complete!")
         print("=" * 60)
-        
+
         print("\n📋 Quick Start Guide:")
         print("-" * 60)
         print("1. Start your Flask app:")
@@ -159,4 +160,3 @@ def create_demo_data():
 
 if __name__ == "__main__":
     create_demo_data()
-

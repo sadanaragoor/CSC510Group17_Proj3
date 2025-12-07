@@ -1,6 +1,7 @@
 """
 Fixtures for dietary preferences tests.
 """
+
 import pytest
 import sys
 import os
@@ -19,15 +20,17 @@ from models.menu_item import MenuItem
 def app():
     """Create and configure a test application instance."""
     app = create_app("testing")
-    
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "WTF_CSRF_ENABLED": False,
-        "SECRET_KEY": "test-secret-key",
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-    })
-    
+
+    app.config.update(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
+            "SECRET_KEY": "test-secret-key",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+        }
+    )
+
     with app.app_context():
         db.create_all()
         yield app
@@ -67,7 +70,9 @@ def gluten_free_user(app):
 def high_protein_user(app):
     """Create a user with high protein preferences."""
     with app.app_context():
-        user = User(username="proteinuser", email="protein@test.com", pref_high_protein=True)
+        user = User(
+            username="proteinuser", email="protein@test.com", pref_high_protein=True
+        )
         user.set_password("testpass")
         db.session.add(user)
         db.session.commit()
@@ -78,7 +83,9 @@ def high_protein_user(app):
 def low_calorie_user(app):
     """Create a user with low calorie preferences."""
     with app.app_context():
-        user = User(username="lowcaluser", email="lowcal@test.com", pref_low_calorie=True)
+        user = User(
+            username="lowcaluser", email="lowcal@test.com", pref_low_calorie=True
+        )
         user.set_password("testpass")
         db.session.add(user)
         db.session.commit()
@@ -90,14 +97,49 @@ def sample_menu_items(app):
     """Create sample menu items with various dietary attributes."""
     with app.app_context():
         items = [
-            MenuItem(name="Vegan Bun", category="bun", price=Decimal("1.50"), is_available=True, is_healthy_choice=True),
-            MenuItem(name="Gluten Free Bun", category="bun", price=Decimal("2.00"), is_available=True, is_healthy_choice=True),
-            MenuItem(name="Veggie Patty", category="patty", price=Decimal("3.00"), is_available=True, is_healthy_choice=True, calories=150, protein=15),
-            MenuItem(name="Beef Patty", category="patty", price=Decimal("4.00"), is_available=True, is_healthy_choice=False, calories=300, protein=25),
-            MenuItem(name="Low Cal Beef", category="patty", price=Decimal("3.50"), is_available=True, is_healthy_choice=True, calories=200, protein=30),
+            MenuItem(
+                name="Vegan Bun",
+                category="bun",
+                price=Decimal("1.50"),
+                is_available=True,
+                is_healthy_choice=True,
+            ),
+            MenuItem(
+                name="Gluten Free Bun",
+                category="bun",
+                price=Decimal("2.00"),
+                is_available=True,
+                is_healthy_choice=True,
+            ),
+            MenuItem(
+                name="Veggie Patty",
+                category="patty",
+                price=Decimal("3.00"),
+                is_available=True,
+                is_healthy_choice=True,
+                calories=150,
+                protein=15,
+            ),
+            MenuItem(
+                name="Beef Patty",
+                category="patty",
+                price=Decimal("4.00"),
+                is_available=True,
+                is_healthy_choice=False,
+                calories=300,
+                protein=25,
+            ),
+            MenuItem(
+                name="Low Cal Beef",
+                category="patty",
+                price=Decimal("3.50"),
+                is_available=True,
+                is_healthy_choice=True,
+                calories=200,
+                protein=30,
+            ),
         ]
         for item in items:
             db.session.add(item)
         db.session.commit()
         return [item.id for item in items]
-

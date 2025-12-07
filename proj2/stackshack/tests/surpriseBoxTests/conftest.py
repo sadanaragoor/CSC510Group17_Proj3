@@ -1,6 +1,7 @@
 """
 Fixtures for surprise box tests.
 """
+
 import pytest
 import sys
 import os
@@ -19,15 +20,17 @@ from models.menu_item import MenuItem
 def app():
     """Create and configure a test application instance."""
     app = create_app("testing")
-    
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "WTF_CSRF_ENABLED": False,
-        "SECRET_KEY": "test-secret-key",
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-    })
-    
+
+    app.config.update(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
+            "SECRET_KEY": "test-secret-key",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+        }
+    )
+
     with app.app_context():
         db.create_all()
         yield app
@@ -68,17 +71,72 @@ def sample_menu_items(app):
     """Create sample menu items for surprise box generation."""
     with app.app_context():
         items = [
-            MenuItem(name="Classic Bun", category="bun", price=Decimal("1.50"), is_available=True),
-            MenuItem(name="Sesame Bun", category="bun", price=Decimal("1.75"), is_available=True),
-            MenuItem(name="Beef Patty", category="patty", price=Decimal("3.50"), is_available=True),
-            MenuItem(name="Veggie Patty", category="patty", price=Decimal("3.00"), is_available=True),
-            MenuItem(name="Cheddar Cheese", category="cheese", price=Decimal("1.00"), is_available=True),
-            MenuItem(name="Swiss Cheese", category="cheese", price=Decimal("1.00"), is_available=True),
-            MenuItem(name="Lettuce", category="topping", price=Decimal("0.50"), is_available=True),
-            MenuItem(name="Tomato", category="topping", price=Decimal("0.50"), is_available=True),
-            MenuItem(name="Pickles", category="topping", price=Decimal("0.50"), is_available=True),
-            MenuItem(name="Ketchup", category="sauce", price=Decimal("0.25"), is_available=True),
-            MenuItem(name="Mustard", category="sauce", price=Decimal("0.25"), is_available=True),
+            MenuItem(
+                name="Classic Bun",
+                category="bun",
+                price=Decimal("1.50"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Sesame Bun",
+                category="bun",
+                price=Decimal("1.75"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Beef Patty",
+                category="patty",
+                price=Decimal("3.50"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Veggie Patty",
+                category="patty",
+                price=Decimal("3.00"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Cheddar Cheese",
+                category="cheese",
+                price=Decimal("1.00"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Swiss Cheese",
+                category="cheese",
+                price=Decimal("1.00"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Lettuce",
+                category="topping",
+                price=Decimal("0.50"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Tomato",
+                category="topping",
+                price=Decimal("0.50"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Pickles",
+                category="topping",
+                price=Decimal("0.50"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Ketchup",
+                category="sauce",
+                price=Decimal("0.25"),
+                is_available=True,
+            ),
+            MenuItem(
+                name="Mustard",
+                category="sauce",
+                price=Decimal("0.25"),
+                is_available=True,
+            ),
         ]
         for item in items:
             db.session.add(item)
@@ -92,9 +150,8 @@ def authenticated_client(client, app, test_user):
     with app.app_context():
         user = db.session.get(User, test_user)
         from flask_login import login_user
-        
+
         with client:
             with app.test_request_context():
                 login_user(user)
             yield client
-

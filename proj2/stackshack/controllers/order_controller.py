@@ -1,5 +1,5 @@
 from models.order import Order, OrderItem
-from models.menu_item import MenuItem 
+from models.menu_item import MenuItem
 from database.db import db
 
 
@@ -42,17 +42,26 @@ class OrderController:
                 # Handle different formats
                 burger_index = None
                 burger_name = None
-                
+
                 if len(item_tuple) == 6:
                     # New format with burger_name
-                    item_id, _client_price, quantity, _client_name, burger_index, burger_name = item_tuple
+                    (
+                        item_id,
+                        _client_price,
+                        quantity,
+                        _client_name,
+                        burger_index,
+                        burger_name,
+                    ) = item_tuple
                 elif len(item_tuple) == 5:
                     # Format with burger_index only
-                    item_id, _client_price, quantity, _client_name, burger_index = item_tuple
+                    item_id, _client_price, quantity, _client_name, burger_index = (
+                        item_tuple
+                    )
                 else:
                     # Legacy format
                     item_id, _client_price, quantity, _client_name = item_tuple
-                
+
                 quantity_int = int(quantity)
                 if quantity_int <= 0:
                     continue
@@ -100,7 +109,9 @@ class OrderController:
                 return False, "Order cannot be empty.", None
 
             new_order.total_price = total_price
-            new_order.original_total = total_price  # Store original total before any discounts
+            new_order.original_total = (
+                total_price  # Store original total before any discounts
+            )
             db.session.commit()
             return True, f"Order #{new_order.id} placed successfully.", new_order
 

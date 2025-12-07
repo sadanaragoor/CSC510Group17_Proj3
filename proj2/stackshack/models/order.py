@@ -8,7 +8,9 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     total_price = db.Column(db.Numeric(10, 2), nullable=False)
-    original_total = db.Column(db.Numeric(10, 2), nullable=True)  # Store original total before coupon
+    original_total = db.Column(
+        db.Numeric(10, 2), nullable=True
+    )  # Store original total before coupon
     status = db.Column(db.String(50), nullable=False, default="Pending")
     ordered_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -37,8 +39,12 @@ class OrderItem(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Numeric(10, 2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    burger_index = db.Column(db.Integer, nullable=True, default=None)  # Track which burger this item belongs to
-    burger_name = db.Column(db.String(255), nullable=True, default=None)  # Store pre-defined burger name
+    burger_index = db.Column(
+        db.Integer, nullable=True, default=None
+    )  # Track which burger this item belongs to
+    burger_name = db.Column(
+        db.String(255), nullable=True, default=None
+    )  # Store pre-defined burger name
 
     def to_dict(self):
         return {
