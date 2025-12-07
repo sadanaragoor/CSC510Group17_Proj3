@@ -5,7 +5,6 @@ Creates all payment-related tables in the database
 
 from app import create_app
 from database.db import db
-from models.payment import Transaction, CampusCard, Receipt, PaymentMethod
 
 
 def create_payment_tables():

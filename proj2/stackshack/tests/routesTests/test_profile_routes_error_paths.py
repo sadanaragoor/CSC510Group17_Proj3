@@ -2,9 +2,6 @@
 Comprehensive error path tests for profile routes.
 """
 
-from models.user import User
-from database.db import db
-
 
 class TestProfileRoutesErrorPaths:
     """Test error paths in profile routes."""

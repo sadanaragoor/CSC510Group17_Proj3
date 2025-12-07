@@ -3,7 +3,7 @@ Comprehensive shift service tests to increase coverage.
 """
 
 from datetime import date, time, timedelta
-from models.shift import Shift, ShiftAssignment, StaffProfile
+from models.shift import Shift, ShiftAssignment
 from models.user import User
 from services.shift_service import ShiftService
 from database.db import db

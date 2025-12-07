@@ -2,10 +2,7 @@
 Extended shift route tests to increase coverage.
 """
 
-from datetime import date, datetime, time
-from models.shift import Shift, ShiftAssignment
-from models.user import User
-from database.db import db
+from datetime import date
 
 
 class TestShiftRoutesExtended:

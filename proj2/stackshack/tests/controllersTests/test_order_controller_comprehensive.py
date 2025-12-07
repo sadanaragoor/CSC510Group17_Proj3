@@ -3,9 +3,7 @@ Comprehensive order controller tests to increase coverage.
 """
 
 from decimal import Decimal
-from datetime import datetime
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
+from models.order import Order
 from controllers.order_controller import OrderController
 from database.db import db
 

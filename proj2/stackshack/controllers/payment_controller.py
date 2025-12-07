@@ -6,7 +6,7 @@ Handles payment processing business logic
 from datetime import datetime, timedelta
 from flask import session
 from database.db import db
-from models.payment import Transaction, CampusCard, Receipt, PaymentMethod
+from models.payment import Transaction, CampusCard, Receipt
 from models.order import Order
 from services.payment_gateway import PaymentGatewayService
 
@@ -136,9 +136,7 @@ class PaymentController:
                     )
 
                     # Check and grant badges
-                    newly_earned_badges = GamificationService.check_and_grant_badges(
-                        order.user_id, order
-                    )
+                    GamificationService.check_and_grant_badges(order.user_id, order)
 
                     # Check daily bonus
                     daily_bonus_success, daily_bonus = (
@@ -265,7 +263,7 @@ class PaymentController:
         <head>
             <meta charset="UTF-8">
             <style>
-                @page {{ 
+                @page {{
                     margin: 10mm;
                 }}
                 * {{
@@ -273,23 +271,23 @@ class PaymentController:
                     padding: 0;
                     box-sizing: border-box;
                 }}
-                body {{ 
-                    font-family: 'Courier New', monospace; 
+                body {{
+                    font-family: 'Courier New', monospace;
                     font-size: 11px;
                     line-height: 1.4;
                     background: #f5f5f5;
                     padding: 15px;
                     color: #000;
                 }}
-                .receipt {{ 
+                .receipt {{
                     max-width: 320px;
                     margin: 0 auto;
                     background: white;
                     padding: 15px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                 }}
-                .header {{ 
-                    text-align: center; 
+                .header {{
+                    text-align: center;
                     margin-bottom: 12px;
                     padding-bottom: 10px;
                     border-bottom: 2px solid #000;
@@ -321,27 +319,27 @@ class PaymentController:
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                 }}
-                .info-line {{ 
+                .info-line {{
                     display: flex;
                     justify-content: space-between;
                     margin: 3px 0;
                     font-size: 9px;
                     line-height: 1.3;
                 }}
-                .info-label {{ 
+                .info-label {{
                     color: #666;
                 }}
-                .info-value {{ 
+                .info-value {{
                     font-weight: bold;
                     text-align: right;
                 }}
-                .items-table {{ 
-                    width: 100%; 
+                .items-table {{
+                    width: 100%;
                     margin: 8px 0;
                     font-size: 9px;
                     border-collapse: collapse;
                 }}
-                .items-table th {{ 
+                .items-table th {{
                     text-align: left;
                     padding: 4px 0;
                     border-bottom: 1px solid #000;
@@ -358,7 +356,7 @@ class PaymentController:
                 .items-table td:nth-child(3) {{
                     text-align: right;
                 }}
-                .totals {{ 
+                .totals {{
                     margin-top: 10px;
                     padding-top: 8px;
                     border-top: 1px solid #000;
@@ -379,8 +377,8 @@ class PaymentController:
                     border-top: 2px solid #000;
                     border-bottom: 2px solid #000;
                 }}
-                .footer {{ 
-                    text-align: center; 
+                .footer {{
+                    text-align: center;
                     margin-top: 12px;
                     padding-top: 10px;
                     border-top: 1px dashed #999;
@@ -431,7 +429,7 @@ class PaymentController:
                         www.stackshack.com
                     </div>
                 </div>
-                
+
                 <!-- Transaction Info -->
                 <div class="divider"></div>
                 <div class="section-title">Transaction Details</div>
@@ -457,7 +455,7 @@ class PaymentController:
                     <span class="payment-badge">✓ PAID</span>
                 </div>
                 <div class="divider"></div>
-                
+
                 <!-- Items -->
                 <div class="section-title">Order Items</div>
                 <table class="items-table">
@@ -472,7 +470,7 @@ class PaymentController:
                         {items_html}
                     </tbody>
                 </table>
-                
+
                 <!-- Totals -->
                 <div class="totals">
                     <div class="total-line">
@@ -485,10 +483,10 @@ class PaymentController:
                         <span>${total:.2f}</span>
                     </div>
                 </div>
-                
+
                 <!-- Barcode -->
                 <div class="barcode">*{transaction.transaction_id[-8:]}*</div>
-                
+
                 <!-- Footer -->
                 <div class="footer">
                     <p style="font-weight: bold;">Thank you for your order!</p>

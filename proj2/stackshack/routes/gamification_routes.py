@@ -27,7 +27,7 @@ def rewards_page():
     # Recalculate points to ensure accuracy
     # This ensures the displayed points match the actual sum of all transactions
     points = GamificationService.get_user_points(current_user.id)
-    tier_info = GamificationService.update_user_tier(current_user.id)
+    GamificationService.update_user_tier(current_user.id)
 
     # Get user badges
     user_badges = UserBadge.query.filter_by(user_id=current_user.id).all()
@@ -39,12 +39,12 @@ def rewards_page():
     ChallengeService.generate_daily_challenges(today, max_challenges=2)
     daily_bonuses = DailyBonus.query.filter_by(bonus_date=today, is_active=True).all()
     daily_bonuses_data = []
-    for db in daily_bonuses:
+    for bonus in daily_bonuses:
         progress = UserChallengeProgress.query.filter_by(
-            user_id=current_user.id, daily_bonus_id=db.id, completed=True
+            user_id=current_user.id, daily_bonus_id=bonus.id, completed=True
         ).first()
         daily_bonuses_data.append(
-            {"bonus": db.to_dict(), "completed": progress is not None}
+            {"bonus": bonus.to_dict(), "completed": progress is not None}
         )
 
     # Get weekly challenges (up to 3 per week)
@@ -54,7 +54,7 @@ def rewards_page():
     challenges = WeeklyChallenge.query.filter(
         WeeklyChallenge.week_start <= today,
         WeeklyChallenge.week_end >= today,
-        WeeklyChallenge.is_active == True,
+        WeeklyChallenge.is_active,
     ).all()
     challenges_data = []
     for challenge in challenges:
@@ -95,7 +95,7 @@ def get_user_points():
     """Get current user's points"""
     # Always recalculate to ensure accuracy
     points = GamificationService.get_user_points(current_user.id)
-    tier_info = GamificationService.update_user_tier(current_user.id)
+    GamificationService.update_user_tier(current_user.id)
 
     return jsonify(
         {
@@ -299,11 +299,11 @@ def get_daily_bonus():
     from models.gamification import UserChallengeProgress
 
     bonuses_data = []
-    for db in daily_bonuses:
+    for bonus in daily_bonuses:
         progress = UserChallengeProgress.query.filter_by(
-            user_id=current_user.id, daily_bonus_id=db.id, completed=True
+            user_id=current_user.id, daily_bonus_id=bonus.id, completed=True
         ).first()
-        bonuses_data.append({"bonus": db.to_dict(), "completed": progress is not None})
+        bonuses_data.append({"bonus": bonus.to_dict(), "completed": progress is not None})
 
     return jsonify({"bonuses": bonuses_data})
 
@@ -321,7 +321,7 @@ def get_weekly_challenge():
     challenges = WeeklyChallenge.query.filter(
         WeeklyChallenge.week_start <= today,
         WeeklyChallenge.week_end >= today,
-        WeeklyChallenge.is_active == True,
+        WeeklyChallenge.is_active,
     ).all()
 
     if not challenges:
@@ -377,7 +377,7 @@ def submit_review():
     data = request.get_json()
     order_id = data.get("order_id")
     rating = data.get("rating")
-    comment = data.get("comment")
+    data.get("comment")
 
     if not order_id or not rating:
         return jsonify({"error": "order_id and rating are required"}), 400

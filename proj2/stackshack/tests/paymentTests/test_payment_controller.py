@@ -3,10 +3,8 @@ Test cases for payment controller.
 """
 
 from decimal import Decimal
-from datetime import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from models.payment import Transaction
-from models.order import Order
 from controllers.payment_controller import PaymentController
 from database.db import db
 

@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from app import create_app
 from database.db import db
-from sqlalchemy import text, inspect
+from sqlalchemy import text
 
 
 def migrate_users_table():
@@ -40,8 +40,8 @@ def migrate_users_table():
                 db.session.execute(
                     text(
                         """
-                    ALTER TABLE users 
-                    ADD COLUMN tier VARCHAR(20) DEFAULT 'Bronze' 
+                    ALTER TABLE users
+                    ADD COLUMN tier VARCHAR(20) DEFAULT 'Bronze'
                     AFTER pref_low_calorie
                 """
                     )
@@ -56,8 +56,8 @@ def migrate_users_table():
                 db.session.execute(
                     text(
                         """
-                    ALTER TABLE users 
-                    ADD COLUMN total_points INT DEFAULT 0 
+                    ALTER TABLE users
+                    ADD COLUMN total_points INT DEFAULT 0
                     AFTER tier
                 """
                     )
@@ -72,8 +72,8 @@ def migrate_users_table():
                 db.session.execute(
                     text(
                         """
-                    ALTER TABLE users 
-                    ADD COLUMN birthday DATE NULL 
+                    ALTER TABLE users
+                    ADD COLUMN birthday DATE NULL
                     AFTER total_points
                 """
                     )
@@ -115,8 +115,8 @@ def migrate_users_table():
             db.session.execute(
                 text(
                     """
-                UPDATE users 
-                SET tier = 'Bronze', total_points = 0 
+                UPDATE users
+                SET tier = 'Bronze', total_points = 0
                 WHERE tier IS NULL OR total_points IS NULL
             """
                 )

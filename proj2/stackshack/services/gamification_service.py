@@ -9,17 +9,16 @@ from models.gamification import (
     DailyBonus,
     WeeklyChallenge,
     UserChallengeProgress,
-    PunchCard,
     Redemption,
     Coupon,
 )
 from models.user import User
-from models.order import Order, OrderItem
+from models.order import Order
 from models.menu_item import MenuItem
 from datetime import date
 from database.db import db
-from datetime import datetime, date, timedelta, timezone
-from sqlalchemy import func, and_, or_
+from datetime import datetime, timedelta
+from sqlalchemy import func
 import secrets
 import pytz
 import string
@@ -352,7 +351,7 @@ class GamificationService:
 
         # Get order items
         order_items = order.items.all()
-        ingredient_names = [item.name.lower() for item in order_items]
+        [item.name.lower() for item in order_items]
         categories = set()
         for item in order_items:
             if item.menu_item_id:
@@ -363,7 +362,6 @@ class GamificationService:
         # Get user's order history for behavioral badges
         all_orders = Order.query.filter_by(user_id=user_id).all()
         order_count = len(all_orders)
-        order_hour = order.ordered_at.hour if order.ordered_at else None
 
         # Check ingredient explorer badges
         badges_to_check = [
@@ -816,7 +814,7 @@ class GamificationService:
         condition, order_items, order, order_time, order_hour, order_minute
     ):
         """Check if a daily challenge condition is met"""
-        condition_lower = condition.lower()
+        condition.lower()
         order_item_names = [item.name.lower() for item in order_items]
 
         # Get menu items for category checking
@@ -962,7 +960,7 @@ class GamificationService:
         challenges = WeeklyChallenge.query.filter(
             WeeklyChallenge.week_start <= today,
             WeeklyChallenge.week_end >= today,
-            WeeklyChallenge.is_active == True,
+            WeeklyChallenge.is_active,
         ).all()
 
         if not challenges:

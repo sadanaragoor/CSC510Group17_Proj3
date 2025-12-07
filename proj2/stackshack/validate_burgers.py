@@ -51,7 +51,7 @@ def validate_burgers():
             if burger_valid:
                 print(f"   [OK] Total Price: ${burger_price:.2f}")
             else:
-                print(f"   [WARNING] Cannot calculate price (missing ingredients)")
+                print("   [WARNING] Cannot calculate price (missing ingredients)")
 
             print()
 
@@ -66,7 +66,7 @@ def validate_burgers():
             print("   - All ingredients found in database")
             print("   - Prices can be calculated")
         else:
-            print(f"\n[FAILED] VALIDATION FAILED!")
+            print("\n[FAILED] VALIDATION FAILED!")
             print(f"\n   Missing ingredients ({len(missing_ingredients)}):")
             for ingredient in sorted(missing_ingredients):
                 print(f"   - {ingredient}")

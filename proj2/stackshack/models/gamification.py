@@ -4,7 +4,6 @@ Gamification models for points, badges, tiers, and achievements.
 
 from database.db import db
 from datetime import datetime, date
-from sqlalchemy import func
 
 
 class PointsTransaction(db.Model):
@@ -293,7 +292,6 @@ class Coupon(db.Model):
 
     def is_valid(self):
         """Check if coupon is valid (not expired, not used)"""
-        from datetime import date
 
         return not self.is_used and self.expiry_date >= date.today()
 

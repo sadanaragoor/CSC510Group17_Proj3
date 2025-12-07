@@ -26,9 +26,7 @@ def migrate_challenges():
 
             # Check daily_bonuses table
             if "daily_bonuses" in inspector.get_table_names():
-                columns = [
-                    col["name"] for col in inspector.get_columns("daily_bonuses")
-                ]
+                [col["name"] for col in inspector.get_columns("daily_bonuses")]
                 constraints = inspector.get_unique_constraints("daily_bonuses")
 
                 # Check if bonus_date has a unique constraint

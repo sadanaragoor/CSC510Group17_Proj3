@@ -13,9 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 from app import create_app
 from database.db import db
 from models.user import User
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
-from models.payment import Transaction, CampusCard
+from models.order import Order
 
 
 @pytest.fixture(scope="function")

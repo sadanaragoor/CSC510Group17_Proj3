@@ -22,9 +22,7 @@ class TestInventoryManagement:
         """Test updating stock quantity."""
         with app.app_context():
             item = db.session.get(MenuItem, sample_menu_items[0])
-            original_quantity = (
-                item.stock_quantity if hasattr(item, "stock_quantity") else None
-            )
+            (item.stock_quantity if hasattr(item, "stock_quantity") else None)
 
             if hasattr(item, "stock_quantity"):
                 item.stock_quantity = 20

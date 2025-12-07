@@ -2,19 +2,11 @@
 Comprehensive gamification route tests to increase coverage.
 """
 
-from decimal import Decimal
 from datetime import date, timedelta
 from models.gamification import (
-    PointsTransaction,
-    Badge,
-    UserBadge,
-    DailyBonus,
-    WeeklyChallenge,
     Coupon,
     Redemption,
 )
-from models.user import User
-from models.order import Order
 from database.db import db
 
 

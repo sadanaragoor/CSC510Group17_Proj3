@@ -4,8 +4,7 @@ Comprehensive badge awarding tests to increase coverage.
 
 from decimal import Decimal
 from datetime import datetime
-from models.gamification import Badge, UserBadge
-from models.user import User
+from models.gamification import Badge
 from models.order import Order, OrderItem
 from models.menu_item import MenuItem
 from services.gamification_service import GamificationService

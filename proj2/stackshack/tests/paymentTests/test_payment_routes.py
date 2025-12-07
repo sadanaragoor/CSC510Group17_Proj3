@@ -2,10 +2,6 @@
 Test cases for payment routes.
 """
 
-from decimal import Decimal
-from models.order import Order
-from database.db import db
-
 
 class TestPaymentRoutes:
     """Test cases for payment routes."""

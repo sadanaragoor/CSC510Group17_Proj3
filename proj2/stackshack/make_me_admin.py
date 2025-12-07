@@ -23,15 +23,15 @@ def make_admin(username):
         user.role = "admin"
         db.session.commit()
 
-        print(f"✅ Success!")
+        print("✅ Success!")
         print(f"   User: {username}")
         print(f"   Old Role: {old_role}")
-        print(f"   New Role: admin")
-        print(f"\nYou can now access:")
-        print(f"   • Admin Payment Dashboard: /payment/admin/dashboard")
-        print(f"   • View all transactions")
-        print(f"   • Filter by time period")
-        print(f"   • See payment statistics")
+        print("   New Role: admin")
+        print("\nYou can now access:")
+        print("   • Admin Payment Dashboard: /payment/admin/dashboard")
+        print("   • View all transactions")
+        print("   • Filter by time period")
+        print("   • See payment statistics")
 
 
 if __name__ == "__main__":

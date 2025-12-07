@@ -2,7 +2,6 @@
 Tests for get_monthly_leaderboard.
 """
 
-from decimal import Decimal
 from datetime import datetime
 from models.gamification import PointsTransaction
 from models.user import User

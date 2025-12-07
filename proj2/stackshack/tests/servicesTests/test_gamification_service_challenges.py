@@ -3,9 +3,8 @@ Comprehensive challenge tests to increase coverage.
 """
 
 from decimal import Decimal
-from datetime import date, datetime, timedelta
-from models.gamification import DailyBonus, WeeklyChallenge, UserChallengeProgress
-from models.user import User
+from datetime import date, datetime
+from models.gamification import DailyBonus
 from models.order import Order, OrderItem
 from models.menu_item import MenuItem
 from services.gamification_service import GamificationService

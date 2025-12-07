@@ -3,10 +3,6 @@ Comprehensive route tests to increase coverage.
 Tests all route endpoints across all modules.
 """
 
-from models.user import User
-from models.order import Order
-from database.db import db
-
 
 class TestAllRoutes:
     """Comprehensive route tests."""

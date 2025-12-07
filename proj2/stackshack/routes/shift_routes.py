@@ -4,12 +4,12 @@ Shift Scheduling routes for admin and staff.
 
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, timedelta
+from sqlalchemy import and_
 from services.shift_service import ShiftService
 from models.user import User
-from models.shift import StaffProfile, Shift, ShiftAssignment
+from models.shift import StaffProfile, ShiftAssignment
 from database.db import db
-from werkzeug.security import generate_password_hash
 
 shift_bp = Blueprint("shift", __name__)
 

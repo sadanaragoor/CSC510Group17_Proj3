@@ -2,17 +2,12 @@
 Test cases for gamification routes.
 """
 
-from decimal import Decimal
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from models.gamification import (
-    Badge,
     UserBadge,
-    DailyBonus,
-    WeeklyChallenge,
     Coupon,
     Redemption,
 )
-from models.user import User
 from models.order import Order
 from database.db import db
 
@@ -145,7 +140,7 @@ class TestRewardsRoutes:
         """Test applying a valid coupon via API."""
         with app.app_context():
             # Create order and coupon
-            order = db.session.get(Order, sample_order)
+            db.session.get(Order, sample_order)
             redemption = Redemption(
                 user_id=test_user, reward_type="free_topping", points_cost=100
             )

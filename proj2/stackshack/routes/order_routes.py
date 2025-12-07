@@ -12,7 +12,6 @@ from flask_login import login_required, current_user
 from controllers.order_controller import OrderController
 from controllers.menu_controller import MenuController
 from models.menu_item import MenuItem
-import json
 
 VEGAN_INGREDIENT_NAMES = {
     # Buns
@@ -82,7 +81,7 @@ def get_ingredients(category):
     # Base query: show ALL available, in-stock items in that category
     query = (
         MenuItem.query.filter(MenuItem.category.ilike(f"%{category}%"))
-        .filter(MenuItem.is_available == True)
+        .filter(MenuItem.is_available)
         .filter(MenuItem.stock_quantity > 0)
     )
 

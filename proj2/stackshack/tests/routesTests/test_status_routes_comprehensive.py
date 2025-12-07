@@ -2,9 +2,6 @@
 Comprehensive status route tests to increase coverage.
 """
 
-from models.order import Order
-from database.db import db
-
 
 class TestStatusRoutesComprehensive:
     """Comprehensive status route tests."""

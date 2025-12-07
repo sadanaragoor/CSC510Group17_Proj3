@@ -2,7 +2,7 @@
 Test cases for shift scheduling models.
 """
 
-from datetime import date, datetime, time
+from datetime import date, time
 from models.shift import StaffProfile, Shift, ShiftAssignment
 from database.db import db
 

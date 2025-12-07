@@ -2,9 +2,6 @@
 Comprehensive profile route tests to increase coverage.
 """
 
-from models.user import User
-from database.db import db
-
 
 class TestProfileRoutesComprehensive:
     """Comprehensive profile route tests."""

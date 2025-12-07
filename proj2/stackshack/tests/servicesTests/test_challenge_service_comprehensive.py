@@ -34,7 +34,7 @@ class TestChallengeServiceComprehensive:
             db.session.commit()
 
             # Try to generate more (should not create duplicates)
-            count = ChallengeService.generate_daily_challenges(today, max_challenges=2)
+            ChallengeService.generate_daily_challenges(today, max_challenges=2)
 
             # Should not create more than 2
             bonuses = DailyBonus.query.filter_by(bonus_date=today, is_active=True).all()
@@ -76,9 +76,7 @@ class TestChallengeServiceComprehensive:
             db.session.commit()
 
             # Try to generate more (should not create duplicates)
-            count = ChallengeService.generate_weekly_challenges(
-                week_start, max_challenges=3
-            )
+            ChallengeService.generate_weekly_challenges(week_start, max_challenges=3)
 
             # Should not create more than 3
             challenges = WeeklyChallenge.query.filter_by(
@@ -90,7 +88,7 @@ class TestChallengeServiceComprehensive:
         """Test that daily challenges can be generated for all types."""
         with app.app_context():
             today = date.today()
-            count = ChallengeService.generate_daily_challenges(today, max_challenges=2)
+            ChallengeService.generate_daily_challenges(today, max_challenges=2)
 
             bonuses = DailyBonus.query.filter_by(bonus_date=today, is_active=True).all()
             # Should have challenges
@@ -102,9 +100,7 @@ class TestChallengeServiceComprehensive:
             days_since_monday = date.today().weekday()
             week_start = date.today() - timedelta(days=days_since_monday)
 
-            count = ChallengeService.generate_weekly_challenges(
-                week_start, max_challenges=3
-            )
+            ChallengeService.generate_weekly_challenges(week_start, max_challenges=3)
 
             challenges = WeeklyChallenge.query.filter_by(
                 week_start=week_start, is_active=True

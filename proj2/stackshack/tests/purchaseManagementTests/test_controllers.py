@@ -1,4 +1,3 @@
-from decimal import Decimal
 from controllers.order_controller import OrderController
 from models.order import Order
 from database.db import db

@@ -2,20 +2,11 @@
 Extended test cases for gamification routes to increase coverage.
 """
 
-from decimal import Decimal
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from models.gamification import (
     Badge,
     UserBadge,
-    DailyBonus,
-    WeeklyChallenge,
-    Coupon,
-    Redemption,
-    PointsTransaction,
 )
-from models.user import User
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
 from database.db import db
 
 

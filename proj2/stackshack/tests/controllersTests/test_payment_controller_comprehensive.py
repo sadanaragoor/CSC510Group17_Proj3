@@ -3,9 +3,7 @@ Comprehensive payment controller tests to increase coverage.
 """
 
 from decimal import Decimal
-from unittest.mock import patch, MagicMock
-from models.payment import Transaction, CampusCard, Receipt
-from models.order import Order
+from models.payment import Transaction, CampusCard
 from controllers.payment_controller import PaymentController
 from database.db import db
 

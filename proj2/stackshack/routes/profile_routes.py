@@ -6,7 +6,6 @@ User profile management including email updates
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from database.db import db
-from models.user import User
 
 profile_bp = Blueprint("profile", __name__)
 
@@ -41,11 +40,11 @@ def update_email():
         # Check if now eligible for campus card
         if current_user.is_eligible_for_campus_card():
             flash(
-                f"Email updated successfully! You are now eligible for a campus card. 🎓",
+                "Email updated successfully! You are now eligible for a campus card. 🎓",
                 "success",
             )
         else:
-            flash(f"Email updated successfully!", "success")
+            flash("Email updated successfully!", "success")
 
         return redirect(url_for("profile.view_profile"))
 

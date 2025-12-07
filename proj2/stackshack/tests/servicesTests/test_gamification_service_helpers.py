@@ -4,8 +4,7 @@ Tests for gamification service helper methods to increase coverage.
 
 from decimal import Decimal
 from datetime import date, datetime, timedelta
-from models.gamification import DailyBonus, WeeklyChallenge, UserChallengeProgress
-from models.user import User
+from models.gamification import WeeklyChallenge, UserChallengeProgress
 from models.order import Order, OrderItem
 from models.menu_item import MenuItem
 from services.gamification_service import GamificationService

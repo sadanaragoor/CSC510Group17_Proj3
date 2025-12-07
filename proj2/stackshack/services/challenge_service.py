@@ -3,12 +3,9 @@ Challenge Service - Manages daily and weekly challenge generation and checking.
 """
 
 import random
-from datetime import date, timedelta, datetime, time
-from models.gamification import DailyBonus, WeeklyChallenge, UserChallengeProgress
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
+from datetime import date, timedelta
+from models.gamification import DailyBonus, WeeklyChallenge
 from database.db import db
-import pytz
 
 
 class ChallengeService:
@@ -647,7 +644,7 @@ class ChallengeService:
         existing = WeeklyChallenge.query.filter(
             WeeklyChallenge.week_start == week_start,
             WeeklyChallenge.week_end == week_end,
-            WeeklyChallenge.is_active == True,
+            WeeklyChallenge.is_active,
         ).all()
         existing_count = len(existing)
 
@@ -679,7 +676,7 @@ class ChallengeService:
                 WeeklyChallenge.week_start == week_start,
                 WeeklyChallenge.week_end == week_end,
                 WeeklyChallenge.condition == challenge_def["condition"],
-                WeeklyChallenge.is_active == True,
+                WeeklyChallenge.is_active,
             ).first()
 
             if existing_with_condition:
@@ -715,5 +712,5 @@ class ChallengeService:
         return WeeklyChallenge.query.filter(
             WeeklyChallenge.week_start == week_start,
             WeeklyChallenge.week_end == week_end,
-            WeeklyChallenge.is_active == True,
+            WeeklyChallenge.is_active,
         ).all()

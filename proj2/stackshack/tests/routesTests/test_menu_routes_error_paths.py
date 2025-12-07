@@ -2,8 +2,6 @@
 Comprehensive error path tests for menu routes.
 """
 
-from decimal import Decimal
-from models.menu_item import MenuItem
 from models.user import User
 from database.db import db
 

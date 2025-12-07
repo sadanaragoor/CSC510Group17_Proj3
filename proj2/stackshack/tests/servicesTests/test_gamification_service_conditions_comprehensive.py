@@ -3,7 +3,6 @@ Comprehensive tests for _check_daily_condition covering all condition branches.
 """
 
 from decimal import Decimal
-from datetime import datetime, time
 from models.order import Order, OrderItem
 from models.menu_item import MenuItem
 from services.gamification_service import GamificationService

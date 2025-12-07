@@ -5,7 +5,6 @@ Fixtures for comprehensive route tests.
 import pytest
 import sys
 import os
-from decimal import Decimal
 
 # Add parent directory to path to import app modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -13,8 +12,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 from app import create_app
 from database.db import db
 from models.user import User
-from models.menu_item import MenuItem
-from models.order import Order, OrderItem
 
 
 @pytest.fixture(scope="function")

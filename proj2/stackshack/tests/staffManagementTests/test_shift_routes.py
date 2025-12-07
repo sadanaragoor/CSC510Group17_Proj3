@@ -2,8 +2,8 @@
 Test cases for shift routes.
 """
 
-from datetime import date, datetime, time, timedelta
-from models.shift import Shift, ShiftAssignment
+from datetime import date
+from models.shift import ShiftAssignment
 from models.user import User
 from database.db import db
 

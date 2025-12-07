@@ -2,10 +2,6 @@
 Test cases for surprise box generator.
 """
 
-import json
-from models.menu_item import MenuItem
-from database.db import db
-
 
 class TestSurpriseBoxRoutes:
     """Test cases for surprise box routes."""

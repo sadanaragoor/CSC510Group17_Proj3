@@ -2,11 +2,6 @@
 Comprehensive order route tests to increase coverage.
 """
 
-from decimal import Decimal
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
-from database.db import db
-
 
 class TestOrderRoutesComprehensive:
     """Comprehensive order route tests."""

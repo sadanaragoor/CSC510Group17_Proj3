@@ -2,9 +2,6 @@
 Comprehensive menu route tests to increase coverage.
 """
 
-from models.menu_item import MenuItem
-from database.db import db
-
 
 class TestMenuRoutesComprehensive:
     """Comprehensive menu route tests."""

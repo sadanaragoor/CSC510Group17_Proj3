@@ -5,7 +5,7 @@ Fixtures for staff management and shift scheduling tests.
 import pytest
 import sys
 import os
-from datetime import date, datetime, time
+from datetime import date, time, timedelta
 
 # Add parent directory to path to import app modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 from app import create_app
 from database.db import db
 from models.user import User
-from models.shift import StaffProfile, Shift, ShiftAssignment
+from models.shift import Shift, ShiftAssignment
 
 
 @pytest.fixture(scope="function")

@@ -5,7 +5,7 @@ Extended payment route tests to increase coverage.
 from decimal import Decimal
 from unittest.mock import patch, MagicMock
 from models.order import Order
-from models.payment import Transaction, CampusCard
+from models.payment import CampusCard
 from database.db import db
 
 

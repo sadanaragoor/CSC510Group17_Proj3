@@ -6,7 +6,6 @@ import pytest
 import sys
 import os
 from decimal import Decimal
-from datetime import date, datetime, timedelta
 
 # Add parent directory to path to import app modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -17,14 +16,7 @@ from models.user import User
 from models.menu_item import MenuItem
 from models.order import Order, OrderItem
 from models.gamification import (
-    PointsTransaction,
     Badge,
-    UserBadge,
-    DailyBonus,
-    WeeklyChallenge,
-    UserChallengeProgress,
-    Redemption,
-    Coupon,
 )
 
 

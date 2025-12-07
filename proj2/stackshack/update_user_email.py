@@ -27,9 +27,9 @@ def add_email_to_user(username, email):
         print(f"   Eligible for campus card: {user.is_eligible_for_campus_card()}")
 
         if user.is_eligible_for_campus_card():
-            print(f"\n🎓 User can now create a campus card!")
+            print("\n🎓 User can now create a campus card!")
         else:
-            print(f"\n⚠️  Email does not end with .edu - not eligible for campus card")
+            print("\n⚠️  Email does not end with .edu - not eligible for campus card")
 
 
 def show_all_users():

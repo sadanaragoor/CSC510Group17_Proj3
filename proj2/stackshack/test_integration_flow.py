@@ -15,7 +15,7 @@ Step 1: BUILD BURGERS & ADD TO CART
 User Action: Build burger #1 (wheat bun, beef patty, cheese, sauce)
 Route: POST /orders/add-to-cart
 Controller: N/A (handled in route)
-Result: 
+Result:
   - Burger saved in session['cart']
   - User redirected to /orders/cart
   - Flash: "Burger added to cart! ($15.75)"
@@ -48,14 +48,14 @@ Process:
   1. Flatten all cart burgers into item list:
      - wheat bun x1, beef patty x1, cheese x1, sauce x1
      - keto bun x1, chicken patty x1, lettuce x1
-  
+
   2. Create Order in Database:
      - Creates Order record (status="Pending")
      - Creates OrderItem records for each ingredient
      - Calculates total_price = $23.25
      - Decrements stock_quantity for each item
      - Returns: (True, "Order #123 placed", order_object)
-  
+
   3. Clear Cart & Redirect:
      - session['cart'] = []
      - Redirect to: /payment/checkout/123
@@ -93,7 +93,7 @@ Process:
      - amount: 23.25
      - payment_method: "card" (or "campus_card", "wallet")
      - card details (if card payment)
-  
+
   2. PaymentController.process_payment():
      a) Get order from DB
      b) Verify order belongs to user
@@ -101,7 +101,7 @@ Process:
         - Validates card/wallet/campus_card
         - Simulates payment (90% success rate)
         - Returns response with transaction_id
-     
+
      d) If successful:
         - Create PaymentTransaction record
         - Commit to get transaction.id
@@ -112,11 +112,11 @@ Process:
           * Store receipt_html in DB
         - Commit transaction & receipt
         - Return: (True, "Payment successful", transaction_dict)
-     
+
      e) If failed:
         - Log failure
         - Return: (False, "Payment failed: reason", None)
-  
+
   3. Redirect based on result:
      - Success: /payment/success/<transaction_id>
      - Failure: /payment/failed/<order_id>
@@ -263,7 +263,7 @@ Solution: PaymentController.process_payment() updates order status
 COMPLETE FLOW DIAGRAM
 =================================================================
 
-[Build Burger] 
+[Build Burger]
     ↓
 [Add to Cart] ← (Repeat for multiple burgers)
     ↓

@@ -175,7 +175,7 @@ def init_sample_weekly_challenge():
         db.session.commit()
         print(f"✓ Created weekly challenge for week {week_start} to {week_end}")
     else:
-        print(f"Weekly challenge already exists for this week")
+        print("Weekly challenge already exists for this week")
 
 
 if __name__ == "__main__":

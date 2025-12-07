@@ -5,8 +5,8 @@ Shift Scheduling Service - Handles shift management and assignments.
 from models.shift import StaffProfile, Shift, ShiftAssignment
 from models.user import User
 from database.db import db
-from datetime import date, datetime, time, timedelta
-from sqlalchemy import and_, or_
+from datetime import date, time, timedelta
+from sqlalchemy import and_
 
 
 class ShiftService:

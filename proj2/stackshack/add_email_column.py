@@ -5,7 +5,6 @@ Run this once to update your existing database
 
 from app import create_app
 from database.db import db
-import pymysql
 
 
 def add_email_column():
@@ -21,10 +20,10 @@ def add_email_column():
             # Check if column already exists
             cursor.execute(
                 """
-                SELECT COUNT(*) 
-                FROM information_schema.columns 
+                SELECT COUNT(*)
+                FROM information_schema.columns
                 WHERE table_schema = DATABASE()
-                AND table_name = 'users' 
+                AND table_name = 'users'
                 AND column_name = 'email'
             """
             )
@@ -39,7 +38,7 @@ def add_email_column():
                 # Add the email column
                 cursor.execute(
                     """
-                    ALTER TABLE users 
+                    ALTER TABLE users
                     ADD COLUMN email VARCHAR(255) NULL
                 """
                 )

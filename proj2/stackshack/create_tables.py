@@ -14,21 +14,6 @@ def create_tables():
         print("=" * 80)
 
         # Import all models to ensure they're registered with SQLAlchemy
-        from models.user import User
-        from models.menu_item import MenuItem
-        from models.order import Order, OrderItem
-        from models.payment import Transaction, PaymentMethod, CampusCard, Receipt
-        from models.gamification import (
-            PointsTransaction,
-            Badge,
-            UserBadge,
-            DailyBonus,
-            WeeklyChallenge,
-            UserChallengeProgress,
-            PunchCard,
-            Redemption,
-        )
-        from models.shift import StaffProfile, Shift, ShiftAssignment
 
         print("\n[+] Models registered:")
         print("  - User")

@@ -69,20 +69,6 @@ if __name__ == "__main__":
     with app.app_context():
         # Import all models to ensure they're registered
         from models.user import User
-        from models.menu_item import MenuItem
-        from models.order import Order, OrderItem
-        from models.payment import Transaction, PaymentMethod, CampusCard, Receipt
-        from models.gamification import (
-            PointsTransaction,
-            Badge,
-            UserBadge,
-            DailyBonus,
-            WeeklyChallenge,
-            UserChallengeProgress,
-            PunchCard,
-            Redemption,
-        )
-        from models.shift import StaffProfile, Shift, ShiftAssignment
 
         # This creates all tables from your models if they don't exist
         db.create_all()

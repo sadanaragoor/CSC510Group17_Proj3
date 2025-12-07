@@ -2,14 +2,7 @@
 Edge case tests for gamification service to increase coverage.
 """
 
-from decimal import Decimal
-from datetime import date, datetime, timedelta
-from models.gamification import PointsTransaction, Badge, UserBadge, Coupon, Redemption
-from models.user import User
-from models.order import Order, OrderItem
-from models.menu_item import MenuItem
 from services.gamification_service import GamificationService
-from database.db import db
 
 
 class TestGamificationServiceEdgeCases:

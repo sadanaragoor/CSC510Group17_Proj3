@@ -30,8 +30,8 @@ def create_demo_data():
             db.session.add(demo_user)
             db.session.commit()
             print("✅ Demo customer created:")
-            print(f"   Username: demo_customer")
-            print(f"   Password: demo123")
+            print("   Username: demo_customer")
+            print("   Password: demo123")
         else:
             print("\n✅ Demo customer already exists:")
             print(f"   Username: {demo_user.username}")

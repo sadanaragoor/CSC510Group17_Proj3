@@ -2,9 +2,8 @@
 Test cases for shift service.
 """
 
-from datetime import date, datetime, time
-from models.shift import Shift, ShiftAssignment, StaffProfile
-from models.user import User
+from datetime import date, time
+from models.shift import ShiftAssignment
 from services.shift_service import ShiftService
 from database.db import db
 

@@ -2,15 +2,12 @@
 Test cases for gamification models.
 """
 
-from decimal import Decimal
 from datetime import date, datetime, timedelta
 from models.gamification import (
     PointsTransaction,
     Badge,
     UserBadge,
     DailyBonus,
-    WeeklyChallenge,
-    UserChallengeProgress,
     Redemption,
     Coupon,
 )
