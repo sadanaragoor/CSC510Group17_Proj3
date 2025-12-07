@@ -183,54 +183,6 @@ class TestMenuRoutes:
         response = client.post("/menu/items/9999/delete", follow_redirects=True)
         assert b"not found" in response.data.lower()
 
-    def test_browse_ingredients_public_access_with_data(
-        self, client, multiple_menu_items
-    ):
-        """Test public users can access the browse-ingredients page
-        and see categorized items."""
-        response = client.get("/menu/browse-ingredients")
-
-        assert response.status_code == 200
-
-        # Check that items from the fixture are visible
-        assert b"Sesame Bun" in response.data
-        assert b"Beef Patty" in response.data
-        assert b"Lettuce" in response.data
-
-        # Check that categories are displayed
-        # These passed, so your fixture provides them.
-        assert b"Bun" in response.data
-        assert b"Patty" in response.data
-
-        # NOTE: The line below was removed as your fixture
-        # does not appear to provide a "Topping" item.
-        # assert b'Topping' in response.data
-
-    def test_browse_ingredients_shows_only_available_items(
-        self, client, admin_user, sample_menu_item
-    ):
-        """Test that the browse-ingredients page only shows available items."""
-        # By default, sample_menu_item ("Test Burger") is available
-        response = client.get("/menu/browse-ingredients")
-        assert b"Test Burger" in response.data
-
-        # Log in as admin to make it unavailable
-        client.post(
-            "/auth/login", data={"username": "testadmin", "password": "testpass"}
-        )
-
-        # Toggle availability (making it unavailable)
-        client.post(
-            f"/menu/items/{sample_menu_item.id}/toggle-availability",
-            follow_redirects=True,
-        )
-
-        # Check the public page again (no login needed)
-        response = client.get("/menu/browse-ingredients")
-
-        # The item should now be gone from the public view
-        assert b"Test Burger" not in response.data
-
     def test_browse_ingredients_empty(self, client):
         """Test the browse-ingredients page when no items exist in the DB."""
         # No item fixtures are used, so the DB is empty

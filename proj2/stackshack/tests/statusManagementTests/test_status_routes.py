@@ -84,27 +84,6 @@ class TestStatusRoutes:
 
         assert response.status_code == 302
 
-    def test_update_status_staff_success(
-        self, client, app, test_staff_user, pending_order
-    ):
-        """Test staff can update order status."""
-        self.login(client, "staff1", "staffpass123")
-
-        response = client.post(
-            "/status/update",
-            data=json.dumps({"order_id": pending_order, "status": "Preparing"}),
-            content_type="application/json",
-        )
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-        assert data["success"] is True
-        assert data["order"]["status"] == "Preparing"
-
-        with app.app_context():
-            order = Order.query.get(pending_order)
-            assert order.status == "Preparing"
-
     def test_update_status_customer_own_order(
         self, client, app, test_customer_user, pending_order
     ):

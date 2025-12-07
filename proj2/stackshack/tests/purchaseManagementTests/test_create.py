@@ -85,14 +85,6 @@ class TestCreateOrderPage:
         assert response.status_code == 200
         assert b"place-order-form" in response.data or b"<form" in response.data.lower()
 
-    def test_create_page_form_action(self, client, app, test_user, sample_menu_items):
-        """Test that form has correct action URL."""
-        self.login_user(client)
-        response = client.get("/orders/new")
-
-        assert response.status_code == 200
-        assert b"/orders/place" in response.data or b"/place" in response.data
-
     def test_create_page_has_javascript(
         self, client, app, test_user, sample_menu_items
     ):

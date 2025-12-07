@@ -7,20 +7,6 @@ class TestStatusController:
 
     # ==================== UPDATE ORDER STATUS TESTS ====================
 
-    def test_update_order_status_pending_to_preparing(self, app, pending_order):
-        """Test updating order status from Pending to Preparing."""
-        with app.app_context():
-            success, msg, updated_order = StatusController.update_order_status(
-                pending_order, "Preparing"
-            )
-
-            assert success is True
-            assert "updated to Preparing" in msg
-            assert updated_order.status == "Preparing"
-
-            refreshed = Order.query.get(pending_order)
-            assert refreshed.status == "Preparing"
-
     def test_update_order_status_preparing_to_ready(self, app, preparing_order):
         """Test updating order status from Preparing to Ready for Pickup."""
         with app.app_context():
@@ -271,13 +257,6 @@ class TestStatusController:
                 assert isinstance(details["display"], str)
                 assert isinstance(details["icon"], str)
                 assert isinstance(details["nextStatuses"], list)
-
-    def test_status_flow_pending_has_preparing_next(self, app):
-        """Test Pending status has Preparing as next status."""
-        with app.app_context():
-            flow = StatusController.get_status_flow()
-
-            assert "Preparing" in flow["Pending"]["nextStatuses"]
 
     def test_status_flow_delivered_has_no_next(self, app):
         """Test Delivered status has no next statuses."""

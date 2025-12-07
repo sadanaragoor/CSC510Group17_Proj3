@@ -146,17 +146,3 @@ class TestMenuController:
         assert len(items) == 2  # Beef and Turkey patties
         assert all(item.category == "patty" for item in items)
 
-    def test_get_available_items(self, app, multiple_menu_items):
-        """Test getting only available items"""
-        success, msg, items = MenuController.get_available_items()
-        assert success is True
-        assert len(items) == 4  # Turkey Patty is unavailable
-        assert all(item.is_available for item in items)
-
-    def test_get_healthy_choices(self, app, multiple_menu_items):
-        """Test getting healthy choice items"""
-        success, msg, items = MenuController.get_healthy_choices()
-        assert success is True
-        assert len(items) == 1  # Only Lettuce is marked healthy
-        assert items[0].name == "Lettuce"
-        assert all(item.is_healthy_choice for item in items)

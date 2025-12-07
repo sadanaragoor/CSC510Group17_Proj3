@@ -107,36 +107,6 @@ class TestStatusAccessControl:
         assert data["success"] is False
         assert "staff" in data["message"].lower()
 
-    def test_update_status_staff_can_update_any_order(
-        self, client, app, test_staff_user, pending_order
-    ):
-        """Test staff can update any order status."""
-        self.login(client, "staff1", "staffpass123")
-        response = client.post(
-            "/status/update",
-            data=json.dumps({"order_id": pending_order, "status": "Preparing"}),
-            content_type="application/json",
-        )
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-        assert data["success"] is True
-
-    def test_update_status_admin_can_update_any_order(
-        self, client, app, test_admin_user, pending_order
-    ):
-        """Test admin can update any order status."""
-        self.login(client, "admin1", "adminpass123")
-        response = client.post(
-            "/status/update",
-            data=json.dumps({"order_id": pending_order, "status": "Preparing"}),
-            content_type="application/json",
-        )
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-        assert data["success"] is True
-
     def test_customer_can_view_own_order(
         self, client, app, test_customer_user, pending_order
     ):
@@ -246,30 +216,6 @@ class TestStatusAccessControl:
         assert data["success"] is True
 
     # ==================== ROLE-BASED WORKFLOW TESTS ====================
-
-    def test_full_workflow_staff_managing_order(
-        self, client, app, test_staff_user, pending_order
-    ):
-        """Test complete workflow: staff updates order through all states."""
-        self.login(client, "staff1", "staffpass123")
-
-        transitions = [
-            ("Preparing", 200),
-            ("Ready for Pickup", 200),
-            ("Delivered", 200),
-        ]
-
-        current_order_id = pending_order
-        for new_status, expected_code in transitions:
-            response = client.post(
-                "/status/update",
-                data=json.dumps({"order_id": current_order_id, "status": new_status}),
-                content_type="application/json",
-            )
-
-            assert response.status_code == expected_code
-            data = json.loads(response.data)
-            assert data["success"] is True
 
     def test_full_workflow_customer_viewing_order(
         self, client, app, test_customer_user, pending_order

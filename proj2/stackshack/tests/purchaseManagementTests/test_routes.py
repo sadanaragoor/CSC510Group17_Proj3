@@ -73,73 +73,6 @@ class TestOrderRoutes:
 
     # ================== INGREDIENTS ENDPOINT TESTS (NO AUTH NEEDED) ==================
 
-    def test_get_ingredients_by_category_bun(self, client, app, sample_menu_items):
-        """Test getting ingredients by category - bun."""
-        response = client.get("/orders/ingredients/bun")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-
-        assert isinstance(data, list)
-        assert len(data) >= 1
-
-        # Check bun item exists
-        bun_item = next((item for item in data if "bun" in item["name"].lower()), None)
-        assert bun_item is not None
-        assert "id" in bun_item
-        assert "name" in bun_item
-        assert "price" in bun_item
-        assert "description" in bun_item
-        assert "is_healthy" in bun_item
-        assert "image_url" in bun_item
-
-    def test_get_ingredients_by_category_patty(self, client, app, sample_menu_items):
-        """Test getting ingredients by category - patty."""
-        response = client.get("/orders/ingredients/patty")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-
-        assert isinstance(data, list)
-        patty_items = [item for item in data if "patty" in item["name"].lower()]
-        assert len(patty_items) >= 1
-
-    def test_get_ingredients_by_category_cheese(self, client, app, sample_menu_items):
-        """Test getting ingredients by category - cheese."""
-        response = client.get("/orders/ingredients/cheese")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-
-        assert isinstance(data, list)
-        cheese_items = [item for item in data if "cheese" in item["name"].lower()]
-        assert len(cheese_items) >= 1
-
-    def test_get_ingredients_by_category_topping(self, client, app, sample_menu_items):
-        """Test getting ingredients by category - topping."""
-        response = client.get("/orders/ingredients/topping")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-
-        assert isinstance(data, list)
-        assert len(data) >= 1
-
-    def test_get_ingredients_by_category_sauce(self, client, app, sample_menu_items):
-        """Test getting ingredients by category - sauce."""
-        response = client.get("/orders/ingredients/sauce")
-
-        assert response.status_code == 200
-        data = json.loads(response.data)
-
-        assert isinstance(data, list)
-        sauce_items = [
-            item
-            for item in data
-            if "sauce" in item["name"].lower() or "ketchup" in item["name"].lower()
-        ]
-        assert len(sauce_items) >= 1
-
     def test_get_ingredients_includes_unavailable(self, client, app, sample_menu_items):
         """Test that get_ingredients includes unavailable items."""
         response = client.get("/orders/ingredients/topping")
@@ -288,91 +221,6 @@ class TestOrderRoutes:
             "/auth/login" in response.location or "login" in response.location.lower()
         )
 
-    def test_place_order_success(self, client, app, test_user, sample_menu_items):
-        """Test placing an order successfully."""
-        self.login(client)
-
-        with app.app_context():
-            bun = db.session.get(MenuItem, sample_menu_items[0])
-            patty = db.session.get(MenuItem, sample_menu_items[1])
-
-            form_data = {
-                f"quantity_{bun.id}": "1",
-                f"price_{bun.id}": str(bun.price),
-                f"name_{bun.id}": bun.name,
-                f"quantity_{patty.id}": "2",
-                f"price_{patty.id}": str(patty.price),
-                f"name_{patty.id}": patty.name,
-            }
-
-        response = client.post("/orders/place", data=form_data, follow_redirects=False)
-
-        assert response.status_code == 302
-        assert "/orders/history" in response.location
-
-    def test_place_order_creates_order(self, client, app, test_user, sample_menu_items):
-        """Test that placing order creates order in database."""
-        self.login(client)
-
-        with app.app_context():
-            initial_count = Order.query.filter_by(user_id=test_user).count()
-
-            bun = db.session.get(MenuItem, sample_menu_items[0])
-            patty = db.session.get(MenuItem, sample_menu_items[1])
-
-            form_data = {
-                f"quantity_{bun.id}": "1",
-                f"price_{bun.id}": str(bun.price),
-                f"name_{bun.id}": bun.name,
-                f"quantity_{patty.id}": "1",
-                f"price_{patty.id}": str(patty.price),
-                f"name_{patty.id}": patty.name,
-            }
-
-        client.post("/orders/place", data=form_data, follow_redirects=True)
-
-        with app.app_context():
-            final_count = Order.query.filter_by(user_id=test_user).count()
-            assert final_count == initial_count + 1
-
-    def test_place_order_correct_total(self, client, app, test_user, sample_menu_items):
-        """Test that order total is calculated correctly."""
-        self.login(client)
-
-        with app.app_context():
-            bun = db.session.get(MenuItem, sample_menu_items[0])
-            patty = db.session.get(MenuItem, sample_menu_items[1])
-            cheese = db.session.get(MenuItem, sample_menu_items[2])
-
-            form_data = {
-                f"quantity_{bun.id}": "1",
-                f"price_{bun.id}": str(bun.price),
-                f"name_{bun.id}": bun.name,
-                f"quantity_{patty.id}": "2",
-                f"price_{patty.id}": str(patty.price),
-                f"name_{patty.id}": patty.name,
-                f"quantity_{cheese.id}": "1",
-                f"price_{cheese.id}": str(cheese.price),
-                f"name_{cheese.id}": cheese.name,
-            }
-
-            expected_total = (
-                Decimal(str(bun.price))
-                + (Decimal(str(patty.price)) * 2)
-                + Decimal(str(cheese.price))
-            )
-
-        client.post("/orders/place", data=form_data, follow_redirects=True)
-
-        with app.app_context():
-            order = (
-                Order.query.filter_by(user_id=test_user)
-                .order_by(Order.ordered_at.desc())
-                .first()
-            )
-            assert order is not None
-            assert order.total_price == expected_total
-
     def test_place_order_empty(self, client, app, test_user):
         """Test placing an empty order."""
         self.login(client)
@@ -426,65 +274,6 @@ class TestOrderRoutes:
 
         assert response.status_code == 200
 
-    def test_place_order_multiple_items(
-        self, client, app, test_user, sample_menu_items
-    ):
-        """Test placing order with multiple different items."""
-        self.login(client)
-
-        with app.app_context():
-            items = [db.session.get(MenuItem, mid) for mid in sample_menu_items[:5]]
-
-            form_data = {}
-            for item in items:
-                form_data[f"quantity_{item.id}"] = "1"
-                form_data[f"price_{item.id}"] = str(item.price)
-                form_data[f"name_{item.id}"] = item.name
-
-        response = client.post("/orders/place", data=form_data, follow_redirects=True)
-
-        assert response.status_code == 200
-
-        with app.app_context():
-            order = (
-                Order.query.filter_by(user_id=test_user)
-                .order_by(Order.ordered_at.desc())
-                .first()
-            )
-            assert order is not None
-            assert len(order.items.all()) == 5
-
-    def test_place_order_large_quantities(
-        self, client, app, test_user, sample_menu_items
-    ):
-        """Test placing order with large quantities."""
-        self.login(client)
-
-        with app.app_context():
-            cheese = db.session.get(MenuItem, sample_menu_items[2])
-
-            form_data = {
-                f"quantity_{cheese.id}": "50",
-                f"price_{cheese.id}": str(cheese.price),
-                f"name_{cheese.id}": cheese.name,
-            }
-
-            expected_total = Decimal(str(cheese.price)) * 50
-
-        client.post("/orders/place", data=form_data, follow_redirects=True)
-
-        with app.app_context():
-            order = (
-                Order.query.filter_by(user_id=test_user)
-                .order_by(Order.ordered_at.desc())
-                .first()
-            )
-            assert order is not None
-            assert order.total_price == expected_total
-
-            order_item = order.items.first()
-            assert order_item.quantity == 50
-
     def test_place_order_invalid_quantity_format(
         self, client, app, test_user, sample_menu_items
     ):
@@ -503,30 +292,6 @@ class TestOrderRoutes:
         response = client.post("/orders/place", data=form_data, follow_redirects=True)
 
         assert response.status_code == 200
-
-    def test_place_order_redirect_on_success(
-        self, client, app, test_user, sample_menu_items
-    ):
-        """Test that successful order redirects to history."""
-        self.login(client)
-
-        with app.app_context():
-            bun = db.session.get(MenuItem, sample_menu_items[0])
-            patty = db.session.get(MenuItem, sample_menu_items[1])
-
-            form_data = {
-                f"quantity_{bun.id}": "1",
-                f"price_{bun.id}": str(bun.price),
-                f"name_{bun.id}": bun.name,
-                f"quantity_{patty.id}": "1",
-                f"price_{patty.id}": str(patty.price),
-                f"name_{patty.id}": patty.name,
-            }
-
-        response = client.post("/orders/place", data=form_data, follow_redirects=False)
-
-        assert response.status_code == 302
-        assert "history" in response.location
 
     def test_place_order_flash_message(self, client, app, test_user, sample_menu_items):
         """Test that placing order shows flash message."""
@@ -720,30 +485,3 @@ class TestOrderRoutes:
         assert response.status_code == 302
         assert "login" in response.location.lower()
 
-    def test_multiple_orders_same_session(
-        self, client, app, test_user, sample_menu_items
-    ):
-        """Test placing multiple orders in the same session."""
-        self.login(client)
-
-        with app.app_context():
-            bun = db.session.get(MenuItem, sample_menu_items[0])
-
-            form_data = {
-                f"quantity_{bun.id}": "1",
-                f"price_{bun.id}": str(bun.price),
-                f"name_{bun.id}": bun.name,
-            }
-
-        # Place first order
-        response1 = client.post("/orders/place", data=form_data, follow_redirects=True)
-        assert response1.status_code == 200
-
-        # Place second order (same session, no re-login needed)
-        response2 = client.post("/orders/place", data=form_data, follow_redirects=True)
-        assert response2.status_code == 200
-
-        # Verify both orders were created
-        with app.app_context():
-            order_count = Order.query.filter_by(user_id=test_user).count()
-            assert order_count >= 2

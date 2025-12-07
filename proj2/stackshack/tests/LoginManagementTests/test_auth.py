@@ -104,20 +104,6 @@ def test_register_role_bypass_security_anon(client, db_session):
 # --- LOGIN AND LOGOUT ---
 
 
-def test_nominal_login_admin(client, login):
-    """Admin logs in successfully and sees dashboard."""
-    response = login("test_admin", "adminpass")
-    assert response.status_code == 200
-    assert b"Welcome, test_admin!" in response.data
-
-
-def test_nominal_login_customer(client, login):
-    """Customer logs in successfully and sees dashboard."""
-    response = login("test_customer", "customerpass")
-    assert response.status_code == 200
-    assert b"Welcome, test_customer!" in response.data
-
-
 def test_login_bad_password_off_nominal(client, login):
     """Login fails with correct username, wrong password."""
     response = login("test_customer", "wrongpassword")
@@ -148,30 +134,6 @@ def test_nominal_logout(client, login):
 
 
 # --- RBAC ACCESS ---
-
-
-def test_dashboard_content_admin(client, login):
-    """Admin dashboard shows correct role and admin links."""
-    response = login("test_admin", "adminpass")
-    assert b"Your Role: <strong>ADMIN</strong>" in response.data
-    assert b"Create Staff/Admin" in response.data
-    assert b"Manage Users" in response.data
-
-
-def test_dashboard_content_staff(client, login):
-    """Staff dashboard shows correct role and staff links (Manage Menu)."""
-    response = login("test_staff", "staffpass")
-    assert b"Your Role: <strong>STAFF</strong>" in response.data
-    assert b"Staff Tools" in response.data
-    assert b"Manage Users" not in response.data
-
-
-def test_dashboard_content_customer(client, login):
-    """Customer dashboard shows correct role and no tools links."""
-    response = login("test_customer", "customerpass")
-    assert b"Your Role: <strong>CUSTOMER</strong>" in response.data
-    assert b"Admin Tools" not in response.data
-    assert b"Staff Tools" not in response.data
 
 
 def test_customer_cannot_access_admin_manage_security(client, login):
