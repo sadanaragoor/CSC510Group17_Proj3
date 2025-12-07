@@ -8,6 +8,7 @@ from routes.order_routes import order_bp
 from routes.status_routes import status_bp
 from routes.payment_routes import payment_bp
 from routes.profile_routes import profile_bp
+from routes.gamification_routes import gamification_bp
 from models.user import User
 from datetime import datetime
 from dotenv import load_dotenv
@@ -38,6 +39,7 @@ def create_app(config_name="development"):
     app.register_blueprint(payment_bp, url_prefix="/payment")
     app.register_blueprint(profile_bp, url_prefix="/profile")
     app.register_blueprint(surprise_bp, url_prefix="/surprisebox")
+    app.register_blueprint(gamification_bp, url_prefix="/gamification")
 
 
     @app.context_processor
@@ -62,6 +64,15 @@ def create_app(config_name="development"):
 if __name__ == "__main__":
     app = create_app("development")
     with app.app_context():
+        # Import all models to ensure they're registered
+        from models.user import User
+        from models.menu_item import MenuItem
+        from models.order import Order, OrderItem
+        from models.payment import Transaction, PaymentMethod, CampusCard, Receipt
+        from models.gamification import (
+            PointsTransaction, Badge, UserBadge, DailyBonus, WeeklyChallenge,
+            UserChallengeProgress, PunchCard, Redemption
+        )
         # This creates all tables from your models if they don't exist
         db.create_all()
         print("Database tables checked/created.")

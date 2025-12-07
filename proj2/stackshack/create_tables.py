@@ -18,6 +18,10 @@ def create_tables():
         from models.menu_item import MenuItem
         from models.order import Order, OrderItem
         from models.payment import Transaction, PaymentMethod, CampusCard, Receipt
+        from models.gamification import (
+            PointsTransaction, Badge, UserBadge, DailyBonus, WeeklyChallenge,
+            UserChallengeProgress, PunchCard, Redemption
+        )
         
         print("\n[+] Models registered:")
         print("  - User")
@@ -28,6 +32,14 @@ def create_tables():
         print("  - PaymentMethod")
         print("  - CampusCard")
         print("  - Receipt")
+        print("  - PointsTransaction")
+        print("  - Badge")
+        print("  - UserBadge")
+        print("  - DailyBonus")
+        print("  - WeeklyChallenge")
+        print("  - UserChallengeProgress")
+        print("  - PunchCard")
+        print("  - Redemption")
         
         # Create all tables
         print("\n[+] Creating database tables...")

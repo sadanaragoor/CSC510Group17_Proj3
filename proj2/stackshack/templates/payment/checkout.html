@@ -61,14 +61,36 @@
                 {% endfor %}
             </tbody>
             <tfoot style="background: #f8f9fa;">
+                <tr id="discount-row" style="display: none;">
+                    <td colspan="3" style="padding: 10px 15px; text-align: right; color: #28a745;">Discount:</td>
+                    <td style="padding: 10px 15px; text-align: right; color: #28a745; font-weight: bold;" id="discount-amount">
+                        -$0.00
+                    </td>
+                </tr>
                 <tr>
                     <td colspan="3" style="padding: 15px; text-align: right; font-weight: bold; font-size: 1.2em;">Total:</td>
-                    <td style="padding: 15px; text-align: right; font-weight: bold; font-size: 1.2em; color: var(--primary-color);">
+                    <td style="padding: 15px; text-align: right; font-weight: bold; font-size: 1.2em; color: var(--primary-color);" id="order-total">
                         ${{ "%.2f"|format(order.total_price) }}
                     </td>
                 </tr>
             </tfoot>
         </table>
+    </div>
+    
+    <!-- Coupon Code Section -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h3>🎟️ Have a Coupon Code?</h3>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <input type="text" id="coupon-code-input" placeholder="Enter coupon code (e.g., SHACK-XXXXXX)" 
+                   style="flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 4px; font-size: 1em; text-transform: uppercase;"
+                   onkeypress="if(event.key === 'Enter') applyCoupon()">
+            <button type="button" onclick="applyCoupon()" id="apply-coupon-btn"
+                    style="padding: 12px 24px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; font-weight: bold;">
+                Apply
+            </button>
+        </div>
+        <div id="coupon-message" style="margin-top: 10px; min-height: 25px;"></div>
+        <input type="hidden" id="applied-coupon-code" name="coupon_code" value="">
     </div>
     
     <!-- Payment Method Selection -->
@@ -91,8 +113,9 @@
         <div id="card-payment" class="payment-form">
             <form action="{{ url_for('payment.process_payment') }}" method="POST">
                 <input type="hidden" name="order_id" value="{{ order.id }}">
-                <input type="hidden" name="amount" value="{{ order.total_price }}">
+                <input type="hidden" name="amount" id="card-amount" value="{{ order.total_price }}">
                 <input type="hidden" name="payment_method" value="card">
+                <input type="hidden" name="coupon_code" id="card-coupon" value="">
                 
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: bold;">Card Number</label>
@@ -127,8 +150,8 @@
                     </div>
                 </div>
                 
-                <button type="submit" style="width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s;">
-                    Pay ${{ "%.2f"|format(order.total_price) }}
+                <button type="submit" id="card-pay-btn" style="width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s;">
+                    Pay $<span id="card-pay-amount">{{ "%.2f"|format(order.total_price) }}</span>
                 </button>
             </form>
         </div>
@@ -159,9 +182,10 @@
             {% elif campus_card %}
             <form action="{{ url_for('payment.process_payment') }}" method="POST">
                 <input type="hidden" name="order_id" value="{{ order.id }}">
-                <input type="hidden" name="amount" value="{{ order.total_price }}">
+                <input type="hidden" name="amount" id="campus-amount" value="{{ order.total_price }}">
                 <input type="hidden" name="payment_method" value="campus_card">
                 <input type="hidden" name="campus_card_id" value="{{ campus_card.id }}">
+                <input type="hidden" name="coupon_code" id="campus-coupon" value="">
                 
                 <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
                     <p><strong>Card Number:</strong> {{ campus_card.card_number }}</p>
@@ -179,8 +203,8 @@
                     Add Balance
                 </button>
                 {% else %}
-                <button type="submit" style="width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s;">
-                    Pay ${{ "%.2f"|format(order.total_price) }}
+                <button type="submit" id="campus-pay-btn" style="width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 4px; font-size: 1.1em; cursor: pointer; transition: background 0.3s;">
+                    Pay $<span id="campus-pay-amount">{{ "%.2f"|format(order.total_price) }}</span>
                 </button>
                 {% endif %}
             </form>
@@ -201,9 +225,10 @@
         <div id="wallet-payment" class="payment-form" style="display: none;">
             <form action="{{ url_for('payment.process_payment') }}" method="POST" id="wallet-form">
                 <input type="hidden" name="order_id" value="{{ order.id }}">
-                <input type="hidden" name="amount" value="{{ order.total_price }}">
+                <input type="hidden" name="amount" id="wallet-amount" value="{{ order.total_price }}">
                 <input type="hidden" name="payment_method" value="wallet">
                 <input type="hidden" name="wallet_provider" id="wallet-provider-input">
+                <input type="hidden" name="coupon_code" id="wallet-coupon" value="">
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                     <button type="button" onclick="selectWallet('gpay')" class="wallet-btn" 
@@ -336,7 +361,8 @@
         payBtn.disabled = false;
         payBtn.style.background = 'var(--primary-color)';
         payBtn.style.cursor = 'pointer';
-        payBtn.textContent = 'Pay ${{ "%.2f"|format(order.total_price) }}';
+        // Use currentTotal (which may include coupon discount) instead of static order total
+        payBtn.textContent = `Pay $${currentTotal.toFixed(2)}`;
     }
     
     async function processWallet() {
@@ -381,8 +407,204 @@
         document.getElementById('wallet-form').submit();
     }
     
+    let appliedCoupon = null;
+    let originalTotal = {{ order.total_price }};
+    let currentTotal = originalTotal;
+    let couponApplied = false;
+    
+    async function applyCoupon() {
+        const couponCode = document.getElementById('coupon-code-input').value.trim().toUpperCase();
+        const messageDiv = document.getElementById('coupon-message');
+        const applyBtn = document.getElementById('apply-coupon-btn');
+        
+        if (!couponCode) {
+            messageDiv.innerHTML = '<p style="color: #dc3545; margin: 0;">Please enter a coupon code.</p>';
+            return;
+        }
+        
+        // Prevent applying if already applied or button is disabled
+        if (couponApplied || applyBtn.disabled) {
+            if (couponApplied) {
+                messageDiv.innerHTML = '<p style="color: #dc3545; margin: 0;">❌ A coupon has already been applied to this order.</p>';
+            }
+            return;
+        }
+        
+        applyBtn.disabled = true;
+        applyBtn.textContent = 'Validating...';
+        messageDiv.innerHTML = '<p style="color: #666; margin: 0;">⏳ Validating coupon...</p>';
+        
+        try {
+            const response = await fetch('/gamification/api/coupon/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    coupon_code: couponCode,
+                    order_id: {{ order.id }}
+                })
+            });
+            
+            // Check if response is ok before parsing JSON
+            let data;
+            try {
+                const responseText = await response.text();
+                console.log('Coupon apply response:', responseText);
+                data = JSON.parse(responseText);
+            } catch (jsonError) {
+                console.error('Error parsing JSON response:', jsonError, 'Response status:', response.status);
+                messageDiv.innerHTML = '<p style="color: #dc3545; margin: 0;">❌ Invalid response from server. Please try again.</p>';
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Apply';
+                applyBtn.style.background = '';
+                return;
+            }
+            
+            console.log('Parsed response data:', data);
+            
+            if (response.ok && data && data.success) {
+                try {
+                    appliedCoupon = data.coupon;
+                    currentTotal = data.new_total;
+                    couponApplied = true;
+                    
+                    // Update UI - with error handling for missing elements
+                    messageDiv.innerHTML = `<p style="color: #28a745; margin: 0;">✅ ${data.message} - Discount: $${data.discount_amount.toFixed(2)}</p>`;
+                    
+                    const discountRow = document.getElementById('discount-row');
+                    if (discountRow) {
+                        discountRow.style.display = 'table-row';
+                    }
+                    
+                    const discountAmount = document.getElementById('discount-amount');
+                    if (discountAmount) {
+                        discountAmount.textContent = `-$${data.discount_amount.toFixed(2)}`;
+                    }
+                    
+                    const orderTotal = document.getElementById('order-total');
+                    if (orderTotal) {
+                        orderTotal.textContent = `$${currentTotal.toFixed(2)}`;
+                    }
+                    
+                    const cardAmount = document.getElementById('card-amount');
+                    if (cardAmount) {
+                        cardAmount.value = currentTotal;
+                    }
+                    
+                    const cardPayAmount = document.getElementById('card-pay-amount');
+                    if (cardPayAmount) {
+                        cardPayAmount.textContent = currentTotal.toFixed(2);
+                    }
+                    
+                    const cardCoupon = document.getElementById('card-coupon');
+                    if (cardCoupon) {
+                        cardCoupon.value = couponCode;
+                    }
+                    
+                    const appliedCouponCode = document.getElementById('applied-coupon-code');
+                    if (appliedCouponCode) {
+                        appliedCouponCode.value = couponCode;
+                    }
+                    
+                    // Update campus card and wallet buttons immediately
+                    const campusPayAmount = document.getElementById('campus-pay-amount');
+                    if (campusPayAmount) {
+                        campusPayAmount.textContent = currentTotal.toFixed(2);
+                    }
+                    
+                    const walletPayBtn = document.getElementById('wallet-pay-btn');
+                    if (walletPayBtn && !walletPayBtn.disabled) {
+                        walletPayBtn.textContent = `Pay $${currentTotal.toFixed(2)}`;
+                    }
+                    
+                    // Update all payment forms
+                    updatePaymentAmounts();
+                    
+                    // Disable coupon input and button
+                    const couponInput = document.getElementById('coupon-code-input');
+                    if (couponInput) {
+                        couponInput.disabled = true;
+                    }
+                    applyBtn.textContent = 'Applied ✓';
+                    applyBtn.style.background = '#28a745';
+                    applyBtn.disabled = true;
+                } catch (uiError) {
+                    console.error('Error updating UI after coupon application:', uiError);
+                    // Even if UI update fails, coupon is applied, so show success
+                    messageDiv.innerHTML = `<p style="color: #28a745; margin: 0;">✅ ${data.message} - Discount: $${data.discount_amount.toFixed(2)}</p>`;
+                    applyBtn.textContent = 'Applied ✓';
+                    applyBtn.style.background = '#28a745';
+                    applyBtn.disabled = true;
+                }
+            } else {
+                // Handle error response
+                const errorMsg = data.error || data.message || 'Invalid coupon code';
+                messageDiv.innerHTML = `<p style="color: #dc3545; margin: 0;">❌ ${errorMsg}</p>`;
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Apply';
+                applyBtn.style.background = '';
+            }
+        } catch (error) {
+            console.error('Error applying coupon:', error);
+            // Check if coupon was actually applied (by checking if currentTotal changed)
+            // If the total changed, the coupon was applied successfully despite the error
+            if (currentTotal !== originalTotal && couponApplied) {
+                // Coupon was applied, just show success message
+                messageDiv.innerHTML = '<p style="color: #28a745; margin: 0;">✅ Coupon applied successfully!</p>';
+                applyBtn.textContent = 'Applied ✓';
+                applyBtn.style.background = '#28a745';
+                applyBtn.disabled = true;
+                const couponInput = document.getElementById('coupon-code-input');
+                if (couponInput) {
+                    couponInput.disabled = true;
+                }
+            } else {
+                // Real error - coupon was not applied
+                messageDiv.innerHTML = '<p style="color: #dc3545; margin: 0;">❌ Error applying coupon. Please try again.</p>';
+                applyBtn.disabled = false;
+                applyBtn.textContent = 'Apply';
+                applyBtn.style.background = '';
+            }
+        }
+    }
+    
+    function updatePaymentAmounts() {
+        // Update all payment form amounts
+        document.getElementById('card-amount').value = currentTotal;
+        document.getElementById('campus-amount').value = currentTotal;
+        document.getElementById('wallet-amount').value = currentTotal;
+        
+        // Update coupon codes in all forms
+        if (appliedCoupon) {
+            document.getElementById('card-coupon').value = appliedCoupon.coupon_code;
+            document.getElementById('campus-coupon').value = appliedCoupon.coupon_code;
+            document.getElementById('wallet-coupon').value = appliedCoupon.coupon_code;
+        }
+        
+        // Update pay button texts - ensure all buttons show the discounted amount
+        const cardPayAmount = document.getElementById('card-pay-amount');
+        if (cardPayAmount) {
+            cardPayAmount.textContent = currentTotal.toFixed(2);
+        }
+        
+        const campusPayAmount = document.getElementById('campus-pay-amount');
+        if (campusPayAmount) {
+            campusPayAmount.textContent = currentTotal.toFixed(2);
+        }
+        
+        const walletPayBtn = document.getElementById('wallet-pay-btn');
+        if (walletPayBtn) {
+            walletPayBtn.textContent = `Pay $${currentTotal.toFixed(2)}`;
+        }
+    }
+    
     // Show processing on card form submit
-    document.querySelector('#card-payment form').addEventListener('submit', function() {
+    document.querySelector('#card-payment form').addEventListener('submit', function(e) {
+        // Update coupon code in form
+        if (appliedCoupon) {
+            document.getElementById('card-coupon').value = appliedCoupon.coupon_code;
+        }
         document.getElementById('processing-modal').style.display = 'flex';
         document.getElementById('processing-title').textContent = 'Processing Card Payment...';
         document.getElementById('processing-message').textContent = 'Verifying card details and processing transaction.';
@@ -391,12 +613,24 @@
     // Show processing on campus card form submit
     const campusForm = document.querySelector('#campus_card-payment form');
     if (campusForm) {
-        campusForm.addEventListener('submit', function() {
+        campusForm.addEventListener('submit', function(e) {
+            // Update coupon code in form
+            if (appliedCoupon) {
+                document.getElementById('campus-coupon').value = appliedCoupon.coupon_code;
+            }
             document.getElementById('processing-modal').style.display = 'flex';
             document.getElementById('processing-title').textContent = 'Processing Campus Card Payment...';
             document.getElementById('processing-message').textContent = 'Checking campus card balance...';
         });
     }
+    
+    // Show processing on wallet form submit
+    document.getElementById('wallet-form').addEventListener('submit', function(e) {
+        // Update coupon code in form
+        if (appliedCoupon) {
+            document.getElementById('wallet-coupon').value = appliedCoupon.coupon_code;
+        }
+    });
 </script>
 {% endblock %}
 

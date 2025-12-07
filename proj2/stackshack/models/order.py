@@ -8,6 +8,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     total_price = db.Column(db.Numeric(10, 2), nullable=False)
+    original_total = db.Column(db.Numeric(10, 2), nullable=True)  # Store original total before coupon
     status = db.Column(db.String(50), nullable=False, default="Pending")
     ordered_at = db.Column(db.DateTime, default=datetime.utcnow)
 

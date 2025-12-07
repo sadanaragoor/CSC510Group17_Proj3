@@ -55,11 +55,19 @@ def process_payment():
             flash("Missing payment information", "error")
             return redirect(url_for("order.order_history"))
         
+        # Get order to verify it exists and get current total
+        order = Order.query.get_or_404(order_id)
+        
+        # Use amount from form (which should be updated with coupon discount)
+        # Convert to float to ensure proper handling
+        form_amount = request.form.get("amount")
+        payment_amount = float(form_amount) if form_amount else float(order.total_price)
+        
         # Build payment data based on method
         payment_data = {
             "order_id": int(order_id),
             "user_id": current_user.id,
-            "amount": request.form.get("amount"),
+            "amount": payment_amount,
             "payment_method": payment_method
         }
         

@@ -100,6 +100,7 @@ class OrderController:
                 return False, "Order cannot be empty.", None
 
             new_order.total_price = total_price
+            new_order.original_total = total_price  # Store original total before any discounts
             db.session.commit()
             return True, f"Order #{new_order.id} placed successfully.", new_order
 

@@ -289,6 +289,7 @@
   <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>
 
   {% if current_user.is_authenticated %}
+    <a href="{{ url_for('gamification.rewards_page') }}">🎁 Rewards</a>
     <a href="{{ url_for('order.view_cart') }}" style="position: relative;">
       🛒 Cart
       {% if session.get('cart') %}

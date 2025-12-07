@@ -3,6 +3,7 @@ Payment Controller
 Handles payment processing business logic
 """
 from datetime import datetime, timedelta
+from flask import session
 from database.db import db
 from models.payment import Transaction, CampusCard, Receipt, PaymentMethod
 from models.order import Order
@@ -43,6 +44,12 @@ class PaymentController:
             if existing_transaction:
                 return False, "Order already paid", None
             
+            # Refresh order from database to get latest total_price (in case coupon was applied)
+            db.session.refresh(order)
+            
+            # Use the amount from payment_data (which includes coupon discount) or fall back to order.total_price
+            payment_amount = float(payment_data.get("amount", order.total_price))
+            
             # Initialize payment gateway
             gateway = PaymentGatewayService(simulation_mode="random_90")
             
@@ -54,7 +61,7 @@ class PaymentController:
                 transaction_id=payment_response["transaction_id"],
                 order_id=order.id,
                 user_id=order.user_id,
-                amount=order.total_price,
+                amount=payment_amount,
                 payment_method=payment_response["payment_method"],
                 payment_provider=payment_response.get("payment_provider"),
                 masked_card=payment_response.get("masked_card"),
@@ -79,6 +86,61 @@ class PaymentController:
                 receipt = PaymentController._generate_receipt(transaction, order)
                 db.session.add(receipt)
                 db.session.commit()
+                
+                # Mark applied coupon as used if one was applied
+                try:
+                    from models.gamification import Coupon
+                    
+                    # First, try to get coupon from session
+                    coupon_code = session.get('applied_coupons', {}).get(str(order.id))
+                    coupon = None
+                    
+                    if coupon_code:
+                        coupon = Coupon.query.filter_by(coupon_code=coupon_code.upper()).first()
+                    
+                    # Fallback: Check if any coupon was applied to this order (by used_order_id)
+                    if not coupon:
+                        coupon = Coupon.query.filter_by(used_order_id=order.id, is_used=False).first()
+                    
+                    # Mark coupon as used if found
+                    if coupon and not coupon.is_used:
+                        coupon.is_used = True
+                        coupon.used_at = datetime.utcnow()
+                        coupon.used_order_id = order.id
+                        db.session.commit()
+                        print(f"Marked coupon {coupon.coupon_code} as used for order {order.id}")
+                    
+                    # Remove from session
+                    if 'applied_coupons' in session:
+                        session['applied_coupons'].pop(str(order.id), None)
+                        session.modified = True
+                except Exception as e:
+                    print(f"Error marking coupon as used: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
+                
+                # Process gamification: points, badges, challenges
+                try:
+                    from services.gamification_service import GamificationService
+                    
+                    # Process order points with all bonuses
+                    total_points, breakdown = GamificationService.process_order_points(order)
+                    
+                    # Check and grant badges
+                    newly_earned_badges = GamificationService.check_and_grant_badges(order.user_id, order)
+                    
+                    # Check daily bonus
+                    daily_bonus_success, daily_bonus = GamificationService.check_daily_bonus(order.user_id, order)
+                    
+                    # Check weekly challenge
+                    weekly_challenge_success, weekly_challenge = GamificationService.check_weekly_challenge(order.user_id, order)
+                    
+                    # Update user tier
+                    GamificationService.update_user_tier(order.user_id)
+                    
+                except Exception as e:
+                    # Log error but don't fail payment
+                    print(f"Gamification processing error: {str(e)}")
             
             return payment_response["success"], payment_response["message"], transaction.to_dict()
             

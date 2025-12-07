@@ -1,0 +1,940 @@
+{% extends "base.html" %}
+{% block title %}Rewards & Achievements{% endblock %}
+{% block content %}
+
+<style>
+.rewards-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.rewards-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.rewards-header h1 {
+    font-family: 'Momo Signature', cursive;
+    font-size: 3em;
+    margin: 0 0 10px 0;
+}
+
+.rewards-header .points-display {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.rewards-header .tier-badge {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-top: 10px;
+}
+
+.tier-badge.bronze {
+    background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%);
+    color: white;
+}
+
+.tier-badge.silver {
+    background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+    color: white;
+}
+
+.tier-badge.gold {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+}
+
+.rewards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.reward-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reward-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.card-icon {
+    font-size: 2.5em;
+}
+
+.card-header h2 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.6em;
+}
+
+.badges-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    min-height: 300px;
+    /* Height will be set dynamically to match redemption history */
+}
+
+.badge-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 25px;
+    font-size: 0.95em;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.badge-item:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+}
+
+.badge-item .badge-icon {
+    font-size: 1.3em;
+}
+
+.no-badges {
+    text-align: center;
+    color: #999;
+    padding: 30px;
+    font-style: italic;
+}
+
+.challenge-content {
+    padding: 0;
+    background: transparent;
+}
+
+.challenge-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.challenge-item:last-child {
+    margin-bottom: 0;
+}
+
+.challenge-content h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary-color);
+}
+
+.challenge-content p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 25px;
+    background: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.rewards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.reward-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.reward-item:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.reward-info {
+    flex: 1;
+}
+
+.reward-name {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.reward-cost {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.redeem-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.redeem-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.redeem-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.completed-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #28a745;
+    color: white;
+    border-radius: 15px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.badge-item.unearned {
+    opacity: 0.6;
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    position: relative;
+}
+
+.badge-item.unearned::after {
+    content: '🔒';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 0.8em;
+}
+
+.badge-item.unearned:hover {
+    opacity: 0.8;
+}
+
+/* Badge Modal */
+.badge-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.badge-modal.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.badge-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.badge-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.badge-modal-icon {
+    font-size: 3em;
+}
+
+.badge-modal-title {
+    flex: 1;
+}
+
+.badge-modal-title h2 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.8em;
+}
+
+.badge-modal-close {
+    background: none;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.badge-modal-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.badge-modal-body {
+    color: #666;
+    line-height: 1.6;
+}
+
+.badge-modal-description {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.badge-modal-how-to {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    margin-top: 15px;
+}
+
+.badge-modal-how-to h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+.badge-modal-how-to p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.badge-modal-status {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.badge-modal-status.earned {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #28a745;
+}
+
+.badge-modal-status.unearned {
+    background: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffc107;
+}
+
+.redemption-history {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 300px;
+    /* Height will be set dynamically to match badges container */
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.redemption-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.redemption-item.used {
+    border-left-color: #28a745;
+    opacity: 0.8;
+}
+
+.redemption-item.expired {
+    border-left-color: #dc3545;
+    opacity: 0.7;
+}
+
+.redemption-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.redemption-reward {
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1.1em;
+}
+
+.redemption-status {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.redemption-status.used {
+    background: #28a745;
+    color: white;
+}
+
+.redemption-status.unused {
+    background: #ffc107;
+    color: #333;
+}
+
+.redemption-status.expired {
+    background: #dc3545;
+    color: white;
+}
+
+.redemption-details {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 8px;
+}
+
+.coupon-code {
+    font-family: monospace;
+    font-weight: bold;
+    color: #667eea;
+    background: #f0f4ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 5px 0;
+}
+
+.loading-text {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .rewards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .rewards-header h1 {
+        font-size: 2em;
+    }
+    
+    .rewards-header .points-display {
+        font-size: 2em;
+    }
+}
+</style>
+
+<div class="rewards-page">
+    <!-- Header with Points and Tier -->
+    <div class="rewards-header">
+        <h1>🎮 Rewards & Achievements</h1>
+        <div class="points-display">{{ points|int|string|replace(',', ',') }} Points</div>
+        <div class="tier-badge {{ tier.lower() }}">{{ tier }} Tier</div>
+        <p style="margin-top: 15px; opacity: 0.9;">{{ tier_multiplier }}x point multiplier</p>
+        <p style="margin-top: 10px; opacity: 0.85; font-size: 0.95em;">Earn {{ (10 * tier_multiplier)|int }} points per $1 spent. Points are automatically added when you pay for an order.</p>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="rewards-grid">
+        <!-- Badges Card -->
+        <div class="reward-card">
+            <div class="card-header">
+                <span class="card-icon">🏆</span>
+                <h2>Badges</h2>
+            </div>
+            <div class="badges-container" id="all-badges-container">
+                <div class="loading-text">Loading badges...</div>
+            </div>
+        </div>
+        
+        <!-- Redemption History Card -->
+        <div class="reward-card">
+            <div class="card-header">
+                <span class="card-icon">📜</span>
+                <h2>Redemption History</h2>
+            </div>
+            <div class="redemption-history" id="redemption-history">
+                <div class="loading-text">Loading redemption history...</div>
+            </div>
+        </div>
+
+        <!-- Daily Bonus Card -->
+        <div class="reward-card">
+            <div class="card-header">
+                <span class="card-icon">📅</span>
+                <h2>Daily Bonus</h2>
+            </div>
+            <div class="challenge-content">
+                {% if daily_bonuses and daily_bonuses|length > 0 %}
+                    {% for bonus_data in daily_bonuses %}
+                        <div class="challenge-item">
+                            <h3 style="margin-top: 0; margin-bottom: 8px; color: var(--primary-color); font-size: 1.05em;">{{ bonus_data['bonus']['description'] }}</h3>
+                            <p style="margin: 5px 0;"><strong>Reward:</strong> {{ bonus_data['bonus']['points_reward'] }} points</p>
+                            {% if bonus_data['completed'] %}
+                                <span class="completed-badge" style="margin-top: 8px; display: inline-block;">✅ Completed!</span>
+                            {% else %}
+                                <p style="color: #ffc107; margin-top: 8px; margin-bottom: 0;"><strong>⏳ Complete this order to earn bonus!</strong></p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No daily bonus available today. Check back tomorrow!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Weekly Challenge Card -->
+        <div class="reward-card">
+            <div class="card-header">
+                <span class="card-icon">🎯</span>
+                <h2>Weekly Challenge</h2>
+            </div>
+            <div class="challenge-content">
+                {% if weekly_challenges and weekly_challenges|length > 0 %}
+                    {% for challenge_data in weekly_challenges %}
+                        <div class="challenge-item">
+                            <h3 style="margin-top: 0; margin-bottom: 8px; color: var(--primary-color); font-size: 1.05em;">{{ challenge_data['challenge']['description'] }}</h3>
+                            <p style="margin: 5px 0;"><strong>Reward:</strong> {{ challenge_data['challenge']['points_reward'] }} points</p>
+                            {% if challenge_data['progress'] %}
+                                <div class="progress-bar" style="margin: 10px 0;">
+                                    <div class="progress-fill" style="width: {{ (challenge_data['progress']['progress'] / challenge_data['progress']['target'] * 100) if challenge_data['progress']['target'] > 0 else 0 }}%">
+                                        {{ challenge_data['progress']['progress'] }}/{{ challenge_data['progress']['target'] }}
+                                    </div>
+                                </div>
+                                {% if challenge_data['progress']['completed'] %}
+                                    <span class="completed-badge" style="margin-top: 8px; display: inline-block;">✅ Challenge Completed!</span>
+                                {% else %}
+                                    <p style="color: #666; margin-top: 8px; margin-bottom: 0;">Keep ordering to complete the challenge!</p>
+                                {% endif %}
+                            {% else %}
+                                <p style="color: #666; margin-top: 8px; margin-bottom: 0;">Start ordering to begin the challenge!</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No weekly challenge available. Check back next week!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Rewards Redemption Card -->
+        <div class="reward-card">
+            <div class="card-header">
+                <span class="card-icon">🎁</span>
+                <h2>Redeem Rewards</h2>
+            </div>
+            <div class="rewards-list">
+                {% set reward_names = {
+                    'free_topping': 'Free Extra Topping',
+                    'free_premium_sauce': 'Free Premium Sauce',
+                    'free_patty_upgrade': 'Free Patty Upgrade',
+                    'three_dollar_off': '$3 Off Next Order',
+                    'skip_queue': 'Skip Queue',
+                    'five_dollar_off': '$5 Off Next Order'
+                } %}
+                {% for reward_type, cost in rewards.items() %}
+                <div class="reward-item">
+                    <div class="reward-info">
+                        <div class="reward-name">{{ reward_names.get(reward_type, reward_type) }}</div>
+                        <div class="reward-cost">{{ cost }} points</div>
+                    </div>
+                    <button class="redeem-btn" 
+                            onclick="redeemReward('{{ reward_type }}')" 
+                            {% if points < cost %}disabled{% endif %}>
+                        Redeem
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Badge Detail Modal -->
+<div class="badge-modal" id="badgeModal">
+    <div class="badge-modal-content">
+        <div class="badge-modal-header">
+            <span class="badge-modal-icon" id="modalBadgeIcon">🏆</span>
+            <div class="badge-modal-title">
+                <h2 id="modalBadgeName">Badge Name</h2>
+                <p style="margin: 5px 0 0 0; color: #999; font-size: 0.9em;" id="modalBadgeCategory"></p>
+            </div>
+            <button class="badge-modal-close" onclick="closeBadgeModal()">&times;</button>
+        </div>
+        <div class="badge-modal-body">
+            <div class="badge-modal-description" id="modalBadgeDescription">
+                Badge description
+            </div>
+            <div class="badge-modal-how-to" id="modalBadgeHowTo">
+                <h3>How to Earn This Badge</h3>
+                <p id="modalBadgeInstructions">Instructions on how to earn this badge</p>
+            </div>
+            <div class="badge-modal-points" id="modalBadgePoints" style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #4caf50;">
+                <strong style="color: #2e7d32; font-size: 1.1em;">🎁 Points Reward:</strong>
+                <p id="modalBadgePointsText" style="margin: 8px 0 0 0; color: #1b5e20; font-size: 1.2em; font-weight: bold;">Loading...</p>
+            </div>
+            <div class="badge-modal-status" id="modalBadgeStatus">
+                Status information
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Badge earning instructions mapping
+const badgeInstructions = {
+    'sauce_collector': 'Try all available sauces in your orders. Each time you order a burger with a sauce you haven\'t tried before, you\'re one step closer to becoming a Sauce Collector!',
+    'veggie_champion': 'Order a burger with 4 or more vegetable toppings (lettuce, tomato, onion, pickles, capsicum) in a single order.',
+    'carnivore_king': 'Try all available patty options in your orders. Explore different patty types like beef, chicken, pork, and veggie patties!',
+    'brave_soul': 'Order a burger with spicy ingredients like jalapeños, hot sauce, or any spicy toppings. Show your love for heat!',
+    'classic_lover': 'Order the same pre-defined burger 5 or more times. Find your favorite and stick with it!',
+    'lunch_rush_warrior': 'Place 10 orders between 12:00 PM and 1:00 PM. Become the lunch rush champion!',
+    'early_bird': 'Place 5 orders before 11:00 AM. Start your day with Stack Shack!',
+    'late_night_snacker': 'Place 5 orders after 8:00 PM. Late night cravings? We\'ve got you covered!',
+    'stackshack_regular': 'Place 20 total orders. You\'re becoming a regular!',
+    'century_club': 'Place 100 total orders. Welcome to the elite Century Club!',
+    'mystery_box_master': 'Order from the Surprise Box 5 times. Embrace the mystery and discover amazing burgers!'
+};
+
+// Badge points rewards mapping
+const badgePoints = {
+    'sauce_collector': 50,
+    'veggie_champion': 75,
+    'carnivore_king': 100,
+    'brave_soul': 50,
+    'classic_lover': 60,
+    'lunch_rush_warrior': 100,
+    'early_bird': 75,
+    'late_night_snacker': 75,
+    'stackshack_regular': 150,
+    'century_club': 500,
+    'mystery_box_master': 80
+};
+
+function showBadgeModalByIndex(index) {
+    if (!window.badgesData || !window.badgesData[index]) {
+        return;
+    }
+    showBadgeModal(window.badgesData[index]);
+}
+
+function showBadgeModal(badge) {
+    const modal = document.getElementById('badgeModal');
+    const icon = document.getElementById('modalBadgeIcon');
+    const name = document.getElementById('modalBadgeName');
+    const category = document.getElementById('modalBadgeCategory');
+    const description = document.getElementById('modalBadgeDescription');
+    const instructions = document.getElementById('modalBadgeInstructions');
+    const pointsText = document.getElementById('modalBadgePointsText');
+    const status = document.getElementById('modalBadgeStatus');
+    
+    icon.textContent = badge.icon || '🏆';
+    name.textContent = badge.name;
+    category.textContent = badge.badge_type ? badge.badge_type.charAt(0).toUpperCase() + badge.badge_type.slice(1) + ' Badge' : '';
+    description.textContent = badge.description || 'No description available.';
+    
+    // Set instructions
+    const instructionText = badgeInstructions[badge.slug] || 'Keep ordering and exploring to earn this badge!';
+    instructions.textContent = instructionText;
+    
+    // Set points reward
+    const pointsReward = badgePoints[badge.slug] || 0;
+    if (badge.earned) {
+        pointsText.innerHTML = `<span style="color: #2e7d32;">✅ You earned <strong>${pointsReward} points</strong> when you unlocked this badge!</span>`;
+    } else {
+        pointsText.innerHTML = `<span style="color: #1b5e20;">Earn <strong>${pointsReward} points</strong> when you unlock this badge!</span>`;
+    }
+    
+    // Set status
+    if (badge.earned) {
+        status.className = 'badge-modal-status earned';
+        status.innerHTML = `
+            <strong>✅ You've earned this badge!</strong><br>
+            <small>Earned on: ${new Date(badge.earned_at).toLocaleDateString()}</small>
+        `;
+    } else {
+        status.className = 'badge-modal-status unearned';
+        status.innerHTML = `
+            <strong>🔒 Not earned yet</strong><br>
+            <small>Follow the instructions above to unlock this badge!</small>
+        `;
+    }
+    
+    modal.classList.add('active');
+}
+
+function closeBadgeModal() {
+    const modal = document.getElementById('badgeModal');
+    modal.classList.remove('active');
+}
+
+// Close modal when clicking outside
+document.getElementById('badgeModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeBadgeModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeBadgeModal();
+    }
+});
+async function redeemReward(rewardType) {
+    if (!confirm('Are you sure you want to redeem this reward?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/gamification/api/points/redeem', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reward_type: rewardType })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert(data.message + '\n\nYour coupon code: ' + data.coupon_code);
+            // Reload the page to update points and history
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error redeeming reward:', error);
+        alert('Error redeeming reward. Please try again.');
+    }
+}
+
+// Load all badges (earned and unearned)
+async function loadAllBadges() {
+    try {
+        const response = await fetch('/gamification/api/badges/all');
+        if (response.ok) {
+            const data = await response.json();
+            const container = document.getElementById('all-badges-container');
+            
+            if (data.badges && data.badges.length > 0) {
+                container.innerHTML = data.badges.map((badge, index) => {
+                    const earnedClass = badge.earned ? '' : 'unearned';
+                    const earnedText = badge.earned ? 
+                        `<small style="display: block; font-size: 0.75em; margin-top: 5px; opacity: 0.8;">Earned: ${new Date(badge.earned_at).toLocaleDateString()}</small>` : 
+                        '<small style="display: block; font-size: 0.75em; margin-top: 5px; opacity: 0.8;">Click to see how to earn</small>';
+                    
+                    return `
+                        <div class="badge-item ${earnedClass}" 
+                             data-badge-index="${index}"
+                             onclick="showBadgeModalByIndex(${index})" 
+                             title="Click for details">
+                            <span class="badge-icon">${badge.icon || '🏆'}</span>
+                            <div>
+                                <div>${badge.name}</div>
+                                ${earnedText}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Store badges data globally for modal access
+                window.badgesData = data.badges;
+                
+                // Sync heights: match redemption history to badges container
+                setTimeout(syncContainerHeights, 100);
+            } else {
+                container.innerHTML = '<div class="no-badges"><p>No badges available.</p></div>';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading badges:', error);
+    }
+}
+
+// Function to sync container heights
+function syncContainerHeights() {
+    const badgesContainer = document.getElementById('all-badges-container');
+    const redemptionContainer = document.getElementById('redemption-history');
+    
+    if (badgesContainer && redemptionContainer) {
+        // Get the natural height of badges container (after content is loaded)
+        const badgesHeight = badgesContainer.scrollHeight;
+        
+        // Apply the same height to redemption history
+        if (badgesHeight > 0) {
+            redemptionContainer.style.height = badgesHeight + 'px';
+            redemptionContainer.style.minHeight = badgesHeight + 'px';
+        }
+    }
+}
+
+// Load redemption history
+async function loadRedemptionHistory() {
+    try {
+        const response = await fetch('/gamification/api/redemptions');
+        if (response.ok) {
+            const data = await response.json();
+            const container = document.getElementById('redemption-history');
+            
+            if (data.redemptions && data.redemptions.length > 0) {
+                container.innerHTML = data.redemptions.map(redemption => {
+                    const coupon = redemption.coupon;
+                    let statusClass = 'unused';
+                    let statusText = 'Unused';
+                    
+                    if (coupon) {
+                        if (coupon.is_used) {
+                            statusClass = 'used';
+                            statusText = 'Used';
+                        } else if (!coupon.is_valid) {
+                            statusClass = 'expired';
+                            statusText = 'Expired';
+                        }
+                    }
+                    
+                    const rewardNames = {
+                        'free_topping': 'Free Extra Topping',
+                        'free_premium_sauce': 'Free Premium Sauce',
+                        'free_patty_upgrade': 'Free Patty Upgrade',
+                        'three_dollar_off': '$3 Off Next Order',
+                        'skip_queue': 'Skip Queue',
+                        'five_dollar_off': '$5 Off Next Order'
+                    };
+                    
+                    return `
+                        <div class="redemption-item ${statusClass}">
+                            <div class="redemption-header">
+                                <div class="redemption-reward">${rewardNames[redemption.reward_type] || redemption.reward_type}</div>
+                                <span class="redemption-status ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="redemption-details">
+                                <p><strong>Redeemed:</strong> ${new Date(redemption.redeemed_at).toLocaleDateString()}</p>
+                                <p><strong>Points Cost:</strong> ${redemption.points_cost} points</p>
+                                ${coupon ? `
+                                    <p><strong>Coupon Code:</strong> <span class="coupon-code">${coupon.coupon_code}</span></p>
+                                    <p><strong>Expires:</strong> ${new Date(coupon.expiry_date).toLocaleDateString()}</p>
+                                    ${coupon.is_used && coupon.used_order_id ? 
+                                        `<p><strong>Used on Order:</strong> #${coupon.used_order_id}</p>` : ''}
+                                ` : '<p>No coupon generated</p>'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Sync heights after redemption history is loaded
+                setTimeout(syncContainerHeights, 100);
+            } else {
+                container.innerHTML = '<div class="no-badges"><p>No redemptions yet. Redeem a reward to get started!</p></div>';
+                // Still sync heights even if empty
+                setTimeout(syncContainerHeights, 100);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading redemption history:', error);
+    }
+}
+
+// Load data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadAllBadges();
+    loadRedemptionHistory();
+    
+    // Final sync after both are loaded
+    setTimeout(syncContainerHeights, 500);
+});
+</script>
+
+{% endblock %}
+

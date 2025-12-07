@@ -20,6 +20,11 @@ class User(UserMixin, db.Model):
     pref_gluten_free = db.Column(db.Boolean, default=False)
     pref_high_protein = db.Column(db.Boolean, default=False)
     pref_low_calorie = db.Column(db.Boolean, default=False)
+    
+    # Gamification fields
+    tier = db.Column(db.String(20), nullable=True, default="Bronze")  # Bronze, Silver, Gold
+    total_points = db.Column(db.Integer, nullable=True, default=0)  # Cached total for performance
+    birthday = db.Column(db.Date, nullable=True)  # For birthday burger reward
 
     def set_password(self, password):
         """
