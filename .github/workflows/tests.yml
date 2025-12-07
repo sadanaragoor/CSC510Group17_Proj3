@@ -94,12 +94,12 @@ jobs:
       run: |
         ruff check .
 
-        - name: Run Bandit (Code Security Scan)
-          # Scans all files recursively, ignores venv, reports medium+ issues
-          run: |
-            bandit -r . -ll
-        
-        - name: Run pip-audit (Dependency Scan)
-          run: |
-            pip-audit -r requirements.txt || echo "WARNING: Known vulnerability in werkzeug 3.0.6 - fix version 3.1.4 not yet released"
-          continue-on-error: true
+    - name: Run Bandit (Code Security Scan)
+      # Scans all files recursively, ignores venv, reports medium+ issues
+      run: |
+        bandit -r . -ll
+    
+    - name: Run pip-audit (Dependency Scan)
+      run: |
+        pip-audit -r requirements.txt || echo "WARNING: Known vulnerability in werkzeug 3.0.6 - fix version 3.1.4 not yet released"
+      continue-on-error: true
