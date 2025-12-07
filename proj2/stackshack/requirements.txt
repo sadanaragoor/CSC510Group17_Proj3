@@ -9,3 +9,4 @@ pytest
 pytest-cov
 pytest-html
 reportlab>=3.6.12
+pytz
