@@ -288,6 +288,7 @@
     <a href="{{ url_for('menu.inventory_dashboard') }}">Inventory</a>
   {% elif current_user.is_authenticated and current_user.role == 'staff' %}
     <a href="{{ url_for('shift.staff_shifts_view') }}">📅 My Shifts</a>
+    <a href="{{ url_for('menu.inventory_dashboard') }}">📦 Inventory</a>
   {% endif %}
 
   <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>
