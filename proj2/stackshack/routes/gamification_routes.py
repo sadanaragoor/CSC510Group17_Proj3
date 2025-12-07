@@ -303,7 +303,9 @@ def get_daily_bonus():
         progress = UserChallengeProgress.query.filter_by(
             user_id=current_user.id, daily_bonus_id=bonus.id, completed=True
         ).first()
-        bonuses_data.append({"bonus": bonus.to_dict(), "completed": progress is not None})
+        bonuses_data.append(
+            {"bonus": bonus.to_dict(), "completed": progress is not None}
+        )
 
     return jsonify({"bonuses": bonuses_data})
 
