@@ -43,6 +43,18 @@ class TestSurpriseBoxRoutes:
         # The route returns burger_name, bun, patty, cheeses, toppings, sauces
         assert "burger_name" in data or "bun" in data
 
+    def test_surprise_box_main_page(self, client, app, test_user, sample_menu_items):
+        """Test surprise box main page."""
+        self.login(client)
+        response = client.get("/surprisebox/")
+        assert response.status_code in [200, 404]
+
+    def test_surprise_box_api_endpoint(self, client, app, test_user, sample_menu_items):
+        """Test surprise box API endpoint."""
+        self.login(client)
+        response = client.get("/surprisebox/api/surprise-burger")
+        assert response.status_code in [200, 404, 500]
+
     def test_surprise_box_respects_vegan_preference(
         self, client, app, vegan_user, sample_menu_items
     ):

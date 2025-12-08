@@ -14,4 +14,8 @@ class TestPaymentRoutesComprehensive:
             follow_redirects=True,
         )
 
-    # All failing tests removed
+    def test_payment_history_empty(self, client, app, test_user):
+        """Test viewing payment history with no payments."""
+        self.login(client)
+        response = client.get("/payment/history")
+        assert response.status_code == 200

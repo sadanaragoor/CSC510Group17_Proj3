@@ -47,3 +47,41 @@ class TestOrderRoutesComprehensive:
         )
 
         assert response.status_code in [200, 404]
+
+    def test_clear_cart(self, client, app, test_user):
+        """Test clearing the cart."""
+        self.login(client)
+        response = client.post("/orders/cart/clear", follow_redirects=True)
+        assert response.status_code == 200
+
+    def test_checkout_empty_cart(self, client, app, test_user):
+        """Test checkout with empty cart."""
+        self.login(client)
+        response = client.post("/orders/cart/checkout", follow_redirects=True)
+        assert response.status_code == 200
+
+    def test_create_order_form(self, client, app, test_user):
+        """Test accessing order creation form."""
+        self.login(client)
+        response = client.get("/orders/new")
+        assert response.status_code == 200
+
+    def test_place_order_redirects(self, client, app, test_user):
+        """Test legacy place order route."""
+        self.login(client)
+        response = client.post("/orders/place", data={}, follow_redirects=True)
+        assert response.status_code == 200
+
+    def test_get_ingredients_api(self, client, app, test_user):
+        """Test getting ingredients by category."""
+        self.login(client)
+        response = client.get("/orders/ingredients/buns")
+        assert response.status_code == 200
+        data = response.get_json()
+        assert isinstance(data, list)
+
+    def test_view_cart_authenticated(self, client, app, test_user):
+        """Test viewing cart when authenticated."""
+        self.login(client)
+        response = client.get("/orders/cart")
+        assert response.status_code == 200

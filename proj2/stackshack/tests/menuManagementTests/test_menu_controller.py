@@ -145,3 +145,59 @@ class TestMenuController:
         assert success is True
         assert len(items) == 2  # Beef and Turkey patties
         assert all(item.category == "patty" for item in items)
+
+    def test_create_item_with_stock(self, app, admin_user):
+        """Test creating item with stock quantity"""
+        with app.test_request_context():
+            login_user(admin_user)
+            success, msg, item = MenuController.create_item(
+                name="Stocked Item",
+                category="bun",
+                description="Has stock",
+                price=2.50,
+                stock_quantity=100,
+                low_stock_threshold=20,
+            )
+            assert success is True
+            assert item.stock_quantity == 100
+            assert item.low_stock_threshold == 20
+            assert item.is_available is True
+
+    def test_update_item_unauthorized(self, app, customer_user, sample_menu_item):
+        """Test unauthorized item update"""
+        with app.test_request_context():
+            login_user(customer_user)
+            success, msg, item = MenuController.update_item(
+                sample_menu_item.id, name="Hacked"
+            )
+            assert success is False
+            assert "Unauthorized" in msg
+
+    def test_create_item_sets_availability_based_on_stock(self, app, admin_user):
+        """Test that availability is set based on stock"""
+        with app.test_request_context():
+            login_user(admin_user)
+            # Create with zero stock
+            success, msg, item = MenuController.create_item(
+                name="No Stock Item",
+                category="bun",
+                description="No stock",
+                price=1.50,
+                stock_quantity=0,
+            )
+            assert success is True
+            assert item.is_available is False
+
+    def test_delete_item_not_found(self, app, admin_user):
+        """Test deleting non-existent item"""
+        with app.test_request_context():
+            login_user(admin_user)
+            success, msg, _ = MenuController.delete_item(9999)
+            assert success is False
+
+    def test_toggle_availability_not_found(self, app, admin_user):
+        """Test toggling availability of non-existent item"""
+        with app.test_request_context():
+            login_user(admin_user)
+            success, msg, item = MenuController.toggle_availability(9999)
+            assert success is False

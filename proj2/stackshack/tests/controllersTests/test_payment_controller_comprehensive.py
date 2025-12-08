@@ -54,3 +54,12 @@ class TestPaymentControllerComprehensive:
 
             assert success is True
             assert len(transactions) > 0
+
+    def test_get_payment_history_empty(self, app, test_user):
+        """Test getting payment history when user has no transactions."""
+        with app.app_context():
+            success, message, transactions = PaymentController.get_user_payment_history(
+                test_user
+            )
+            assert success is True
+            assert isinstance(transactions, list)

@@ -1,6 +1,4 @@
-"""
-Fixtures for service tests.
-"""
+"""Fixtures for profile tests."""
 
 import pytest
 import sys
@@ -10,8 +8,8 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 from app import create_app
-from database.db import db
 from models.user import User
+from database.db import db
 
 
 @pytest.fixture(scope="function")
@@ -37,11 +35,17 @@ def app():
 
 
 @pytest.fixture(scope="function")
+def client(app):
+    """Create a test client."""
+    return app.test_client()
+
+
+@pytest.fixture
 def test_user(app):
     """Create a test user."""
     with app.app_context():
         user = User(username="testuser", email="test@example.com", role="customer")
-        user.set_password("testpassword123")
+        user.set_password("password123")
         db.session.add(user)
         db.session.commit()
         yield user
@@ -49,7 +53,9 @@ def test_user(app):
         db.session.commit()
 
 
-@pytest.fixture(scope="function")
-def client(app):
-    """Create a test client."""
-    return app.test_client()
+@pytest.fixture
+def authenticated_client(client, test_user):
+    """Return a client authenticated with test_user."""
+    with client.session_transaction() as sess:
+        sess["_user_id"] = str(test_user.id)
+    return client

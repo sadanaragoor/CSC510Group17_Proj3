@@ -13,3 +13,9 @@ class TestProfileRoutesComprehensive:
             data={"username": username, "password": password},
             follow_redirects=True,
         )
+
+    def test_view_profile(self, client, app, test_user):
+        """Test viewing user profile."""
+        self.login(client)
+        response = client.get("/profile/profile")
+        assert response.status_code == 200

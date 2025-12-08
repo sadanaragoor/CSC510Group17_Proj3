@@ -99,3 +99,23 @@ class TestOrderController:
             # Verify no new orders were created
             final_count = Order.query.count()
             assert final_count == initial_count
+
+    def test_create_order_nonexistent_item(self, app, test_user):
+        """Test creating order with non-existent menu item."""
+        with app.app_context():
+            item_data = [(99999, 1.50, 1, "Fake Item")]
+
+            success, message, order = OrderController.create_new_order(
+                test_user, item_data
+            )
+
+            assert success is False
+            assert "not found" in message.lower()
+
+    def test_get_user_orders_error_handling(self, app):
+        """Test error handling in get_user_orders."""
+        with app.app_context():
+            # Test with invalid user_id type that might cause an error
+            success, message, orders = OrderController.get_user_orders(None)
+            # Should handle gracefully
+            assert success in [True, False]

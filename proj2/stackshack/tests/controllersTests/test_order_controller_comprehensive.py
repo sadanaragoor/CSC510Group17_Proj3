@@ -32,3 +32,16 @@ class TestOrderControllerComprehensive:
             orders = OrderController.get_user_orders(test_user)
 
             assert len(orders) >= 2
+
+    def test_get_user_orders_empty(self, app, test_user):
+        """Test getting orders when user has none."""
+        with app.app_context():
+            success, msg, orders = OrderController.get_user_orders(test_user)
+            assert success is True
+            assert isinstance(orders, list)
+
+    def test_get_user_orders_invalid_user(self, app):
+        """Test getting orders for non-existent user."""
+        with app.app_context():
+            success, msg, orders = OrderController.get_user_orders(99999)
+            assert isinstance(orders, list)
