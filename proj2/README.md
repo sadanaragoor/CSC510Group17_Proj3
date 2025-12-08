@@ -1,209 +1,287 @@
 
-# 🍔 StackShack - Build Your Own Burger! (Version 1.2)
+# 🍔 StackShack - Build Your Own Burger! (Version 2.0)
 
 <div align="center">
 
-[![Tests](https://github.com/Shorse321/CSC510Group24/actions/workflows/tests.yml/badge.svg)](https://github.com/Shorse321/CSC510Group24/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/Shorse321/CSC510Group24/graph/badge.svg?token=M71DB8ZDSC)](https://codecov.io/gh/Shorse321/CSC510Group24)
+[![Tests](https://github.com/sadanaragoor/CSC510Group17_Proj3/actions/workflows/tests.yml/badge.svg)](https://github.com/sadanaragoor/CSC510Group17_Proj3/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/sadanaragoor/CSC510Group17_Proj3/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/sadanaragoor/CSC510Group17_Proj3)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![Flask](https://img.shields.io/badge/flask-3.0.0-lightgrey.svg)](https://flask.palletsprojects.com/)
 [![MySQL](https://img.shields.io/badge/mysql-8.0-blue.svg)](https://www.mysql.com/)
 
 [![License](https://img.shields.io/badge/license-Educational-blue.svg)](LICENSE)
-[![Contributors](https://img.shields.io/github/contributors/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/graphs/contributors)
-[![Last Commit](https://img.shields.io/github/last-commit/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/commits/main)
-[![Issues](https://img.shields.io/github/issues/Shorse321/CSC510Group24)](https://github.com/Shorse321/CSC510Group24/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/commits/main)
+[![Issues](https://img.shields.io/github/issues/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/issues)
 
-[![DOI](https://zenodo.org/badge/1044477954.svg)](https://doi.org/10.5281/zenodo.17509156)
-[![Run Tests and Linting](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml/badge.svg?branch=development&event=push)](https://github.com/shorse321/csc510group24/actions/workflows/tests.yml)
+[![Closed Issues](https://img.shields.io/github/issues-closed/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/issues?q=is%3Aissue+is%3Aclosed)
+
+[![Contributors](https://img.shields.io/github/contributors/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/graphs/contributors)
+
+
+[![DOI](https://zenodo.org/badge/1098759280.svg)](https://doi.org/10.5281/zenodo.17853408)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linter: Ruff](https://img.shields.io/badge/Linter-Ruff-blue)](https://github.com/astral-sh/ruff)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
-
 [![vulnerabilities: pip-audit](https://img.shields.io/badge/vulnerabilities-pip--audit-blue.svg)](https://pypi.org/project/pip-audit/)
-**Group 24** • CSC 510 - Software Engineering
 
-*Build your perfect custom burger with fresh and healthy ingredients!*
+**Group 17** • CSC 510 - Software Engineering
 
-[Features](#stackshack-who-are-we) • [Installation](#installation) • [Usage](#usage) • [Testing](#running-the-test-suite) • [Team](#team)
+*Build your perfect custom burger with personalized recommendations, gamification rewards, and seamless payment!*
+
+[Features](#-key-features) • [Installation](#installation) • [Usage](#usage) • [Testing](#running-the-test-suite) • [API](#api-references)
 
 </div>
 
 ---
-## StackShack! Who are we?
-Feeling overwhelmed by campus dining options?  StackShack makes it fun, fast and easy. Customize every layer of your burger—from buns to sauces, toppings to patties — so every bite is exactly how you want it.  Eat Bold. Eat Fresh.
 
-*Free and open source for educational use
+## 🍔 StackShack! Who are we?
 
-## Why You’ll Love Us: 
+Feeling overwhelmed by campus dining options? StackShack makes it fun, fast and easy. Customize every layer of your burger—from buns to sauces, toppings to patties — with **personalized recommendations** based on your dietary preferences. Earn points, unlock badges, complete challenges, and enjoy a gamified dining experience!
 
-- Build a burger as unique as you are.
-- Balance or treat yourself — it’s your choice.
-- No waiting, no confusion — just stack and go.
-- Feeling adventurous? Get random burgers tailored.
-- Watch your order come to life from kitchen to tray.
+*Free and open source for educational use*
 
-Are you a developer? Our FLASK + MySQL based application is easy to use, easy to maintain, lightweight, scalable, modular and clean!
+## ✨ Why You'll Love Us
 
-https://drive.google.com/file/d/1-IrpHWX4MqggE0iFxbUq6qsovvH0ND1D/view?usp=sharing
+- 🎯 **Smart Recommendations** - Get personalized burger suggestions based on your dietary preferences (vegan, gluten-free, high-protein, low-calorie)
+- 🎮 **Gamification** - Earn points, unlock badges, complete daily/weekly challenges, and redeem coupons
+- 💳 **Flexible Payments** - Pay with campus cards, credit/debit cards, or digital wallet
+- 👤 **Profile Management** - Set dietary preferences, update email, manage your password
+- 📊 **Order Tracking** - Watch your order progress from kitchen to tray with real-time status updates
+- 🎁 **Surprise Box** - Get random burgers tailored to your nutritional preferences
+- 📦 **Inventory Management** - Real-time ingredient availability tracking
+- 👨‍💼 **Staff Management** - Complete shift scheduling and assignment system
+- 🧾 **Receipt Generation** - Automatic PDF receipt generation for every order
 
-### Demo Video Link
-
-https://drive.google.com/file/d/1BCaCU2kTzfwxNgA9VKMIwgs5zK-iUpMS/view?usp=sharing
-
-### Features
-#### User Management
-
-Unified login portal providing role-based access and functionality for customers, staff and admins.
-
-#### Order Purchase
-
-Interactive page that lets users custom-build their burger from scratch; With real-time visuals and dynamic pricing, customers can choose from a variety of buns, patties, sauces and toppings.
-
-#### Order Management
-
-Staff manages orders in real-time to prepare and fulfill them efficiently; Customers can track orders’ progress, ensuring transparency and reducing waiting time at the counter.
-
-#### Menu Management
-
-Admins have full control over menu items and daily ingredient availability; Mark healthy options and disable out-of-stock ingredients to promote balanced, nutritious meals.
-
-### Who can use StackShack?
-
-What's stopping you from building your custom burgers? Wa have a fun, intuitive interface to design your healthy burger! University students, faculty, parents, guests, restaurant staff and admins, come visit us! 
-
-### For Customers
-- Browse available menu items
-- View nutritional information (calories, protein)
-- Custom burger builder
-
-### For Admins
-- Full menu management
-- User management
-- Manage staff/admin accounts
-  
-### For Staff
-- Manage menu ingredients availabiliy and healthy choices
-- Manage order status (tracking)
+Are you a developer? Our **FLASK + MySQL/SQLite** based application is easy to use, easy to maintain, lightweight, scalable, modular and clean!
 
 ---
 
-## Tech Stack
+## 🎯 Key Features
+
+### 🎮 Gamification System (NEW!)
+- **Points & Rewards** - Earn points with every purchase and redeem for discounts
+- **Badges & Achievements** - Unlock badges for milestones (first order, healthy eater, etc.)
+- **Daily Bonuses** - Claim daily points for consecutive logins
+- **Weekly Challenges** - Complete challenges like "Order 3 healthy burgers this week"
+- **Punch Cards** - Traditional loyalty cards for free items
+- **Coupons** - Redeem discount coupons at checkout
+
+### 💳 Payment System (NEW!)
+- **Multiple Payment Methods** - Credit/debit cards, campus cards, digital wallet
+- **Campus Card Integration** - Special pricing and balance management for students
+- **Transaction History** - Complete payment history with receipts
+- **Receipt Generation** - Automatic PDF receipts for all transactions
+- **Balance Management** - Add funds to digital wallet
+- **Admin Dashboard** - Payment analytics and transaction monitoring
+
+### 👤 Profile Management (NEW!)
+- **Dietary Preferences** - Set vegan, gluten-free, high-protein, low-calorie preferences
+- **Smart Recommendations** - Get burger recommendations based on your preferences
+- **Email Management** - Update email and check campus card eligibility
+- **Password Management** - Secure password updates
+- **Order History** - View past orders and reorder favorites
+
+### 📦 Inventory Management (NEW!)
+- **Stock Tracking** - Real-time ingredient quantity monitoring
+- **Low Stock Alerts** - Automatic alerts when items run low
+- **Availability Management** - Enable/disable items based on stock
+- **Stock History** - Track inventory changes over time
+
+### 👨‍💼 Staff Shift Management (NEW!)
+- **Shift Scheduling** - Create and manage staff shifts (Morning, Afternoon, Evening, Night)
+- **Staff Assignments** - Assign staff to specific shifts and stations
+- **Staff Profiles** - Manage staff information and positions
+- **Shift Calendar** - Weekly shift calendar view
+
+### 🎁 Surprise Box (NEW!)
+- **Random Burgers Tailored to Your Taste** - Get adventurous with personalized random burger combinations
+- **Dietary Compliance** - All surprise boxes respect your dietary preferences and restrictions
+- **Personalized Randomization** - Random burgers that match your vegan, gluten-free, high-protein, or low-calorie settings
+- **Budget Options** - Set your preferred price range for surprise burgers
+- **Nutritional Balance** - Smart algorithm ensures balanced macro distribution
+- **Taste Profile Learning** - System learns from your order history for better suggestions
+- **Adventurous Mode** - Try new ingredient combinations you haven't ordered before
+- **Save & Share** - Save favorite surprise burgers and share your creations with friends
+
+### 🍔 Core Features
+- **User Management** - Role-based access (customer, staff, admin) with secure authentication
+- **Order Purchase** - Interactive burger builder with real-time pricing and visual feedback
+- **Order Management** - Real-time order tracking and status updates
+- **Menu Management** - Complete CRUD operations for menu items
+- **Status Tracking** - Live order status from pending to delivered
+- **Nutritional Info** - Calorie and protein information for health-conscious users
+
+---
+
+## 🏗️ Tech Stack
 
 **Backend:**
 - Python 3.8+
 - Flask 3.0.0
 - Flask-SQLAlchemy (ORM)
 - Flask-Login (Authentication)
-- MySQL Database
+- MySQL 8.0+ / SQLite (development)
+- ReportLab (PDF generation)
 
 **Frontend:**
 - HTML5
 - CSS3
+- JavaScript
 - Jinja2 Templates
+- Responsive Design
 
-**Database:**
-- MySQL 8.0+
+**Testing & Quality:**
+- pytest (493 test cases: 117 unit, 376 integration)
+- pytest-cov (75%+ code coverage)
+- pytest-html (HTML test reports)
+- Black (code formatting)
+- Ruff (linting)
+- Bandit (security scanning)
+
+**CI/CD:**
+- GitHub Actions
+- Codecov Integration
+- Automated Testing & Linting
 
 ---
 
-## Prerequisites
+## 📊 Test Coverage
 
-Before you begin, ensure you have the following installed:
+Our comprehensive test suite includes:
+- **Total Test Cases**: 493
+  - Unit Tests: 117
+  - Integration Tests: 376
+- **Code Coverage**: 75%+
+  - Models: 99%
+  - Controllers: 77%
+  - Routes: 83%
+  - Services: 92%
 
-- **Python 3.8 or higher** - [Download Python](https://www.python.org/downloads/)
-- **MySQL 8.0 or higher** - [Download MySQL](https://dev.mysql.com/downloads/mysql/)
-- **Git** - [Download Git](https://git-scm.com/downloads)
+All tests are automatically run on every push via GitHub Actions with coverage reporting to Codecov.
 
 ---
-## Project Structure
+
+## 🎮 Who Can Use StackShack?
+
+### 👥 For Customers
+- Browse personalized burger recommendations
+- View nutritional information (calories, protein)
+- Custom burger builder with real-time pricing
+- Earn points, badges, and complete challenges
+- Manage dietary preferences and profile
+- Track orders in real-time
+- Pay with multiple payment methods
+- View transaction history and receipts
+
+### 👨‍💼 For Staff
+- Manage ingredient availability and stock
+- Update order statuses through workflow
+- View assigned shifts and stations
+- Access staff dashboard
+- Update menu item healthy choices
+
+### 🔧 For Admins
+- Full menu management (CRUD operations)
+- User role management
+- Staff shift scheduling and assignments
+- Payment analytics dashboard
+- Gamification settings (challenges, rewards)
+- System-wide inventory oversight
+- Receipt and transaction management
+
+---
+
+## 📁 Project Structure
 
 ```bash
 stackshack/
-├── controllers/           # Business logic
+├── controllers/              # Business logic layer
 │   ├── auth_controller.py
 │   ├── menu_controller.py
-│   └── order_controller.py
-├── database/              # Database configuration
+│   ├── order_controller.py
+│   ├── payment_controller.py
+│   └── status_controller.py
+├── database/                 # Database configuration
 │   └── db.py
-├── models/                # Database models
+├── models/                   # Database models (SQLAlchemy)
 │   ├── user.py
 │   ├── menu_item.py
-│   └── order.py
-├── routes/                # URL routing
+│   ├── order.py
+│   ├── payment.py           # NEW: Payment models
+│   ├── gamification.py      # NEW: Gamification models
+│   └── shift.py             # NEW: Shift management models
+├── routes/                   # URL routing (Flask Blueprints)
 │   ├── auth_routes.py
 │   ├── menu_routes.py
-│   └── order_routes.py
-├── templates/             # HTML templates
+│   ├── order_routes.py
+│   ├── payment_routes.py    # NEW: Payment endpoints
+│   ├── profile_routes.py    # NEW: Profile management
+│   ├── gamification_routes.py  # NEW: Gamification endpoints
+│   ├── shift_routes.py      # NEW: Shift management
+│   ├── status_routes.py
+│   └── surprise_routes.py
+├── services/                 # Service layer
+│   ├── burger_recommendations.py  # NEW: Recommendation engine
+│   ├── challenge_service.py       # NEW: Challenge logic
+│   ├── gamification_service.py    # NEW: Points & rewards
+│   ├── payment_gateway.py         # NEW: Payment processing
+│   └── shift_service.py           # NEW: Shift scheduling
+├── templates/                # HTML templates
 │   ├── menu/
-│   │   ├── items.html
-│   │   ├── create_item.html
-│   │   ├── edit_item.html
-│   │   └── browse_ingredients.html
 │   ├── orders/
-│   │   ├── create.html
-│   │   └── history.html
-│   ├── base.html
-│   ├── home.html
-│   ├── dashboard.html
-│   ├── login.html
-│   ├── register.html
-│   ├── menu.html
-│   ├── admin_create.html
-│   └── admin_manage.html
-├── tests/
-│   ├── menuManagementTests/
-│   │   ├── conftest.py
-│   │   ├── test_menu_model.py
-│   │   ├── test_menu_controller.py
-│   │   └── test_menu_routes.py
+│   ├── payment/             # NEW: Payment templates
+│   ├── profile/             # NEW: Profile templates
+│   ├── gamification/        # NEW: Rewards templates
+│   ├── shifts/              # NEW: Shift templates
+│   └── ...
+├── tests/                    # Comprehensive test suite (493 tests)
+│   ├── controllersTests/
+│   ├── dietaryPreferencesTests/   # NEW
+│   ├── inventoryTests/            # NEW
 │   ├── LoginManagementTests/
-│   │   ├── conftest.py
-│   │   └── test_auth.py
-│   └── purchaseManagementTests/
-│       ├── conftest.py
-│       ├── test_create.py
-│       ├── test_models.py
-│       ├── test_controllers.py
-│       └── test_routes.py
-├── venv/                  # Virtual environment (not in Git)
-├── .env                   # Environment variables (not in Git)
-├── .gitignore             # Git ignore rules
-├── app.py                 # Main application file
-├── config.py              # Configuration settings
-├── test_conn.py
-├── create_admin.py
-├── seed_menu.py
-├── requirements.txt       # Python dependencies
-└── README.md              # Documentation
+│   ├── menuManagementTests/
+│   ├── paymentTests/              # NEW
+│   ├── profileTests/              # NEW
+│   ├── purchaseManagementTests/
+│   ├── rewardsTests/              # NEW
+│   ├── routesTests/
+│   ├── servicesTests/             # NEW
+│   ├── staffManagementTests/      # NEW
+│   ├── statusManagementTests/
+│   └── surpriseBoxTests/
+├── static/                   # Static assets (images, CSS)
+├── .github/workflows/        # CI/CD configuration
+│   └── tests.yml            # Automated testing & coverage
+├── app.py                    # Main application entry point
+├── config.py                 # Configuration settings
+├── create_tables.py          # Database initialization
+├── create_admin.py          # Admin user creation
+├── seed_menu.py             # Sample data seeding
+├── pyproject.toml           # Black & Ruff configuration
+├── pytest.ini               # Pytest configuration
+├── requirements.txt         # Python dependencies
+└── README.md                # This file
 ```
----
-
-## Flask Project Structure (Modularity)
-- **Blueprints** separate app modules (`auth_bp`, `menu_bp`, `order_bp`) for clean routing.
-- **Controllers** handle business logic separately from routes.
-- **Templates** (HTML files) are organized into folders per module (`auth/`, `menu/`, `orders/`).
-- **Tests** follow modular test folder structure with one subfolder per feature (`LoginManagementTests`, `menuManagementTests`, `purchaseManagementTests`).
-
-![Architecture](stackshack/static/images/modular_arch.png)
 
 ---
 
-## Installation
+## 🚀 Installation
+
+### Prerequisites
+
+Before you begin, ensure you have:
+
+- **Python 3.8 or higher** - [Download Python](https://www.python.org/downloads/)
+- **MySQL 8.0+ or SQLite** - [Download MySQL](https://dev.mysql.com/downloads/mysql/) (optional for local dev)
+- **Git** - [Download Git](https://git-scm.com/downloads)
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Shorse321/CSC510Group24.git
-cd CSC510Group24/proj2/stackshack
+git clone https://github.com/sadanaragoor/CSC510Group17_Proj3.git
+cd CSC510Group17_Proj3/proj2/stackshack
 ```
 
 ### 2. Set Up Virtual Environment
-
-**Windows (Git Bash):**
-```bash
-python -m venv venv
-source venv/Scripts/activate
-```
 
 **Windows (PowerShell):**
 ```bash
@@ -217,653 +295,446 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-You should see `(venv)` appear in your terminal prompt.
+You should see `(venv)` in your terminal prompt.
 
 ### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set Up MySQL Database
+### 4. Configure Database
 
-**Open MySQL Workbench or command line and run:**
+**Option A: SQLite (Quick Start - No Setup Required)**
+
+SQLite is automatically used if no MySQL credentials are provided. Perfect for local development!
+
+**Option B: MySQL (Production)**
+
+1. Create MySQL database:
 ```sql
 CREATE DATABASE stackshack;
 USE stackshack;
 ```
 
-The tables will be created automatically when you first run the app.
-
-### 5. Configure Environment Variables
-
-Create a `.env` file in the project root:
-```bash
-# Copy the example file
-cp .env.example .env
-```
-
-Edit `.env` with your MySQL credentials:
+2. Create `.env` file in `proj2/stackshack/`:
 ```env
 FLASK_APP=app.py
 FLASK_ENV=development
 SECRET_KEY=your-secret-key-here
 
-# MySQL Configuration
+# MySQL Configuration (optional - omit to use SQLite)
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_mysql_password
 DB_NAME=stackshack
 ```
 
-**Important:** Replace `your_mysql_password` with your actual MySQL password!
-
-### 6. Initialize the Database (if the tables haven't been automatically created)
+### 5. Initialize Database
 ```bash
 python create_tables.py
 ```
 
-### 7. Create Admin User
+This creates all tables including:
+- Users, Menu Items, Orders
+- Payment tables (transactions, campus cards, receipts)
+- Gamification tables (points, badges, challenges, coupons)
+- Shift management tables
+
+### 6. Create Admin User
 ```bash
 python create_admin.py
 ```
 
-This creates an admin account with:
+Creates admin account:
 - **Username:** `admin`
 - **Password:** `admin`
 
-**Change this password after first login in production!**
+⚠️ **Change this password after first login!**
 
-### 8. Seed Sample Menu Data
+### 7. Seed Sample Data
 ```bash
 python seed_menu.py
 ```
 
-This adds sample burger menu ingredients to test the system.
+Populates menu with burger ingredients.
 
 ---
 
-## Running the Application
+## 🎮 Running the Application
 
 ### Start the Server
 ```bash
 python app.py
 ```
-or 
-```bash
-export FLASK_APP
-flask run
-```
 
 You should see:
-```bash
+```
+Database tables checked/created.
 * Running on http://127.0.0.1:5000
 * Debug mode: on
 ```
 
 ### Access the Application
 
-Open your browser and go to:
-```bash
+Open your browser:
+```
 http://localhost:5000
 ```
-or bash
-```
-http://127.0.0.1:5000
-```
----
-## Command Reference & Function Overview
-
-Below is a detailed guide to all the key commands
-
-### Application Commands
-
-| Command | Description | Example |
-|----------|--------------|----------|
-| `python app.py` | Runs the Flask development server locally. | `python app.py` |
-| `flask run` | Starts the app using Flask CLI with automatic reloading. | `flask run --debug` |
-| `python seed_menu.py` | Populates the `menu_items` table in the database with sample data from `menu_items.csv`. | `python seed_menu.py` |
-| `python create_admin.py` | Creates an admin user account with default credentials. | `python create_admin.py` |
-| `pytest` | Runs all automated test suites across controllers, routes, and models. | `pytest -v` |
 
 ---
 
-## Function Reference
+## 🧪 Running the Test Suite
 
-Below is a detailed list of core controller functions in our backend architecture.
-
-| **Controller** | **Function** | **Description** |
-|----------------|--------------|-----------------|
-| **AuthController** | `register_user(username, password, role='customer')` | Registers a new user with role validation (only admins can assign elevated roles). |
-|  | `login_user_account(username, password)` | Authenticates users and logs them into the session. |
-|  | `logout_user_account()` | Logs the current user out. |
-|  | `get_all_users()` | Retrieves all users from the database. |
-|  | `update_user_role(user_id, new_role)` | Updates the role of an existing user. |
-|  | `delete_user(user_id)` | Deletes a user account from the system. |
-| **MenuController** | `get_all_items()` | Retrieves all menu items in sorted order. |
-|  | `get_item_by_id(item_id)` | Fetches a specific menu item by ID. |
-|  | `create_item(name, category, description, price, ...)` | Creates a new menu item (Admin/Staff only). |
-|  | `update_item(item_id, ...)` | Updates an existing menu item (Admin/Staff only). |
-|  | `delete_item(item_id)` | Deletes a menu item (Admin only). |
-|  | `toggle_availability(item_id)` | Toggles menu item availability (Admin/Staff only). |
-|  | `toggle_healthy_choice(item_id)` | Marks/unmarks a menu item as a healthy choice (Admin/Staff only). |
-|  | `get_items_by_category(category)` | Retrieves menu items filtered by category. |
-|  | `get_available_items()` | Retrieves only available menu items (for customers). |
-|  | `get_healthy_choices()` | Retrieves items marked as healthy choices. |
-| **OrderController** | `get_user_orders(user_id)` | Retrieves all past orders for a user. |
-|  | `create_new_order(user_id, item_data)` | Creates a new order and calculates total price. |
-| **StatusController** | `get_status_flow()` | Returns status flow mapping for frontend use. |
-|  | `update_order_status(order_id, new_status)` | Updates order status through valid transitions. |
-|  | `cancel_order(order_id, user_id)` | Cancels a pending or preparing order. |
-|  | `get_order_by_id(order_id, user_id)` | Retrieves an order by ID (with user access check). |
-|  | `get_all_orders_for_staff()` | Fetches all orders for staff/admin dashboards. |
-|  | `is_staff(user_id)` | Checks if a user is a staff or admin member. |
-
----
-
-### Configuration Options (`config.py`)
-
-| Option | Description | Example Value |
-|---------|--------------|---------------|
-| `SQLALCHEMY_DATABASE_URI` | MySQL connection string | `mysql+pymysql://root:password@localhost/stackshack_db` |
-| `SECRET_KEY` | Flask app secret key used for sessions and CSRF protection | `'my-secret-key'` |
-| `DEBUG` | Enables or disables Flask debug mode | `True` |
-| `TESTING` | Enables testing mode during CI/CD | `False` |
-
----
-
-### Testing Commands
-
-| Command | Description | Example |
-|----------|--------------|----------|
-| `pytest tests/menuManagementTests/` | Runs all tests related to menu management. | `pytest tests/menuManagementTests/` |
-| `pytest tests/LoginManagementTests/` | Runs authentication-related tests. | `pytest tests/LoginManagementTests/` |
-| `pytest tests/purchaseManagementTests/` | Runs tests for order and purchase flows. | `pytest tests/purchaseManagementTests/` |
-| `pytest tests/statusManagementTests/` | Runs tests for order status flows. | `pytest tests/statusManagementTests/` |
-| `pytest --cov=controllers` | Checks test coverage for all controller functions. | `pytest --cov=controllers` |
-
----
-
-### Dependency Management
-
-| Command | Description | Example |
-|----------|--------------|----------|
-| `pip install -r requirements.txt` | Installs all Python dependencies. | `pip install -r requirements.txt` |
-
----
-
-### Database Setup
-
-| Step | Command | Description |
-|------|----------|-------------|
-| 1 | `flask db init` | Initialize the database migration directory. |
-| 2 | `flask db migrate -m "Initial migration"` | Create migration scripts based on models. |
-| 3 | `flask db upgrade` | Apply migrations and create all tables. |
-
----
-
-## Testing Database connection
-
+### Run All Tests
 ```bash
-python test_conn.py
+pytest
 ```
 
-Should output: `Connected to MySQL successfully!`
+### Run Tests with Coverage
+```bash
+pytest --cov=models --cov=controllers --cov=routes --cov=services --cov-report=term --cov-report=html
+```
+
+### Generate HTML Test Report
+```bash
+pytest --html=test-results.html --self-contained-html
+```
+
+### Run Specific Test Suites
+```bash
+# Profile tests
+pytest tests/profileTests/
+
+# Payment tests
+pytest tests/paymentTests/
+
+# Gamification tests
+pytest tests/rewardsTests/
+
+# Service tests
+pytest tests/servicesTests/
+```
+
+### Code Quality Checks
+```bash
+# Format code with Black
+black .
+
+# Lint with Ruff
+ruff check .
+
+# Security scan with Bandit
+bandit -r . -ll
+
+# Check for vulnerabilities
+pip-audit
+```
 
 ---
 
-## Running the Test Suite
+## 📖 Usage Examples
 
-To verify that all components are working correctly, you can run the project's built-in test suite.
+### Customer Journey
 
-1.  Make sure you are in the `proj2/` directory.
-2.  Install `pytest` (if not already in `requirements.txt`):
-    ```bash
-    pip install pytest
-    ```
-3.  Run the tests using the following command (this sets the correct path for imports):
-    ```bash
-    PYTHONPATH=./stackshack python -m pytest stackshack/tests
-    ```
-    or run the below command to get the test case suite results in a html file:
-    ```
-    python -m pytest stackshack/tests/ --html=test-results.html --self-contained-html
-    ```
+1. **Register & Login**
+   - Navigate to `/auth/register`
+   - Create account
+   - Set dietary preferences in profile
 
----
+2. **Get Personalized Recommendations**
+   - View dashboard with burger recommendations
+   - Recommendations match your dietary preferences
 
+3. **Build & Order a Burger**
+   - Go to `/orders/new`
+   - Select ingredients
+   - View real-time price calculation
+   - Place order
 
-## Usage
+4. **Pay for Order**
+   - Choose payment method (card/campus card/wallet)
+   - Complete payment
+   - Receive PDF receipt
 
-### Demo Scenario: Customer places an order
+5. **Earn Rewards**
+   - Earn points automatically
+   - Claim daily bonus
+   - Complete weekly challenges
+   - Unlock badges
+   - Redeem coupons
 
-**What do you have to do?**
+6. **Track Order**
+   - View order status in real-time
+   - Get notified when ready for pickup
 
-#### Login
+### Admin Dashboard
 
-1. Navigate to:  
-   `http://localhost:5000/auth/login`
-2. Enter credentials:  
-   - **Username:** `customer`  
-   - **Password:** `pwstrong`
-3. Click **Login**
+1. **Menu Management**
+   - Add/edit/delete menu items
+   - Manage inventory and stock levels
+   - Toggle availability
+   - Mark healthy choices
 
-![user login demo](stackshack/static/images/user_login.png)
-![user register demo](stackshack/static/images/user_register.png)
-#### Create and Place Order
+2. **Staff Management**
+   - Create staff accounts
+   - Schedule shifts
+   - Assign staff to stations
 
-1. Go to:  
-   `http://127.0.0.1:5000/orders/new`
-2. Build your burger by selecting buns, patties, toppings, sauces, and cheese.
-3. Review the order summary and confirm total price.
-4. Click **Place Order**.
-5. Track the order status in:  
-   `http://127.0.0.1:5000/orders/history`
-6. Logout once done.
- ![View ingredients](stackshack/static/images/view_ingredients.png)
-![Customer Order Demo](stackshack/static/images/purchase_burger_ss.png)
+3. **Payment Analytics**
+   - View transaction history
+   - Monitor payment methods
+   - Generate financial reports
 
----
-
-### Demo Scenario: Admin manages menu and user roles
-
-**What do you have to do?**
-
-#### Login as Admin
-
-1. Navigate to:  
-   `http://localhost:5000/auth/login`
-2. Enter credentials:  
-   - **Username:** `admin`  
-   - **Password:** `admin`
-3. Click **Login**
-
-#### Manage Menu
-
-1. Access **Dashboard → Manage Menu**
-2. Perform actions like:
-   - **Add New Item** – Click “+ Add New Menu Item”
-   - **Edit Item** – Modify existing items
-   - **Delete Item** – Remove items (admin only)
-   - **Toggle Availability** – Enable/disable menu items
-   - **Mark Healthy Choice** – Highlight healthy options
-
-![admin manage menu demo](stackshack/static/images/manage_menu.png)
-
-#### Manage Users
-
-1. Access **Dashboard → Manage Users**
-2. Update roles for existing users (promote to staff, demote to customer).
-3. Remove inactive users if required.
-
-![admin manage user demo](stackshack/static/images/manage_user2.png)
----
-
-### Demo Scenario: Staff updates order statuses
-
-**What do you have to do?**
-
-#### Login as Staff
-
-1. Navigate to:  
-   `http://localhost:5000/auth/login`
-2. Enter credentials:  
-   - **Username:** `staff`  
-   - **Password:** `staffpw`
-3. Click **Login**
-
-#### Manage Orders
-
-1. Go to **Dashboard → Orders**
-2. You can:
-   - **View All Orders** with current status
-   - **Update Status** through transitions:
-     - Pending → Preparing  
-     - Preparing → Ready for Pickup  
-     - Ready for Pickup → Delivered
-3. Once delivered, mark as **Completed**
-![ Staff manage order](stackshack/static/images/status_mgmt.png)
-
-#### Customer Viewing Order Status
-
-![Customer manage order](stackshack/static/images/status_check.png)
-![Customer manage order](stackshack/static/images/status_map.png)
-
-### Menu Item Categories
-
-- **Bun** - Bread options
-- **Patty** - Protein choices
-- **Cheese** - Cheese varieties
-- **Topping** - Vegetables and extras
-- **Sauce** - Condiments
+4. **Gamification Settings**
+   - Create challenges
+   - Manage reward tiers
+   - Issue coupons
 
 ---
 
-## Configuration
+## 🔌 API References
 
-### Database Configuration
-
-Edit `config.py` to change database settings. By default, it reads from `.env` file.
-
----
-
-## API References
-
-
-This section provides an overview of all major RESTful endpoints implemented in the **StackShack Burger Ordering System**.
-### Authentication & User Management (`auth_routes.py`)
+### Authentication Endpoints
 
 | Endpoint | Method | Description | Access |
-|-----------|---------|-------------|---------|
-| `/register` | `GET`, `POST` | Registers a new user account. Defaults to `customer` role unless an admin is logged in. | Public / Admin |
-| `/login` | `GET`, `POST` | Authenticates a user and starts a session. Redirects to dashboard upon success. | Public |
-| `/logout` | `GET` | Logs out the current user and clears session. | Authenticated |
-| `/dashboard` | `GET` | Displays a user dashboard with user-specific info and admin options. | Authenticated |
-| `/admin/create-user` | `GET`, `POST` | Admin-only route to create new staff or admin accounts. | Admin |
-| `/admin/manage-users` | `GET`, `POST` | Admin-only panel to view, update roles, or delete users. | Admin |
+|----------|--------|-------------|--------|
+| `/auth/register` | GET, POST | Register new user | Public |
+| `/auth/login` | GET, POST | User login | Public |
+| `/auth/logout` | GET | User logout | Authenticated |
+| `/auth/dashboard` | GET | User dashboard with recommendations | Authenticated |
 
-#### Example JSON (POST `/register`)
-```json
-{
-  "username": "john_doe",
-  "password": "password123",
-  "role": "customer"
-}
-```
-response
-```
-{
-  "success": true,
-  "message": "User registered successfully."
-}
-```
-### Menu Management Routes
+### Profile Endpoints (NEW)
 
-| HTTP Method | Route | Description | Access Level |
-|--------------|--------|-------------|---------------|
-| GET | `/menu/items` | View all menu items | Admin / Staff |
-| GET | `/menu/items/new` | Display form to create a new item | Admin / Staff |
-| POST | `/menu/items/create` | Create a new menu item | Admin / Staff |
-| GET | `/menu/items/<item_id>/edit` | Display edit form for an item | Admin / Staff |
-| POST | `/menu/items/<item_id>/update` | Update an existing menu item | Admin / Staff |
-| POST | `/menu/items/<item_id>/delete` | Delete a menu item | Admin only |
-| POST | `/menu/items/<item_id>/toggle-availability` | Toggle availability of a menu item | Admin / Staff |
-| POST | `/menu/items/<item_id>/toggle-healthy` | Toggle healthy choice flag | Admin / Staff |
-| GET | `/menu/browse` | Browse all available items (customer view) | Public |
-| GET | `/menu/healthy` | View healthy menu choices | Public |
-| GET | `/menu/browse-ingredients` | Browse available ingredients grouped by category | Public |
-#### Example JSON (POST /menu/items/create)
-```{
-  "name": "Sesame Bun",
-  "category": "bun",
-  "description": "Soft and fresh sesame seed bun",
-  "price": 2.50,
-  "calories": 180,
-  "protein": 6,
-  "image_url": "/static/images/sesame_bun.jpg"
-}
-```
-response
-```
-{
-  "success": true,
-  "message": "Menu item created successfully"
-}
-```
-### Order Management Routes
+| Endpoint | Method | Description | Access |
+|----------|--------|-------------|--------|
+| `/profile/profile` | GET | View user profile | Authenticated |
+| `/profile/update-email` | POST | Update user email | Authenticated |
+| `/profile/update-password` | POST | Update user password | Authenticated |
+| `/profile/update-preferences` | POST | Update dietary preferences | Authenticated |
 
-| HTTP Method | Route | Description | Access Level |
-|--------------|--------|-------------|---------------|
-| GET | `/order/history` | View logged-in user’s past orders | Customer |
-| GET | `/order/ingredients/<category>` | Retrieve ingredients by category (JSON response) | Public |
-| GET | `/order/new` | Display burger creation/order form | Customer |
-| POST | `/order/place` | Submit and place a new order | Customer |
-#### Example JSON (GET /order/ingredients/bun)
-```
-[
-  {
-    "id": 1,
-    "name": "Sesame Bun",
-    "price": 2.50,
-    "description": "Soft sesame bun",
-    "is_healthy": false,
-    "image_url": "/static/images/sesame_bun.jpg"
-  },
-  {
-    "id": 2,
-    "name": "Whole Wheat Bun",
-    "price": 3.00,
-    "description": "Rich in fiber and nutrients",
-    "is_healthy": true,
-    "image_url": "/static/images/whole_wheat_bun.jpg"
-  }
-]
-```
-#### Example JSON (POST /order/place)
-```
-{
-  "user_id": 5,
-  "items": [
-    {
-      "item_id": 1,
-      "name": "Sesame Bun",
-      "price": 2.5,
-      "quantity": 1
-    },
-    {
-      "item_id": 7,
-      "name": "Beef Patty",
-      "price": 5.0,
-      "quantity": 1
-    }
-  ]
-}
-```
-response
-```
-{
-  "success": true,
-  "message": "Order placed successfully!"
-}
-```
+### Payment Endpoints (NEW)
 
-## Data Import and Export
+| Endpoint | Method | Description | Access |
+|----------|--------|-------------|--------|
+| `/payment/checkout` | GET, POST | Process payment | Authenticated |
+| `/payment/history` | GET | View payment history | Authenticated |
+| `/payment/campus-card` | GET, POST | Manage campus card | Authenticated |
+| `/payment/add-balance` | POST | Add wallet balance | Authenticated |
+| `/payment/admin-dashboard` | GET | Payment analytics | Admin |
 
-**StackShack**: All data formats follow **open standards** (CSV, JSON) ensuring easy integration with other databases or analytics tools.
+### Gamification Endpoints (NEW)
 
-- 📂 **Data Import:**  
-  - Menu items, orders, and users can be imported from `.csv` or `.json` files.  
+| Endpoint | Method | Description | Access |
+|----------|--------|-------------|--------|
+| `/gamification/rewards` | GET | View rewards dashboard | Authenticated |
+| `/gamification/claim-daily` | POST | Claim daily bonus | Authenticated |
+| `/gamification/redeem` | POST | Redeem coupon | Authenticated |
 
-- 📤 **Data Export:**  
-  - Application data (menu, order history, user records) can be exported to `.csv` or `.json` for interoperability with other systems. 
+### Menu Endpoints
 
-## Open Communications Protocols
+| Endpoint | Method | Description | Access |
+|----------|--------|-------------|--------|
+| `/menu/items` | GET | View all items | Staff/Admin |
+| `/menu/items/create` | POST | Create menu item | Staff/Admin |
+| `/menu/items/<id>/edit` | GET, POST | Edit menu item | Staff/Admin |
+| `/menu/items/<id>/delete` | POST | Delete menu item | Admin |
+| `/menu/browse-ingredients` | GET | Browse ingredients | Public |
 
-**StackShack** communicates using **open and standard web protocols**:
+### Order Endpoints
 
-- The application runs on **HTTP/HTTPS** using REST-style Flask routes.
-- All client–server interactions use **JSON** as the data-interchange format.
-- The API endpoints can be accessed by any system that supports standard HTTP requests.
+| Endpoint | Method | Description | Access |
+|----------|--------|-------------|--------|
+| `/orders/new` | GET, POST | Create new order | Authenticated |
+| `/orders/history` | GET | View order history | Authenticated |
+| `/orders/ingredients/<category>` | GET | Get ingredients by category | Public |
+
+### Shift Management Endpoints (NEW)
+
+| Endpoint | Method | Description | Access |
+|----------|--------|-------------|--------|
+| `/shifts/admin-dashboard` | GET | Shift management dashboard | Admin |
+| `/shifts/staff-dashboard` | GET | View assigned shifts | Staff |
+| `/shifts/assign` | POST | Assign shift to staff | Admin |
 
 ---
 
-## Troubleshooting
+## 🛠️ Configuration
 
-### "Access denied for user 'root'@'localhost'"
+### Environment Variables
 
-**Problem:** MySQL password is incorrect in `.env` file.
+```env
+# Flask Configuration
+FLASK_APP=app.py
+FLASK_ENV=development
+SECRET_KEY=your-secret-key-here
 
-**Solution:** Update `DB_PASSWORD` in `.env` with your correct MySQL password.
+# Database Configuration (optional for SQLite)
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=stackshack
 
-### "ModuleNotFoundError: No module named 'dotenv'"
-
-**Problem:** `python-dotenv` not installed.
-
-**Solution:**
-```bash
-pip install python-dotenv
+# Or use direct DATABASE_URL
+DATABASE_URL=mysql+pymysql://user:pass@host/db
 ```
 
-### "No module named 'flask'"
+### Database Fallback
 
-**Problem:** Virtual environment not activated or dependencies not installed.
+The application automatically uses:
+1. `DATABASE_URL` if set
+2. MySQL with `DB_*` variables if all are set
+3. SQLite (`stackshack_dev.db`) as fallback for local development
 
-**Solution:**
-```bash
-source venv/Scripts/activate  # Activate venv
-pip install -r requirements.txt
-```
+---
 
-### "Table 'stackshack.menu_items' doesn't exist"
+## 🐛 Troubleshooting
 
-**Problem:** Database tables not created.
+### SQLAlchemy Errors
 
-**Solution:** Run the database initialization commands from step 6.
+**Problem:** "Table doesn't exist" errors for payment/gamification features
 
-### Port 5000 Already in Use
+**Solution:** Run `python create_tables.py` to ensure all models are imported and tables created.
 
-**Problem:** Another application is using port 5000.
+### Port Already in Use
 
-**Solution:** Kill the process or change the port in `app.py`:
+**Problem:** Port 5000 is taken
+
+**Solution:** Change port in `app.py`:
 ```python
-app.run(debug=True, port=5001)  # Use different port
+app.run(debug=True, port=5001)
 ```
-## Third-Party Dependencies and Build Verification
 
-### Dependency Overview
+### Module Not Found
 
-The following third-party packages are required to run the StackShack web application:
+**Problem:** `ModuleNotFoundError`
 
-| Dependency | Version | License | Source / Website | Mandatory / Optional | Description |
-|-------------|----------|----------|------------------|----------------------|--------------|
-| Flask | 3.0.0 | BSD-3-Clause | [https://flask.palletsprojects.com/](https://flask.palletsprojects.com/) | Mandatory | Core web framework for routing, templating, and request handling. |
-| Flask-SQLAlchemy | 3.1.1 | BSD | [https://flask-sqlalchemy.palletsprojects.com/](https://flask-sqlalchemy.palletsprojects.com/) | Mandatory | Simplifies ORM-based database management using SQLAlchemy. |
-| Flask-Login | 0.6.3 | MIT | [https://flask-login.readthedocs.io/](https://flask-login.readthedocs.io/) | Mandatory | Manages user authentication sessions and roles. |
-| PyMySQL | 1.1.0 | MIT | [https://pymysql.readthedocs.io/](https://pymysql.readthedocs.io/) | Mandatory | MySQL database connector for Python. |
-| Cryptography | 41.0.7 | Apache 2.0 | [https://cryptography.io/](https://cryptography.io/) | Mandatory | Provides secure encryption and hashing utilities. |
-| Werkzeug | 3.0.1 | BSD | [https://werkzeug.palletsprojects.com/](https://werkzeug.palletsprojects.com/) | Mandatory | WSGI utility library used internally by Flask. |
-| python-dotenv | 1.0.0 | BSD-3-Clause | [https://pypi.org/project/python-dotenv/](https://pypi.org/project/python-dotenv/) | Mandatory | Loads environment variables from a `.env` file into Flask. |
-| pytest | latest | MIT | [https://pytest.org/](https://pytest.org/) | Optional | Testing framework for Python unit and integration tests. |
-| pytest-cov | latest | MIT | [https://pypi.org/project/pytest-cov/](https://pypi.org/project/pytest-cov/) | Optional | Plugin to measure code coverage during testing. |
-| pytest-html | latest | MIT | [https://pypi.org/project/pytest-html/](https://pypi.org/project/pytest-html/) | Optional | Plugin to generate HTML test reports. |
-
-### Installation via Dependency Manager
-
-All dependencies are listed in [`requirements.txt`](./requirements.txt).  
-You can install them automatically using:
-
+**Solution:**
 ```bash
+# Activate virtual environment
+source venv/bin/activate  # or .\venv\Scripts\Activate.ps1 on Windows
+
+# Install dependencies
 pip install -r requirements.txt
 ```
-After deployment, you can verify that the system works correctly using automated tests:
+
+### Database Connection Failed
+
+**Problem:** Can't connect to MySQL
+
+**Solution:** Use SQLite by removing all `DB_*` variables from `.env`. The app will automatically use SQLite.
+
+---
+
+## 🔒 Security
+
+- ✅ Password hashing with bcrypt
+- ✅ CSRF protection on all forms
+- ✅ SQL injection protection via SQLAlchemy ORM
+- ✅ Session management with Flask-Login
+- ✅ Input validation and sanitization
+- ✅ Role-based access control
+- ✅ Secure payment processing
+- ✅ Environment variable protection
+
+**Security Best Practices:**
+- Never commit `.env` file
+- Change default admin password
+- Use strong passwords
+- Keep dependencies updated
+- Regular security audits with Bandit
+
+---
+
+## 📝 Code Quality
+
+### Standards
+- ✅ PEP 8 compliance
+- ✅ Black formatting (line length: 88)
+- ✅ Ruff linting
+- ✅ Type hints where applicable
+- ✅ Comprehensive docstrings
+- ✅ Modular architecture
+- ✅ 75%+ test coverage
+
+### Pre-commit Checks
 ```bash
-pytest --html=report.html --self-contained-html
+# Format code
+black .
+
+# Lint code
+ruff check .
+
+# Run tests
+pytest
+
+# Check coverage
+pytest --cov=models --cov=controllers --cov=routes --cov=services
 ```
----
-
-## Cross-platform support Check
-
-Tested on macOS, Windows and Linux laptops using Python 3.8+.
 
 ---
 
-## Coding Conventions - Python Style
-- Code follows **PEP 8** conventions.
-- Used **meaningful variable and function names** for readability.
-- Classes are written in **PascalCase** (e.g., `MenuItem`, `OrderController`).
-- Functions and variables use **snake_case** (e.g., `get_available_items`, `is_healthy_choice`).
-- Each route and controller function has **docstrings** explaining purpose.
-- All database models follow SQLAlchemy ORM conventions.
+## 🎓 Educational Use
 
-## Accessibility Standards
+This project is developed for **CSC 510 - Software Engineering** and demonstrates:
 
-- The user interface is designed following **WCAG 2.1** and **ARIA8** best practices wherever possible.  
-- All buttons, input fields and navigation elements are keyboard-accessible.  
-- Color choices maintain strong contrast for readability.  
-- Semantic HTML tags (`<header>`, `<nav>`, `<main>`, `<footer>`) are used to improve screen-reader compatibility.  
-- Dynamic content (like modals and alerts) is handled with proper ARIA labels and roles.
-
----
-
-## Documentation Accessibility
-
-- All documentation, including the `README.md` and `docs/` pages, follows **plain language** principles and is compatible with **Markdown renderers** that support screen readers.  
-- Headings (`#`, `##`, `###`) are structured hierarchically for screen-reader navigation.  
-- Text alternatives (`alt` attributes) are provided for all embedded images (e.g., logos, architecture diagrams).  
-- Hyperlinks use descriptive text rather than generic labels like “click here”.
+- ✅ RESTful API design
+- ✅ MVC architecture
+- ✅ Database modeling with ORM
+- ✅ User authentication & authorization
+- ✅ Test-driven development (TDD)
+- ✅ Continuous Integration (CI/CD)
+- ✅ Code quality tools
+- ✅ Modular design patterns
+- ✅ Service layer architecture
+- ✅ Payment gateway integration concepts
+- ✅ Gamification systems
 
 ---
 
-## Milestones
+## 📜 License
 
-- [x] User Management (Authentication & Authorization of customers, admins and staff)
-- [x] Menu Management (Add/Edit/Delete Items and item information)
-- [x] Order Purchase (Build a Burger and place order)
-- [x] Order Status Management (Customer - check order status; Staff - update order status)
+This project is for educational purposes as part of CSC 510. No trademark claims.
 
 ---
 
-## Future Enhancements
-
-- Surprise box (randomised burger ingredients based on customer nutritional preferences and trending recommendations)
-- Nutritional calculator, dietary restriction filters and customer preferences
-- Payment integration
-- Inventory (ingredients availability) management
-
----
-
-## Security Notes
-
-- Never commit `.env` file to Git
-- Change default admin password after first login
-- Use strong passwords in production
-- Keep dependencies up to date
-
----
-
-## License
-
-This project is for educational purposes as part of CSC 510. StackShack is a student academic project and so there are no trademark claims.
-
----
-
-## How to Cite
-
-If you use *StackShack* in your work, please cite it with DOI: [10.5281/zenodo.1234567](https://doi.org/10.5281/zenodo.1234567)  
-
----
-
-## Support
+## 📞 Support
 
 For issues or questions:
-1. Check the [Troubleshooting](#troubleshooting) section
-2. Contact team members for queries/help @ https://discord.gg/R9bttnvf
-3. Check the [GitHub Issues](https://github.com/Shorse321/CSC510Group24/issues)
+1. Check [Troubleshooting](#-troubleshooting)
+2. Check [GitHub Issues](https://github.com/sadanaragoor/CSC510Group17_Proj3/issues)
+3. Contact the team
 
 ---
 
-## Team
+## 👥 Team
 
-**Group 24**
-- Adam Myers
-- Akash R
-- Sailesh Sridhar
-- Swetha Manivasagam
+**Group 17 - CSC 510 Software Engineering**
 
-Project maintained by 4 contributors; pull requests reviewed by maintainers. Contributors retain rights to their code contributions.
-No funding was received for driving this project to completion.
-**Course:** 
+Project maintained by contributors. All team members share roles:
+- Project Maintainers
+- Core Developers
+- Code Reviewers
+- Documentation Writers
+- QA Testers
 
-CSC 510 - Software Engineering
+No external funding received.
 
-All team members have the following roles and responsibilities
-| **Role** | **Responsibility** |
-|-----------|--------------------|
-| **Project Maintainers** | Oversee code quality, merge pull requests and manage releases |
-| **Core Developers** | Implement new features, conduct testing and manage database schemas |
-| **Contributors** | Report issues, submit pull requests (PRs) and improve documentation |
-| **Reviewers** | Conduct peer reviews and ensure adherence to code conventions |
+---
+
+## 📊 Project Stats
+
+- **Lines of Code**: 3,242+ (application code)
+- **Test Cases**: 493 (117 unit + 376 integration)
+- **Code Coverage**: 75%+
+- **Models**: 20+ database models
+- **Routes**: 50+ API endpoints
+- **Controllers**: 5 business logic controllers
+- **Services**: 5 service modules
+- **Total Commits**: 100+
 
 ---
 
 **Happy Stacking! 🍔**
+
+*Built with ❤️ by Group 17 for CSC 510*
 
