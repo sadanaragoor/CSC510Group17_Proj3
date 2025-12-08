@@ -16,7 +16,9 @@
 [![Closed Issues](https://img.shields.io/github/issues-closed/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/issues?q=is%3Aissue+is%3Aclosed)
 
 [![Contributors](https://img.shields.io/github/contributors/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/graphs/contributors)
-[![DOI](https://zenodo.org/badge/1098759280.svg)](https://doi.org/10.5281/zenodo.17853409)
+
+
+[![DOI](https://zenodo.org/badge/1098759280.svg)](https://doi.org/10.5281/zenodo.17853408)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linter: Ruff](https://img.shields.io/badge/Linter-Ruff-blue)](https://github.com/astral-sh/ruff)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
