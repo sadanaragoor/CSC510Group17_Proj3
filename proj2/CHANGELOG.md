@@ -39,21 +39,17 @@ This is a significant upgrade featuring gamification, advanced payment systems, 
 - Real-time stock quantity tracking
 - Low stock alerts with customizable thresholds
 - Automatic availability updates
-- Complete stock history audit trail
-- Reorder suggestions based on usage patterns
 
 #### 👨‍💼 Staff Shift Management
 - Shift scheduling (Morning, Afternoon, Evening, Night)
 - Staff assignments to stations
 - Staff profile management
 - Weekly shift calendar view
-- Performance tracking
 
 #### 🎁 Surprise Box
 - Random burgers tailored to dietary preferences
 - Budget-based randomization
-- Personalized suggestions from order history
-- Save and share favorite combinations
+
 
 ### 🧪 **Testing & Quality**
 - **493 total test cases** (117 unit + 376 integration)

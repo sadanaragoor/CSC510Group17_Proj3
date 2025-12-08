@@ -24,4 +24,4 @@ SOFTWARE.
 Contributors from Group 17
 
 **Course:** CSC 510 - Software Engineering  
-**Project:** StackShack - Custom Burger Ordering System with Gamification & Smart Recommendations
+**Project:** StackShack 2.0

@@ -16,9 +16,7 @@
 [![Closed Issues](https://img.shields.io/github/issues-closed/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/issues?q=is%3Aissue+is%3Aclosed)
 
 [![Contributors](https://img.shields.io/github/contributors/sadanaragoor/CSC510Group17_Proj3)](https://github.com/sadanaragoor/CSC510Group17_Proj3/graphs/contributors)
-
-
-[![DOI](https://zenodo.org/badge/1098759280.svg)](https://doi.org/10.5281/zenodo.17853408)
+[![DOI](https://zenodo.org/badge/1098759280.svg)](https://doi.org/10.5281/zenodo.17853409)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linter: Ruff](https://img.shields.io/badge/Linter-Ruff-blue)](https://github.com/astral-sh/ruff)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
@@ -63,7 +61,6 @@ Are you a developer? Our **FLASK + MySQL/SQLite** based application is easy to u
 - **Badges & Achievements** - Unlock badges for milestones (first order, healthy eater, etc.)
 - **Daily Bonuses** - Claim daily points for consecutive logins
 - **Weekly Challenges** - Complete challenges like "Order 3 healthy burgers this week"
-- **Punch Cards** - Traditional loyalty cards for free items
 - **Coupons** - Redeem discount coupons at checkout
 
 ### 💳 Payment System (NEW!)
@@ -71,7 +68,6 @@ Are you a developer? Our **FLASK + MySQL/SQLite** based application is easy to u
 - **Campus Card Integration** - Special pricing and balance management for students
 - **Transaction History** - Complete payment history with receipts
 - **Receipt Generation** - Automatic PDF receipts for all transactions
-- **Balance Management** - Add funds to digital wallet
 - **Admin Dashboard** - Payment analytics and transaction monitoring
 
 ### 👤 Profile Management (NEW!)
@@ -83,7 +79,7 @@ Are you a developer? Our **FLASK + MySQL/SQLite** based application is easy to u
 
 ### 📦 Inventory Management (NEW!)
 - **Stock Tracking** - Real-time ingredient quantity monitoring
-- **Low Stock Alerts** - Automatic alerts when items run low
+- **Low Stock Alerts** - Alerts when items run low
 - **Availability Management** - Enable/disable items based on stock
 - **Stock History** - Track inventory changes over time
 
@@ -95,13 +91,7 @@ Are you a developer? Our **FLASK + MySQL/SQLite** based application is easy to u
 
 ### 🎁 Surprise Box (NEW!)
 - **Random Burgers Tailored to Your Taste** - Get adventurous with personalized random burger combinations
-- **Dietary Compliance** - All surprise boxes respect your dietary preferences and restrictions
 - **Personalized Randomization** - Random burgers that match your vegan, gluten-free, high-protein, or low-calorie settings
-- **Budget Options** - Set your preferred price range for surprise burgers
-- **Nutritional Balance** - Smart algorithm ensures balanced macro distribution
-- **Taste Profile Learning** - System learns from your order history for better suggestions
-- **Adventurous Mode** - Try new ingredient combinations you haven't ordered before
-- **Save & Share** - Save favorite surprise burgers and share your creations with friends
 
 ### 🍔 Core Features
 - **User Management** - Role-based access (customer, staff, admin) with secure authentication
