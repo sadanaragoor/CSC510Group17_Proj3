@@ -56,6 +56,22 @@ Are you a developer? Our **FLASK + MySQL/SQLite** based application is easy to u
 
 ---
 
+## 🎬 Demo Video
+
+Check out our comprehensive video demonstration showcasing all the features of StackShack v2.0:
+
+[![StackShack Demo Video](https://img.shields.io/badge/▶️_Watch_Demo-Google_Drive-blue?style=for-the-badge&logo=googledrive)](https://drive.google.com/file/d/1ZlpvLAZtJVtBO2DaAuSnxQicTziovrmE/view?usp=drive_link)
+
+**Watch the demo to see:**
+- 🎮 Gamification & rewards system in action
+- 💳 Payment processing with multiple methods
+- 🥗 Smart recommendations based on dietary preferences
+- 📦 Inventory management and real-time stock tracking
+- 👨‍💼 Staff shift scheduling and management
+- 🎁 Surprise Box feature with personalized burgers
+
+---
+
 ## 🎯 Key Features
 
 ### 🎮 Gamification System (NEW!)
