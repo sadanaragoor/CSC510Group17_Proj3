@@ -14,6 +14,27 @@ def create_tables():
         print("=" * 80)
 
         # Import all models to ensure they're registered with SQLAlchemy
+        from models.user import User  # noqa: F401
+        from models.menu_item import MenuItem  # noqa: F401
+        from models.order import Order, OrderItem  # noqa: F401
+        from models.payment import (  # noqa: F401
+            Transaction,
+            PaymentMethod,
+            CampusCard,
+            Receipt,
+        )
+        from models.gamification import (  # noqa: F401
+            PointsTransaction,
+            Badge,
+            UserBadge,
+            DailyBonus,
+            WeeklyChallenge,
+            UserChallengeProgress,
+            PunchCard,
+            Redemption,
+            Coupon,
+        )
+        from models.shift import StaffProfile, Shift, ShiftAssignment  # noqa: F401
 
         print("\n[+] Models registered:")
         print("  - User")
@@ -32,6 +53,7 @@ def create_tables():
         print("  - UserChallengeProgress")
         print("  - PunchCard")
         print("  - Redemption")
+        print("  - Coupon")
         print("  - StaffProfile")
         print("  - Shift")
         print("  - ShiftAssignment")
@@ -104,8 +126,7 @@ def create_tables():
         print("=" * 80)
         print("\nYou can now:")
         print("  1. Run seed_menu.py to populate menu items")
-        print("  2. Run demo_payment_gateway.py to add demo payment data")
-        print("  3. Start the Flask app: python app.py")
+        print("  2. Start the Flask app: python app.py")
         print("\n" + "=" * 80)
 
 

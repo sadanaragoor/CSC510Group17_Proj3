@@ -26,6 +26,30 @@ def create_app(config_name="development"):
     app.config.from_object(config[config_name])
 
     init_db(app)
+
+    # Import all models to ensure they're registered with SQLAlchemy
+    # This ensures db.create_all() will create all tables
+    from models.menu_item import MenuItem  # noqa: F401
+    from models.order import Order, OrderItem  # noqa: F401
+    from models.payment import (  # noqa: F401
+        Transaction,
+        PaymentMethod,
+        CampusCard,
+        Receipt,
+    )
+    from models.gamification import (  # noqa: F401
+        PointsTransaction,
+        Badge,
+        UserBadge,
+        DailyBonus,
+        WeeklyChallenge,
+        UserChallengeProgress,
+        PunchCard,
+        Redemption,
+        Coupon,
+    )
+    from models.shift import StaffProfile, Shift, ShiftAssignment  # noqa: F401
+
     app.config["TEMPLATES_AUTO_RELOAD"] = True
     app.jinja_env.auto_reload = True
     app.jinja_env.cache = {}
@@ -67,10 +91,8 @@ def create_app(config_name="development"):
 if __name__ == "__main__":
     app = create_app("development")
     with app.app_context():
-        # Import all models to ensure they're registered
-        from models.user import User
-
         # This creates all tables from your models if they don't exist
+        # (models are imported in create_app)
         db.create_all()
         print("Database tables checked/created.")
     app.run(debug=True, host="0.0.0.0", port=5000)  # nosec B104 B201

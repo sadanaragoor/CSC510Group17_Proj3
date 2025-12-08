@@ -19,10 +19,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-**Group 24**
-- Adam Myers
-- Akash R
-- Sailesh Sridhar
-- Swetha Manivasagam
+**Group 17 - StackShack v2.0**
 
-**Course:** CSC 510 - Software Engineering
+Contributors from Group 17
+
+**Course:** CSC 510 - Software Engineering  
+**Project:** StackShack - Custom Burger Ordering System with Gamification & Smart Recommendations
